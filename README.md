@@ -36,3 +36,5 @@ Fase de bootstrap arquitetural. Ainda não há implementação funcional da cole
 - [Modelo conceitual do banco](/docs/DATABASE_CONCEPT.md)
 - [Contrato do run](/docs/RUN_CONTRACT.md)
 - [Ingestion bundle](/docs/INGESTION_BUNDLE.md)
+- [Formato do manifesto do run](/docs/RUN_MANIFEST_FORMAT.md)
+- [Formato do ingestion bundle](/docs/INGESTION_BUNDLE_FORMAT.md)

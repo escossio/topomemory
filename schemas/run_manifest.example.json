@@ -1,0 +1,49 @@
+{
+  "_example": true,
+  "run_id": "run-2026-04-14-001",
+  "collector_id": "vm-10.45.0.4",
+  "target_type": "domain",
+  "target_value": "facebook.com",
+  "service_hint": "public_home_page",
+  "scenario": "home_page",
+  "started_at": "2026-04-14T09:00:00-03:00",
+  "finished_at": "2026-04-14T09:18:42-03:00",
+  "run_status": "partial",
+  "collection_health": "degraded",
+  "tools_enabled": [
+    "browser",
+    "devtools/network",
+    "dns",
+    "curl/check"
+  ],
+  "tools_succeeded": [
+    "browser",
+    "curl/check",
+    "dns"
+  ],
+  "tools_failed": [
+    "devtools/network"
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "artifact-manifest-001",
+      "kind": "manifest",
+      "path": "runs/run-2026-04-14-001/manifest.json",
+      "purpose": "registro oficial do run",
+      "sha256": "example-only"
+    },
+    {
+      "artifact_id": "artifact-html-001",
+      "kind": "html_snapshot",
+      "path": "runs/run-2026-04-14-001/home_page.html",
+      "purpose": "snapshot da página inicial",
+      "mime_type": "text/html"
+    }
+  ],
+  "notes": [
+    "example/reference only",
+    "run parcial com coleta útil",
+    "bundle esperado para ingestão mínima"
+  ]
+}
+

@@ -115,3 +115,6 @@ Ao receber um run válido, a Camada 1 pode assumir que:
 - a qualidade da coleta foi classificada
 - a ingestão pode começar sem reconstituir o run a partir de arquivos soltos
 
+## Formato de referência
+
+O formato serializável de referência do manifesto do run está documentado em [RUN_MANIFEST_FORMAT.md](/docs/RUN_MANIFEST_FORMAT.md).

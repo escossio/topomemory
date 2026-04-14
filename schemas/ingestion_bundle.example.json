@@ -1,0 +1,74 @@
+{
+  "_example": true,
+  "run_context": {
+    "run_id": "run-2026-04-14-001",
+    "collector_id": "vm-10.45.0.4",
+    "target_type": "domain",
+    "target_value": "facebook.com",
+    "service_hint": "public_home_page",
+    "scenario": "home_page",
+    "started_at": "2026-04-14T09:00:00-03:00",
+    "finished_at": "2026-04-14T09:18:42-03:00",
+    "run_status": "partial",
+    "collection_health": "degraded"
+  },
+  "observed_elements": [
+    {
+      "observation_id": "obs-el-001",
+      "element_id": "el-homepage-001",
+      "element_type": "service_entrypoint",
+      "label": "Facebook home page",
+      "evidence_ref": "runs/run-2026-04-14-001/home_page.html",
+      "confidence": 0.86
+    },
+    {
+      "observation_id": "obs-el-002",
+      "element_id": "el-cdn-001",
+      "element_type": "network_dependency",
+      "label": "static asset delivery",
+      "evidence_ref": "runs/run-2026-04-14-001/devtools-network.json",
+      "confidence": 0.72
+    }
+  ],
+  "observed_relations": [
+    {
+      "relation_id": "rel-001",
+      "from_element_id": "el-homepage-001",
+      "to_element_id": "el-cdn-001",
+      "relation_type": "depends_on",
+      "evidence_ref": "runs/run-2026-04-14-001/devtools-network.json",
+      "confidence": 0.78
+    }
+  ],
+  "artifacts_manifest": [
+    {
+      "artifact_id": "artifact-manifest-001",
+      "kind": "manifest",
+      "path": "runs/run-2026-04-14-001/manifest.json",
+      "purpose": "registro oficial do run",
+      "sha256": "example-only"
+    },
+    {
+      "artifact_id": "artifact-html-001",
+      "kind": "html_snapshot",
+      "path": "runs/run-2026-04-14-001/home_page.html",
+      "purpose": "snapshot da página inicial",
+      "mime_type": "text/html"
+    },
+    {
+      "artifact_id": "artifact-network-001",
+      "kind": "network_log",
+      "path": "runs/run-2026-04-14-001/devtools-network.json",
+      "purpose": "log de rede capturado no run",
+      "mime_type": "application/json"
+    }
+  ],
+  "ingestion_confidence": {
+    "level": "minimal",
+    "rationale": "bundle coerente para ingestão parcial; rede incompleta não impede leitura inicial",
+    "blocking_issues": [
+      "network capture parcial"
+    ]
+  }
+}
+

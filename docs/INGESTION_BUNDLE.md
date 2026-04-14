@@ -103,3 +103,6 @@ O bundle não é confiável o bastante para ingestão disciplinada.
 
 O `ingestion_bundle` é a fronteira formal entre observação controlada e memória canônica. A Camada 1 não deve operar diretamente sobre a saída bruta da Camada 0 sem esse pacote.
 
+## Formato de referência
+
+O formato serializável de referência do `ingestion_bundle` está documentado em [INGESTION_BUNDLE_FORMAT.md](/docs/INGESTION_BUNDLE_FORMAT.md).
