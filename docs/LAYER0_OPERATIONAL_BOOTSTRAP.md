@@ -24,7 +24,7 @@ Motivo:
 
 - o PostgreSQL do ambiente passa a escutar em `10.45.0.3`
 - a VM `10.45.0.4` acessa o banco pela rede interna `10.45.0.0/16`
-- o caminho oficial deixa de depender de túnel SSH reverso
+- o caminho oficial é conexão TCP direta do runner para o PostgreSQL
 
 Fluxo:
 
@@ -65,6 +65,9 @@ O runner remoto:
 - executa a coleta
 - executa a ingestão
 - retorna a pasta do run
+- usa SSH apenas como transporte de execução/transferência
+- acessa o PostgreSQL diretamente pela `DATABASE_URL` da rede interna
+- não usa túnel SSH como parte do caminho oficial
 
 ## Variáveis mínimas
 

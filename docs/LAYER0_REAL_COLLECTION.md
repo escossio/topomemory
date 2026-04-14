@@ -53,7 +53,9 @@ python3 src/collect_minimal_run.py example.com \
 
 Fluxo mínimo validado:
 
-- acesso canônico por `ssh -i /lab/projects/livecopilot/lab/vms/livecopilot-validation/admin_sshkey codex@10.45.0.4`
+- execução canônica na VM `10.45.0.4` via `scripts/run_layer0_remote.sh`
+- SSH usado só para executar comandos e transferir os arquivos mínimos
+- sem túnel SSH em qualquer ponto do fluxo
 - pasta temporária limpa na VM: `/tmp/topomemory-runner`
 - envio mínimo usado na VM:
   - `src/collect_minimal_run.py`
@@ -68,6 +70,8 @@ Agora a coleta literal na VM aponta direto para o host PostgreSQL na rede intern
 python3 src/collect_minimal_run.py example.com \
   --database-url 'postgresql://topomemory_app:<senha>@10.45.0.3:5432/topomemory'
 ```
+
+O caminho oficial não depende de `ssh -L`, `ssh -R` nem de qualquer túnel para o banco.
 
 ## Diretório de run
 

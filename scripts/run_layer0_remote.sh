@@ -20,6 +20,10 @@ Variáveis:
   REMOTE_HOST   host da VM oficial (padrão: 10.45.0.4)
   REMOTE_USER   usuário SSH (padrão: codex)
   SSH_KEY       chave SSH canônica
+
+Observação:
+  O SSH aqui é só canal de execução/transferência. O PostgreSQL é acessado
+  diretamente pela VM via DATABASE_URL, sem túnel SSH.
 EOF
 }
 
