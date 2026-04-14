@@ -43,6 +43,7 @@ Campos principais:
 - modelo por ambiente: `TOPOMEMORY_EMBEDDING_MODEL`
 - provider externo futuro: documentado em [LAYER1_SEMANTIC_PROVIDER_ARCH.md](/docs/LAYER1_SEMANTIC_PROVIDER_ARCH.md)
 - provider real disponível: `openai`, documentado em [LAYER1_SEMANTIC_REAL_PROVIDER.md](/docs/LAYER1_SEMANTIC_REAL_PROVIDER.md)
+- fonte operacional usada nesta rodada: `livecopilot-semantic-api.service` com `EnvironmentFile=/etc/livecopilot-semantic.env`
 
 Este modelo foi escolhido porque:
 

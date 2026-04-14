@@ -14,12 +14,12 @@
 ## Provider real tentado
 
 - provider: `openai`
-- estado: bloqueado por credencial ausente
-- erro observado: `OPENAI_API_KEY` ausente
+- credencial reutilizada de: `/etc/livecopilot-semantic.env` via `livecopilot-semantic-api.service`
+- estado: bloqueado por quota insuficiente
+- erro observado: `insufficient_quota`
 
 ## Resultado
 
 - reindexação: não executada
 - benchmark: não reexecutado com provider real
 - comparação de qualidade: indisponível até a configuração da credencial
-

@@ -33,3 +33,8 @@
 - falhas: `1`
 - a avaliação usa `topomemory.network_element_semantic` e a busca semântica auxiliar atual
 - a identidade determinística não é alterada por este benchmark
+
+## Observação desta rodada
+
+- o provider `openai` foi carregado a partir do `EnvironmentFile` do Livecopilot
+- a reindexação não avançou porque a conta retornou `insufficient_quota` ao solicitar embeddings
