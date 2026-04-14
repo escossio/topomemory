@@ -18,39 +18,38 @@ Se algum item faltar, o bootstrap pode instalar o conjunto mínimo via `apt` qua
 
 ## Conexão oficial ao PostgreSQL
 
-A forma operacional inicial é um túnel SSH reverso a partir do host que executa o runner local.
+A forma operacional oficial agora é conexão TCP direta do runner para o host PostgreSQL na rede interna.
 
 Motivo:
 
-- o PostgreSQL do ambiente atual escuta apenas em `127.0.0.1`
-- a VM `10.45.0.4` precisa enxergar o banco sem abrir a topologia do banco para a rede
-- o túnel reduz mudanças estruturais e mantém a prova reproduzível
+- o PostgreSQL do ambiente passa a escutar em `10.45.0.3`
+- a VM `10.45.0.4` acessa o banco pela rede interna `10.45.0.0/16`
+- o caminho oficial deixa de depender de túnel SSH reverso
 
 Fluxo:
 
-- o host local abre `127.0.0.1:5432` para a VM como `127.0.0.1:15432`
-- o runner remoto usa `DATABASE_URL` apontando para `127.0.0.1:15432`
+- o runner remoto usa `DATABASE_URL` apontando para `10.45.0.3:5432/topomemory`
+- a autenticação usa `topomemory_app` com senha e `scram-sha-256`
 
 Exemplo de forma oficial:
 
 ```bash
-ssh -N -R 15432:127.0.0.1:5432 \
-  -i /lab/projects/livecopilot/lab/vms/livecopilot-validation/admin_sshkey \
-  codex@10.45.0.4
+DATABASE_URL='postgresql://topomemory_app:<senha>@10.45.0.3:5432/topomemory'
 ```
 
 ## GRANTs mínimos
 
-O role de ingestão usa o mínimo necessário:
+O role oficial do projeto usa o mínimo necessário para operar o schema próprio:
 
-- `USAGE` no schema `topomemory`
-- `SELECT`, `INSERT`, `UPDATE`, `DELETE` nas tabelas `topomemory.collector`, `topomemory.run`, `topomemory.run_artifact` e `topomemory.ingestion_bundle`
+- ownership do database `topomemory`
+- ownership do schema `topomemory`
+- `USAGE`, `CREATE` no schema `topomemory`
 
-O SQL oficial fica em:
+O acesso oficial fica documentado em:
 
-- [sql/001_layer0_minimum_grants.sql](/sql/001_layer0_minimum_grants.sql)
+- [docs/DATABASE_ACCESS.md](/docs/DATABASE_ACCESS.md)
 
-Não há sequência nem privilégio adicional requerido nesta rodada.
+Não há acesso amplo fora da rede `10.45.0.0/16`.
 
 ## Execução remota oficial
 
@@ -63,7 +62,6 @@ O runner remoto:
 
 - prepara um diretório limpo na VM
 - envia apenas `src/collect_minimal_run.py` e `src/ingest_run_bundle.py`
-- sobe o túnel SSH reverso
 - executa a coleta
 - executa a ingestão
 - retorna a pasta do run

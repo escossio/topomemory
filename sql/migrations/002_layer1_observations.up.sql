@@ -109,6 +109,6 @@ CREATE INDEX observed_relation_relation_type_idx ON observed_relation (relation_
 COMMENT ON TABLE observed_element IS 'Primeira persistência relacional mínima da Camada 1 para elementos observados.';
 COMMENT ON TABLE observed_relation IS 'Primeira persistência relacional mínima da Camada 1 para relações observadas.';
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE observed_element, observed_relation TO livecopilot_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE observed_element, observed_relation TO topomemory_app;
 
 COMMIT;

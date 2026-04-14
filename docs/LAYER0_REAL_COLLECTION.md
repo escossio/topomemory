@@ -46,7 +46,7 @@ Se precisar sobrescrever o banco:
 
 ```bash
 python3 src/collect_minimal_run.py example.com \
-  --database-url 'postgresql:///livecopilot?host=/var/run/postgresql'
+  --database-url 'postgresql://topomemory_app:<senha>@10.45.0.3:5432/topomemory'
 ```
 
 ## Prova literal na VM `10.45.0.4`
@@ -62,19 +62,11 @@ Fluxo mínimo validado:
 - alvo mantido em `example.com`
 - cenário mantido em `home_page`
 
-Se o PostgreSQL estiver escutando apenas em `127.0.0.1` no host de origem, use um túnel SSH reverso para expor a porta local na VM:
-
-```bash
-ssh -fNT -R 15432:127.0.0.1:5432 \
-  -i /lab/projects/livecopilot/lab/vms/livecopilot-validation/admin_sshkey \
-  codex@10.45.0.4
-```
-
-Depois rode a coleta literal na VM apontando para a porta tunelada:
+Agora a coleta literal na VM aponta direto para o host PostgreSQL na rede interna:
 
 ```bash
 python3 src/collect_minimal_run.py example.com \
-  --database-url 'postgresql://<usuario>:<senha>@127.0.0.1:15432/livecopilot'
+  --database-url 'postgresql://topomemory_app:<senha>@10.45.0.3:5432/topomemory'
 ```
 
 ## Diretório de run
@@ -140,4 +132,4 @@ WHERE run_id = '<run_id>';
 - O browser completo e DevTools continuam fora do escopo.
 - O bundle continua sendo a única porta oficial de entrada da Camada 1.
 - Se o trace real variar, o run ainda deve permanecer auditável pelos artefatos salvos.
-- Se o role de aplicação ainda não tiver acesso ao schema `topomemory`, a ingestão falha até o `GRANT` mínimo ser aplicado.
+- Se o role `topomemory_app` ainda não tiver acesso ao schema `topomemory`, a ingestão falha até o bootstrap oficial ser aplicado.

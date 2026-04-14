@@ -19,13 +19,13 @@ O projeto separa observação, memória, saúde, tempo, projeção e ação em c
 ## Componentes principais
 
 - VM oficial de coleta inicial: `10.45.0.4`
-- Banco principal: `PostgreSQL + pgvector`
+- Banco principal: `PostgreSQL + pgvector`, com database dedicado `topomemory`
 - Prometheus: camada temporal e base de séries observáveis
 - Zabbix: componente operacional de monitoramento, não o cérebro do sistema
 
 ## Status atual
 
-Fase de bootstrap arquitetural. A Camada 0 já tem coleta real mínima validada. A Camada 1 já normaliza `observed_elements` e `observed_relations` e agora inicia a identidade canônica mínima com `network_element` e `identity_decision`, ainda sem embeddings e sem consolidar IP privado automaticamente.
+Fase de bootstrap arquitetural. A Camada 0 já tem coleta real mínima validada. A Camada 1 já normaliza `observed_elements` e `observed_relations` e agora inicia a identidade canônica mínima com `network_element` e `identity_decision`, ainda sem embeddings e sem consolidar IP privado automaticamente. O banco oficial agora é `topomemory`, com acesso direto pela rede interna `10.45.0.0/16`.
 
 ## Documentação
 
@@ -34,6 +34,7 @@ Fase de bootstrap arquitetural. A Camada 0 já tem coleta real mínima validada.
 - [Decisões](/docs/DECISIONS.md)
 - [VM 10.45.0.4](/docs/COLLECTOR_VM_10.45.0.4.md)
 - [Modelo conceitual do banco](/docs/DATABASE_CONCEPT.md)
+- [Acesso ao banco](/docs/DATABASE_ACCESS.md)
 - [Schema conceitual da Camada 0](/docs/COLLECTION_SCHEMA_CONCEPT.md)
 - [Notas do SQL inicial da Camada 0](/docs/LAYER0_SQL_NOTES.md)
 - [Bootstrap do banco](/docs/DB_BOOTSTRAP.md)

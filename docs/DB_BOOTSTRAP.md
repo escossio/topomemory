@@ -5,12 +5,16 @@
 - PostgreSQL já existente e acessível.
 - Permissão para criar o schema lógico do projeto.
 - A base tecnológica continua sendo `PostgreSQL + pgvector`.
+- O database oficial do projeto é `topomemory`.
+- O role oficial do projeto é `topomemory_app`.
 
 ## Ordem de aplicação
 
-1. Aplicar a migration baseline: [sql/migrations/001_layer0_initial.up.sql](/sql/migrations/001_layer0_initial.up.sql)
-2. Aplicar a seed mínima do collector: [sql/seeds/001_collector_vm_10.45.0.4.sql](/sql/seeds/001_collector_vm_10.45.0.4.sql)
-3. Aplicar os GRANTs mínimos da Camada 0: [sql/001_layer0_minimum_grants.sql](/sql/001_layer0_minimum_grants.sql)
+1. Criar o role e o database dedicados, conforme [Acesso ao banco](/docs/DATABASE_ACCESS.md)
+2. Aplicar a migration baseline: [sql/migrations/001_layer0_initial.up.sql](/sql/migrations/001_layer0_initial.up.sql)
+3. Aplicar a normalização mínima da Camada 1: [sql/migrations/002_layer1_observations.up.sql](/sql/migrations/002_layer1_observations.up.sql)
+4. Aplicar a identidade canônica mínima da Camada 1: [sql/migrations/003_layer1_identity_minimal.up.sql](/sql/migrations/003_layer1_identity_minimal.up.sql)
+5. Aplicar a seed mínima do collector: [sql/seeds/001_collector_vm_10.45.0.4.sql](/sql/seeds/001_collector_vm_10.45.0.4.sql)
 
 ## Baseline
 
@@ -35,23 +39,18 @@ A seed mínima registra o collector oficial inicial da Camada 0:
 
 ## GRANTs mínimos
 
-O role de ingestão usa o mínimo necessário para persistir a coleta real:
+O acesso transitório da Camada 0 usou `livecopilot_app` como papel de ingestão.
+O estado oficial do projeto usa `topomemory_app` no database `topomemory`, documentado em [Acesso ao banco](/docs/DATABASE_ACCESS.md).
 
-- `USAGE` no schema `topomemory`
-- `SELECT`, `INSERT`, `UPDATE`, `DELETE` nas tabelas `topomemory.collector`, `topomemory.run`, `topomemory.run_artifact` e `topomemory.ingestion_bundle`
-
-O arquivo oficial é:
-
-- [sql/001_layer0_minimum_grants.sql](/sql/001_layer0_minimum_grants.sql)
+- `USAGE` e `CREATE` no schema `topomemory`
+- ownership do database `topomemory`
+- ownership do schema `topomemory`
+- permissões de criação/alteração sobre os objetos do próprio projeto
 
 ## Observação sobre escopo lógico
 
-O bootstrap funciona tanto em:
-
-- database dedicado `topomemory`
-- schema dedicado `topomemory` em database compartilhado
-
-A decisão de organização lógica não altera a migration nem a seed, apenas o ponto de instalação.
+O bootstrap oficial agora prefere um database dedicado `topomemory`.
+O schema dedicado em database compartilhado continua sendo fallback de infraestrutura, mas não é o caminho oficial desta rodada.
 
 ## Sobre o arquivo SQL histórico
 
@@ -64,4 +63,4 @@ A migration versionada oficial é [sql/migrations/001_layer0_initial.up.sql](/sq
 - Não há framework de migration.
 - Não há seed adicional além do collector oficial inicial.
 - Não há pipeline de coleta usando essas tabelas ainda.
-- A conexão operacional inicial da VM usa túnel SSH reverso enquanto o PostgreSQL permanecer escutando apenas em `127.0.0.1`.
+- O acesso oficial ao PostgreSQL agora é direto pela rede interna `10.45.0.0/16`.

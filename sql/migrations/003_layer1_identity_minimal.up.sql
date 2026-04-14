@@ -128,6 +128,6 @@ EXECUTE FUNCTION topomemory.touch_updated_at();
 COMMENT ON TABLE network_element IS 'Primeira identidade canônica mínima da Camada 1 para elementos públicos observados.';
 COMMENT ON TABLE identity_decision IS 'Registro auditável da decisão mínima de identidade canônica tomada sobre cada observed_element.';
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE network_element, identity_decision TO livecopilot_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE network_element, identity_decision TO topomemory_app;
 
 COMMIT;

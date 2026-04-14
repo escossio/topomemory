@@ -8,8 +8,11 @@
 - Banco principal: `PostgreSQL + pgvector`
 - O projeto reutiliza a instância PostgreSQL já existente no ambiente
 - Não haverá nova instância, serviço ou engine de banco nesta fase
-- Preferência operacional: database dedicado `topomemory` dentro da instância existente
-- Alternativa aceitável: schema `topomemory` em database compartilhado, se houver restrição operacional
+- Database oficial do projeto: `topomemory`
+- Role oficial do projeto: `topomemory_app`
+- Schema oficial do projeto: `topomemory`
+- Acesso oficial ao PostgreSQL: rede interna `10.45.0.0/16` com `scram-sha-256`
+- O túnel SSH reverso deixou de ser o caminho oficial do projeto
 - VM oficial de coleta inicial: `10.45.0.4`
 - Prometheus é a camada temporal do sistema
 - Zabbix é componente operacional, não o cérebro do sistema
@@ -23,6 +26,8 @@
 - O projeto deve ficar logicamente isolado, com ownership e fronteira documentados.
 - A opção padrão é um database dedicado porque simplifica operação, permissões e manutenção.
 - O schema dedicado continua sendo fallback válido quando o ambiente compartilhado exigir essa forma.
+- O owner lógico do banco do projeto é `topomemory_app`.
+- O acesso do projeto não depende mais de `livecopilot_app`.
 
 ## Bootstrap de arquivos e diretórios
 

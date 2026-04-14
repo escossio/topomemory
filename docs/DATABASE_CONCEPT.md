@@ -2,13 +2,16 @@
 
 ## Base escolhida
 
-O banco principal do projeto é `PostgreSQL + pgvector`.
+O banco principal do projeto é `PostgreSQL + pgvector`, com database dedicado oficial `topomemory`.
 
 ## Decisão de infraestrutura
 
 - O Topomemory reutiliza a instância PostgreSQL já existente no ambiente.
 - Não haverá nova instância, serviço ou engine de banco nesta fase.
 - A discussão atual é sobre escopo lógico dentro dessa mesma instância.
+- O role oficial do projeto é `topomemory_app`.
+- O schema oficial do projeto é `topomemory`.
+- O acesso oficial usa a rede interna `10.45.0.0/16`.
 
 ## Princípio de separação
 
@@ -39,6 +42,7 @@ O modelo separa observação bruta de entidade canônica. A mesma coisa observad
 A Camada 0 já possui um schema conceitual persistível separado, documentado em [COLLECTION_SCHEMA_CONCEPT.md](/docs/COLLECTION_SCHEMA_CONCEPT.md).
 Esse schema conceitual será persistido sobre a instância PostgreSQL já existente, mantendo isolamento lógico conforme a opção de escopo escolhida.
 O primeiro SQL inicial dessa camada está em [sql/001_layer0_initial.sql](/sql/001_layer0_initial.sql).
+O estado operacional atual do projeto usa o database dedicado `topomemory` com owner `topomemory_app`.
 
 ## Blocos principais da Camada 0
 
