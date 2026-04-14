@@ -2,7 +2,7 @@ BEGIN;
 
 SET search_path TO topomemory, public;
 
-INSERT INTO collector (
+INSERT INTO topomemory.collector (
   collector_id,
   collector_name,
   collector_type,
