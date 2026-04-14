@@ -2,7 +2,7 @@
 
 ## Base escolhida
 
-O banco principal do projeto é `PostgreSQL + pgvector`, com database dedicado oficial `topomemory`.
+O banco principal do projeto é `PostgreSQL`; `pgvector` faz parte da direção conceitual, mas ainda não é operacional nesta fase.
 
 ## Decisão de infraestrutura
 
@@ -67,16 +67,7 @@ A etapa seguinte adiciona as primeiras entidades canônicas mínimas e o registr
 - `network_element`
 - `identity_decision`
 
-Nesta rodada:
-
-- a consolidação determinística cobre IP público, hostname/PTR forte e IP privado por contexto local
-- `canonical_ip` continua sendo a chave principal para IP público
-- hostname/PTR só entra como complemento quando não há `canonical_ip`
-- IP privado só entra por assinatura determinística local de vizinhança e posição
-- IP privado não é consolidado por igualdade pura de IP
-- a decisão fica registrada com evidência e motivo textual
-
-O baseline mínimo consolidado está resumido em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md).
+Nesta rodada, a consolidação determinística cobre IP público, hostname/PTR forte e IP privado por contexto local. Os detalhes mínimos, as chaves de identidade e as limitações ficam em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md).
 
 ## Observação
 

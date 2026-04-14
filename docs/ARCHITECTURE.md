@@ -46,25 +46,16 @@ O contrato formal dessa passagem da Camada 0 para a Camada 1 está documentado e
 
 ## Camada 1 mínima
 
-A primeira implementação relacional da Camada 1 normaliza apenas as observações do `ingestion_bundle` em `observed_element` e `observed_relation`.
+A primeira implementação relacional da Camada 1 normaliza as observações do `ingestion_bundle` em `observed_element` e `observed_relation`.
 
 - O vínculo com `bundle_id` e `run_id` permanece explícito.
 - `element_index` e `relation_index` preservam a identidade local dentro do bundle.
 - `raw_json` permanece disponível para auditoria.
-- Nesta subfatia inicial, ainda não havia consolidação canônica nem correlação semântica pesada.
+- O detalhe da consolidação canônica mínima fica em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md).
 
 ## Identidade canônica mínima
 
-A Camada 1 mínima já consolidou um baseline determinístico e conservador:
-
-- `observed_element` público com IP público pode gerar ou reforçar uma linha em `network_element`
-- `observed_element` público sem IP canônico pode consolidar por hostname/PTR forte
-- `observed_element` privado pode consolidar por assinatura determinística local de vizinhança e posição
-- `identity_decision` registra a decisão tomada para cada observação processada
-- a consolidação continua conservadora e auditável
-- não há embeddings, semântica pesada nem merge entre IPs diferentes
-
-O resumo único do baseline está em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md).
+A Camada 1 mínima já consolidou um baseline determinístico e conservador. Ela cobre IP público por `canonical_ip`, hostname/PTR forte quando não há IP canônico e IP privado por assinatura determinística local. O contrato completo, as limitações e os tipos de decisão ficam em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md).
 
 ## Interface formal da Camada 0
 
