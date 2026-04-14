@@ -38,6 +38,7 @@ O modelo separa observação bruta de entidade canônica. A mesma coisa observad
 
 A Camada 0 já possui um schema conceitual persistível separado, documentado em [COLLECTION_SCHEMA_CONCEPT.md](/docs/COLLECTION_SCHEMA_CONCEPT.md).
 Esse schema conceitual será persistido sobre a instância PostgreSQL já existente, mantendo isolamento lógico conforme a opção de escopo escolhida.
+O primeiro SQL inicial dessa camada está em [sql/001_layer0_initial.sql](/sql/001_layer0_initial.sql).
 
 ## Blocos principais da Camada 0
 

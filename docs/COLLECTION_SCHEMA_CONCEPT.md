@@ -5,6 +5,7 @@
 Este documento fecha o schema conceitual inicial de persistência da Camada 0.
 Ele não define o SQL final, mas já estabelece entidades, relações, cardinalidades e a fronteira entre campos relacionais e blocos serializados.
 A persistência será feita sobre a instância PostgreSQL já existente no ambiente, sem nova stack de banco.
+O primeiro mapeamento SQL inicial dessa modelagem está em [sql/001_layer0_initial.sql](/sql/001_layer0_initial.sql).
 
 O objetivo é dar base estável para a evolução futura sem contradizer os contratos já publicados em:
 
