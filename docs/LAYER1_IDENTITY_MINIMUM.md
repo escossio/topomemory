@@ -16,6 +16,7 @@ O baseline mínimo completo da Camada 1 está resumido em [LAYER1_BASELINE.md](/
 - não faz merge por ASN sozinho
 - não faz merge por org sozinho
 - não faz merge entre IPs diferentes
+- não usa a frente semântica auxiliar para decidir identidade
 
 ## Regra base desta rodada
 
@@ -73,12 +74,17 @@ Essa regra privada faz parte do baseline mínimo, mas continua sem semântica, e
 
 - não existe correlação semântica entre entidades
 - não existe decisão probabilística
-- não existe `pgvector`
+- não existe `pgvector` operacional nesta regra de identidade
 - não existe merge por equivalência textual ampla
 - não existe grafo operacional aberto a partir desta consolidação
 - veja a regra complementar de hostname/PTR em [LAYER1_IDENTITY_HOSTNAME_RULE.md](/docs/LAYER1_IDENTITY_HOSTNAME_RULE.md)
 - veja a regra complementar de IP privado em [LAYER1_IDENTITY_PRIVATE_RULE.md](/docs/LAYER1_IDENTITY_PRIVATE_RULE.md)
 - veja o resumo único do baseline em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md)
+
+## Relação com a frente semântica
+
+A frente semântica auxiliar pode existir em paralelo, mas não participa desta camada de identidade.
+Ela deve ser tratada como consulta e enriquecimento, não como verdade canônica.
 
 ## Próximos passos prováveis
 

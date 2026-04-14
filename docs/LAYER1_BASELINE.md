@@ -33,12 +33,17 @@ A Camada 1 mínima já cobre três regras determinísticas de identidade canôni
 
 ## Limites do baseline
 
-- sem embeddings
-- sem `pgvector` operacional na Camada 1
-- sem merge semântico
+- sem embeddings na identidade canônica
+- sem `pgvector` como fonte da verdade da identidade
+- sem merge semântico para decisão de identidade
 - sem correlação frouxa por ASN/org
 - sem grafo operacional
 - sem heurísticas agressivas de hostname
+
+## Frente semântica separada
+
+A frente semântica auxiliar, quando usada, vive em tabela própria e não altera este baseline.
+Ela pode enriquecer consulta e contexto, mas não participa da decisão determinística de identidade.
 
 ## Objetivo da camada
 

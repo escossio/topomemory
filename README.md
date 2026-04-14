@@ -1,6 +1,6 @@
 # topomemory
 
-topomemory é o núcleo documental e arquitetural para organizar coleta controlada, memória canônica, saúde operacional e projeções do grafo de operação de rotas e entregas.
+topomemory é o núcleo documental e arquitetural para organizar coleta controlada, memória canônica, saúde operacional, consulta semântica auxiliar e projeções do grafo de operação de rotas e entregas.
 
 ## Visão geral
 
@@ -25,7 +25,7 @@ O projeto separa observação, memória, saúde, tempo, projeção e ação em c
 
 ## Status atual
 
-Fase de bootstrap arquitetural. A Camada 0 já tem coleta real mínima validada e opera com execução remota na VM `10.45.0.4` e persistência direta no PostgreSQL oficial `10.45.0.3:5432/topomemory` via `topomemory_app`, sem túnel SSH. A Camada 1 já normaliza `observed_elements` e `observed_relations` e tem o baseline mínimo documentado em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md). Ainda não há embeddings, `pgvector` operacional, merge semântico nem grafo.
+Fase de bootstrap arquitetural. A Camada 0 já tem coleta real mínima validada e opera com execução remota na VM `10.45.0.4` e persistência direta no PostgreSQL oficial `10.45.0.3:5432/topomemory` via `topomemory_app`, sem túnel SSH. A Camada 1 já normaliza `observed_elements` e `observed_relations` e tem o baseline mínimo documentado em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md). A identidade determinística segue como fonte da verdade; a frente semântica agora existe em tabela própria, como consulta auxiliar, sem merge automático.
 
 Uma frente futura de enriquecimento BGP público também está documentada em [BGP_PUBLIC_ENRICHMENT.md](/docs/BGP_PUBLIC_ENRICHMENT.md), como apoio externo e não como fonte primária da verdade.
 
@@ -49,6 +49,7 @@ Ela também tem uma superfície analítica de comparação entre runs para enxer
 - [Normalização mínima da Camada 1](/docs/LAYER1_MINIMAL_NORMALIZATION.md)
 - [Auditoria operacional da Camada 1](/docs/LAYER1_AUDIT.md)
 - [Comparação entre runs da Camada 1](/docs/LAYER1_RUN_DIFF.md)
+- [Baseline semântico auxiliar da Camada 1](/docs/LAYER1_SEMANTIC_BASELINE.md)
 - [Contrato do run](/docs/RUN_CONTRACT.md)
 - [Ingestion bundle](/docs/INGESTION_BUNDLE.md)
 - [Formato do manifesto do run](/docs/RUN_MANIFEST_FORMAT.md)

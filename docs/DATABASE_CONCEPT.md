@@ -2,7 +2,8 @@
 
 ## Base escolhida
 
-O banco principal do projeto é `PostgreSQL`; `pgvector` faz parte da direção conceitual, mas ainda não é operacional nesta fase.
+O banco principal do projeto é `PostgreSQL`.
+A frente semântica auxiliar já usa `pgvector` de forma isolada, mas sem interferir na verdade canônica da Camada 1.
 
 ## Decisão de infraestrutura
 
@@ -68,6 +69,21 @@ A etapa seguinte adiciona as primeiras entidades canônicas mínimas e o registr
 - `identity_decision`
 
 Nesta rodada, a consolidação determinística cobre IP público, hostname/PTR forte e IP privado por contexto local. Os detalhes mínimos, as chaves de identidade e as limitações ficam em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md).
+
+## Camada 1 semântica auxiliar
+
+A frente semântica complementar registra perfil textual e embedding por `network_element` em tabela própria.
+
+- `network_element_semantic`
+
+Essa camada é auxiliar:
+
+- consulta contexto com ranking vetorial
+- não altera `network_element`
+- não altera `identity_decision`
+- não autoriza merge automático
+
+Os detalhes operacionais ficam em [LAYER1_SEMANTIC_BASELINE.md](/docs/LAYER1_SEMANTIC_BASELINE.md).
 
 ## Auditoria operacional da Camada 1
 
