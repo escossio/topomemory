@@ -3,6 +3,7 @@
 ## Escopo
 
 Este documento registra as escolhas do primeiro SQL inicial da Camada 0, definido em [sql/001_layer0_initial.sql](/sql/001_layer0_initial.sql).
+A forma versionada oficial da baseline agora está em [sql/migrations/001_layer0_initial.up.sql](/sql/migrations/001_layer0_initial.up.sql).
 Ele cobre apenas as entidades mínimas necessárias para a persistência inicial:
 
 - `collector`
@@ -57,7 +58,8 @@ O SQL inicial foi escrito para bater com:
 
 ## Limitações conhecidas
 
-- Não há migrações versionadas ainda.
+- Não há migrations adicionais além da baseline versionada.
+- A baseline oficial versionada é a migration `001_layer0_initial.up.sql`.
 - Não há seed de dados.
 - Não há lógica de aplicação para manter `updated_at`; o SQL inicial usa trigger.
 - Não há normalização da Camada 1.
