@@ -64,6 +64,9 @@ Há também uma frente futura de enriquecimento público de BGP para apoiar cont
 - fontes como RIPEstat, RouteViews e BGPKIT podem complementar leituras futuras
 - isso não substitui a observação local da Camada 0
 - isso não redefine a verdade canônica da Camada 1
+- a Camada 0 continua sendo a verdade observada local
+- a Camada 1 continua sendo a memória topológica canônica
+- o enriquecimento BGP público é um módulo auxiliar futuro, não um componente ativo
 - o detalhe da frente fica em [BGP_PUBLIC_ENRICHMENT.md](/docs/BGP_PUBLIC_ENRICHMENT.md)
 
 ## Interface formal da Camada 0
