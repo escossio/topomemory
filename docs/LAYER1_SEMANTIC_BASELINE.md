@@ -44,7 +44,7 @@ Campos principais:
 - provider externo futuro: documentado em [LAYER1_SEMANTIC_PROVIDER_ARCH.md](/docs/LAYER1_SEMANTIC_PROVIDER_ARCH.md)
 - provider real disponível: `openai`, documentado em [LAYER1_SEMANTIC_REAL_PROVIDER.md](/docs/LAYER1_SEMANTIC_REAL_PROVIDER.md)
 - fonte operacional usada nesta rodada: `livecopilot-semantic-api.service` com `EnvironmentFile=/etc/livecopilot-semantic.env`
-- variante vencedora do tuning: `hybrid`, configurada por `TOPOMEMORY_SEMANTIC_PROFILE_VARIANT`
+- variante vencedora atual do tuning: `hybrid_private_page8_focus`, configurada por `TOPOMEMORY_SEMANTIC_PROFILE_VARIANT`
 
 Este modelo foi escolhido porque:
 
@@ -120,4 +120,4 @@ O dataset de queries vive em [schemas/semantic_eval_queries.json](/schemas/seman
 ## Troca de motor
 
 A tentativa de trocar o motor de embedding está documentada em [LAYER1_SEMANTIC_MOTOR_CHANGE.md](/docs/LAYER1_SEMANTIC_MOTOR_CHANGE.md).
-No estado atual do ambiente, não há credencial/API viável nem stack local instalada para executar esse salto com segurança.
+O provider real `openai` já foi ativado com sucesso no ambiente Livecopilot, e a camada semântica passou por tuning focalizado sem mexer na identidade determinística.

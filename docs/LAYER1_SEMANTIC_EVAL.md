@@ -72,8 +72,9 @@ python3 src/evaluate_semantic_search.py \
 
 - provider executado: `openai`
 - modelo executado: `text-embedding-3-small`
-- variante vencedora: `hybrid`
-- hit_rate observado: `0.9166666666666666`
+- variante vencedora: `hybrid_private_page8_focus`
+- hit_rate observado: `1.0`
+- `q10_private_node`: `pass`
 - `q12_private_hop_google`: `pass`
 
 ## Leitura esperada
