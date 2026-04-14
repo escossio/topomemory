@@ -106,3 +106,8 @@ Ela é útil para consulta e enriquecimento, mas continua subordinada ao baselin
 
 A avaliação do baseline semântico fica documentada em [LAYER1_SEMANTIC_EVAL.md](/docs/LAYER1_SEMANTIC_EVAL.md).
 O dataset de queries vive em [schemas/semantic_eval_queries.json](/schemas/semantic_eval_queries.json), e os artefatos de execução ficam em [artifacts/semantic-eval/README.md](/artifacts/semantic-eval/README.md).
+
+## Troca de motor
+
+A tentativa de trocar o motor de embedding está documentada em [LAYER1_SEMANTIC_MOTOR_CHANGE.md](/docs/LAYER1_SEMANTIC_MOTOR_CHANGE.md).
+No estado atual do ambiente, não há credencial/API viável nem stack local instalada para executar esse salto com segurança.
