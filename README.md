@@ -29,6 +29,8 @@ Fase de bootstrap arquitetural. A Camada 0 já tem coleta real mínima validada 
 
 Uma frente futura de enriquecimento BGP público também está documentada em [BGP_PUBLIC_ENRICHMENT.md](/docs/BGP_PUBLIC_ENRICHMENT.md), como apoio externo e não como fonte primária da verdade.
 
+A Camada 1 também já tem uma superfície de auditoria operacional em SQL e CLI para inspecionar `matched_existing_entity`, `new_entity_created` e `skipped_*` por run e bundle, sem abrir semântica.
+
 ## Documentação
 
 - [Arquitetura](/docs/ARCHITECTURE.md)
@@ -43,6 +45,7 @@ Uma frente futura de enriquecimento BGP público também está documentada em [B
 - [Bootstrap operacional da Camada 0](/docs/LAYER0_OPERATIONAL_BOOTSTRAP.md)
 - [Ingestão mínima da Camada 0](/docs/LAYER0_INGESTION.md)
 - [Normalização mínima da Camada 1](/docs/LAYER1_MINIMAL_NORMALIZATION.md)
+- [Auditoria operacional da Camada 1](/docs/LAYER1_AUDIT.md)
 - [Contrato do run](/docs/RUN_CONTRACT.md)
 - [Ingestion bundle](/docs/INGESTION_BUNDLE.md)
 - [Formato do manifesto do run](/docs/RUN_MANIFEST_FORMAT.md)

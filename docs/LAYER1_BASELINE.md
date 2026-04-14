@@ -43,3 +43,11 @@ A Camada 1 mínima já cobre três regras determinísticas de identidade canôni
 ## Objetivo da camada
 
 O baseline existe para manter a identidade canônica auditável, conservadora e idempotente antes da próxima frente semântica.
+
+## Próxima frente operacional
+
+A frente seguinte, sem abrir semântica, é a auditoria operacional da Camada 1 por `run_id` e `bundle_id`.
+
+- ela lê o resultado do baseline sem alterar as regras de identidade
+- ela expõe `decision_type`, `confidence`, `reasoning_summary` e o `network_element` resolvido
+- ela ajuda a revisar `matched_existing_entity`, `new_entity_created` e `skipped_*` com clareza operacional

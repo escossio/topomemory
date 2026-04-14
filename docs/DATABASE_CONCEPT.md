@@ -69,6 +69,14 @@ A etapa seguinte adiciona as primeiras entidades canônicas mínimas e o registr
 
 Nesta rodada, a consolidação determinística cobre IP público, hostname/PTR forte e IP privado por contexto local. Os detalhes mínimos, as chaves de identidade e as limitações ficam em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md).
 
+## Auditoria operacional da Camada 1
+
+A Camada 1 também passa a ter uma superfície SQL de auditoria para leitura operacional dos resultados do baseline, sem mexer na lógica de consolidação.
+
+- a view `topomemory.v_layer1_identity_audit` organiza `observed_element`, `identity_decision` e `network_element`
+- o objetivo é enxergar por `run_id` e `bundle_id` como cada observação foi tratada
+- isso continua sendo leitura de auditoria; não é uma nova camada semântica
+
 ## Observação
 
 Este documento descreve apenas o modelo conceitual inicial. Não é o schema SQL definitivo e não substitui decisões de implementação futura.

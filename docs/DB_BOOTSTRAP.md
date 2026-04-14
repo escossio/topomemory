@@ -14,7 +14,10 @@
 2. Aplicar a migration baseline: [sql/migrations/001_layer0_initial.up.sql](/sql/migrations/001_layer0_initial.up.sql)
 3. Aplicar a normalização mínima da Camada 1: [sql/migrations/002_layer1_observations.up.sql](/sql/migrations/002_layer1_observations.up.sql)
 4. Aplicar a identidade canônica mínima da Camada 1: [sql/migrations/003_layer1_identity_minimal.up.sql](/sql/migrations/003_layer1_identity_minimal.up.sql)
-5. Aplicar a seed mínima do collector: [sql/seeds/001_collector_vm_10.45.0.4.sql](/sql/seeds/001_collector_vm_10.45.0.4.sql)
+5. Aplicar a regra conservadora de hostname/PTR da Camada 1: [sql/migrations/004_layer1_identity_hostname_rule.up.sql](/sql/migrations/004_layer1_identity_hostname_rule.up.sql)
+6. Aplicar a regra determinística conservadora para IP privado: [sql/migrations/005_layer1_identity_private_rule.up.sql](/sql/migrations/005_layer1_identity_private_rule.up.sql)
+7. Aplicar a view de auditoria operacional da Camada 1: [sql/migrations/006_layer1_audit_view.up.sql](/sql/migrations/006_layer1_audit_view.up.sql)
+8. Aplicar a seed mínima do collector: [sql/seeds/001_collector_vm_10.45.0.4.sql](/sql/seeds/001_collector_vm_10.45.0.4.sql)
 
 ## Baseline
 
