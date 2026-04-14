@@ -46,8 +46,15 @@ O primeiro SQL inicial dessa camada está em [sql/001_layer0_initial.sql](/sql/0
 - `run`
 - `run_artifact`
 - `ingestion_bundle`
-- `observed_element_stub` (futuro, se necessário)
-- `observed_relation_stub` (futuro, se necessário)
+
+## Camada 1 mínima: observações normalizadas
+
+A primeira etapa relacional da Camada 1 normaliza as observações já persistidas no `ingestion_bundle` em tabelas próprias, preservando o vínculo com `bundle_id` e `run_id` e mantendo o `raw_json` para auditoria.
+
+- `observed_element`
+- `observed_relation`
+
+Nesta etapa ainda não há entidade canônica consolidada, correlação semântica ou grafo operacional.
 
 ## Observação
 

@@ -25,7 +25,7 @@ O projeto separa observação, memória, saúde, tempo, projeção e ação em c
 
 ## Status atual
 
-Fase de bootstrap arquitetural. A Camada 0 já tem schema conceitual persistível documentado e um SQL inicial; a persistência reutiliza a instância PostgreSQL já existente, sem nova stack de banco, e ainda não há implementação funcional da coleta nem schema SQL definitivo.
+Fase de bootstrap arquitetural. A Camada 0 já tem coleta real mínima validada e a Camada 1 começou pela normalização mínima de `observed_elements` e `observed_relations` em persistência relacional própria; a persistência reutiliza a instância PostgreSQL já existente, sem nova stack de banco.
 
 ## Documentação
 
@@ -39,6 +39,7 @@ Fase de bootstrap arquitetural. A Camada 0 já tem schema conceitual persistíve
 - [Bootstrap do banco](/docs/DB_BOOTSTRAP.md)
 - [Bootstrap operacional da Camada 0](/docs/LAYER0_OPERATIONAL_BOOTSTRAP.md)
 - [Ingestão mínima da Camada 0](/docs/LAYER0_INGESTION.md)
+- [Normalização mínima da Camada 1](/docs/LAYER1_MINIMAL_NORMALIZATION.md)
 - [Contrato do run](/docs/RUN_CONTRACT.md)
 - [Ingestion bundle](/docs/INGESTION_BUNDLE.md)
 - [Formato do manifesto do run](/docs/RUN_MANIFEST_FORMAT.md)

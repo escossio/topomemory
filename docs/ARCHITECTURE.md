@@ -44,6 +44,15 @@ O contrato formal dessa passagem da Camada 0 para a Camada 1 está documentado e
 - Grafo: projeção derivada do modelo canônico.
 - Operação: decisão e ação sobre o sistema.
 
+## Camada 1 mínima
+
+A primeira implementação relacional da Camada 1 normaliza apenas as observações do `ingestion_bundle` em `observed_element` e `observed_relation`.
+
+- O vínculo com `bundle_id` e `run_id` permanece explícito.
+- `element_index` e `relation_index` preservam a identidade local dentro do bundle.
+- `raw_json` permanece disponível para auditoria.
+- Não há, nesta fase, consolidação canônica nem correlação semântica pesada.
+
 ## Interface formal da Camada 0
 
 - O run de coleta é a unidade mínima da Camada 0.
