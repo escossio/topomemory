@@ -44,6 +44,7 @@ Campos principais:
 - provider externo futuro: documentado em [LAYER1_SEMANTIC_PROVIDER_ARCH.md](/docs/LAYER1_SEMANTIC_PROVIDER_ARCH.md)
 - provider real disponível: `openai`, documentado em [LAYER1_SEMANTIC_REAL_PROVIDER.md](/docs/LAYER1_SEMANTIC_REAL_PROVIDER.md)
 - fonte operacional usada nesta rodada: `livecopilot-semantic-api.service` com `EnvironmentFile=/etc/livecopilot-semantic.env`
+- variante vencedora do tuning: `hybrid`, configurada por `TOPOMEMORY_SEMANTIC_PROFILE_VARIANT`
 
 Este modelo foi escolhido porque:
 

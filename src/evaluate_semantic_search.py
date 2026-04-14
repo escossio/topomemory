@@ -13,6 +13,7 @@ from typing import Any
 import psycopg
 
 from embedding_provider import EMBEDDING_PROVIDER_ENV, EmbeddingProviderError, get_embedding_provider, vector_literal
+from semantic_support import get_semantic_profile_variant
 from search_network_elements_semantic import search_elements
 
 
@@ -177,6 +178,7 @@ def render_markdown(summary: dict[str, Any], results: list[QueryResult], queries
         "",
         f"- queries_file: `{queries_file}`",
         f"- limit: `{limit}`",
+        f"- profile_variant: `{summary['profile_variant']}`",
         f"- embedding_provider: `{summary['embedding_provider']}`",
         f"- embedding_model: `{summary['embedding_model']}`",
         f"- total_queries: `{summary['total_queries']}`",
@@ -270,6 +272,7 @@ def main() -> int:
     summary = {
         "queries_file": str(queries_path),
         "limit": args.limit,
+        "profile_variant": get_semantic_profile_variant(),
         "embedding_provider": os.environ.get(EMBEDDING_PROVIDER_ENV, "hash"),
         "embedding_model": provider.model_name(),
         "total_queries": total_queries,

@@ -9,11 +9,8 @@ from typing import Any
 
 import psycopg
 
-from semantic_support import (
-    EMBEDDING_MODEL,
-    SEMANTIC_PROFILE_VERSION,
-    build_semantic_profile_text,
-)
+from embedding_provider import EmbeddingProviderError, get_embedding_provider
+from semantic_support import SEMANTIC_PROFILE_VERSION, build_semantic_profile_text, get_semantic_profile_variant
 
 
 class SemanticProfileError(RuntimeError):
@@ -104,14 +101,14 @@ def load_network_element_rows(conn: psycopg.Connection[Any]) -> list[dict[str, A
     return [dict(zip(columns, row, strict=True)) for row in rows]
 
 
-def upsert_semantic_profile(conn: psycopg.Connection[Any], row: dict[str, Any]) -> None:
-    semantic_profile_text = build_semantic_profile_text(row)
+def upsert_semantic_profile(conn: psycopg.Connection[Any], row: dict[str, Any], *, variant: str) -> None:
+    semantic_profile_text = build_semantic_profile_text(row, variant=variant)
     payload = {
         "semantic_id": f"semantic-{row['element_id']}",
         "element_id": row["element_id"],
         "semantic_profile_text": semantic_profile_text,
         "semantic_profile_version": SEMANTIC_PROFILE_VERSION,
-        "embedding_model": EMBEDDING_MODEL,
+        "embedding_model": "openai",
     }
     with conn.cursor() as cur:
         cur.execute(
@@ -166,19 +163,25 @@ def main() -> int:
 
     if not args.database_url:
         raise SemanticProfileError("DATABASE_URL não definido")
+    variant = get_semantic_profile_variant()
+    try:
+        embedding_model = get_embedding_provider().model_name()
+    except EmbeddingProviderError as exc:
+        raise SemanticProfileError(str(exc)) from exc
 
     with db_connect(args.database_url) as conn:
         with conn.transaction():
             rows = load_network_element_rows(conn)
             for row in rows:
-                upsert_semantic_profile(conn, row)
+                upsert_semantic_profile(conn, row, variant=variant)
 
     print(
         json.dumps(
             {
                 "status": "ok",
                 "semantic_profile_version": SEMANTIC_PROFILE_VERSION,
-                "embedding_model": EMBEDDING_MODEL,
+                "profile_variant": variant,
+                "embedding_model": embedding_model,
                 "indexed_elements": len(rows),
             },
             ensure_ascii=False,

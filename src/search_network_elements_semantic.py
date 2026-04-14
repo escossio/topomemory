@@ -10,6 +10,7 @@ from typing import Any
 import psycopg
 
 from embedding_provider import EMBEDDING_PROVIDER_ENV, EmbeddingProviderError, get_embedding_provider, vector_literal
+from semantic_support import get_semantic_profile_variant
 
 
 class SemanticSearchError(RuntimeError):
@@ -119,6 +120,7 @@ def main() -> int:
         json.dumps(
             {
                 "query": args.query.strip(),
+                "profile_variant": get_semantic_profile_variant(),
                 "embedding_provider": os.environ.get(EMBEDDING_PROVIDER_ENV, "hash"),
                 "embedding_model": provider.model_name(),
                 "result_count": len(results),

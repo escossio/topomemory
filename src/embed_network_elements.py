@@ -10,7 +10,7 @@ from typing import Any
 import psycopg
 
 from embedding_provider import EMBEDDING_PROVIDER_ENV, EmbeddingProviderError, get_embedding_provider, vector_literal
-from semantic_support import SEMANTIC_PROFILE_VERSION
+from semantic_support import SEMANTIC_PROFILE_VERSION, get_semantic_profile_variant
 
 
 class SemanticEmbeddingError(RuntimeError):
@@ -86,6 +86,7 @@ def main() -> int:
             {
                 "status": "ok",
                 "semantic_profile_version": SEMANTIC_PROFILE_VERSION,
+                "profile_variant": get_semantic_profile_variant(),
                 "embedding_provider": os.environ.get(EMBEDDING_PROVIDER_ENV, "hash"),
                 "embedding_model": provider.model_name(),
                 "embedded_elements": len(rows),
