@@ -4,6 +4,7 @@
 
 Este documento fecha o schema conceitual inicial de persistência da Camada 0.
 Ele não define o SQL final, mas já estabelece entidades, relações, cardinalidades e a fronteira entre campos relacionais e blocos serializados.
+A persistência será feita sobre a instância PostgreSQL já existente no ambiente, sem nova stack de banco.
 
 O objetivo é dar base estável para a evolução futura sem contradizer os contratos já publicados em:
 
@@ -19,6 +20,8 @@ O objetivo é dar base estável para a evolução futura sem contradizer os cont
 - O `ingestion_bundle` é a única porta oficial de entrada da Camada 1.
 - Artefatos brutos não entram como contrato primário da Camada 1.
 - O modelo conceitual precisa ser auditável, persistível e evolutivo desde já.
+- A decisão pendente é de escopo lógico de persistência, não de engine.
+- A engine continua sendo PostgreSQL + pgvector.
 
 ## Entidades mínimas
 
@@ -231,3 +234,4 @@ Esses stubs ficam como apoio futuro de modelagem, sem entrar no núcleo obrigat�
 - A relação inicial entre `run` e `ingestion_bundle` é tratada como `1:1` lógica.
 - Os blocos observacionais mais voláteis ficam serializados em JSON/JSONB por enquanto.
 - O desenho já prepara uma transição limpa para o SQL definitivo, sem retrabalho estrutural grande.
+- O modelo já pressupõe um isolamento lógico claro sobre o PostgreSQL existente, seja por database dedicado, seja por schema dedicado.
