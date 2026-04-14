@@ -54,6 +54,7 @@ A chave privada usa, nesta ordem:
 - não mistura contextos diferentes
 - não usa ASN/org para decidir identidade privada
 - não abre o grafo operacional
+- esta regra é parte do baseline mínimo documentado em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md)
 
 ## Tipos de decisão
 

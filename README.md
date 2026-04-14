@@ -25,7 +25,7 @@ O projeto separa observação, memória, saúde, tempo, projeção e ação em c
 
 ## Status atual
 
-Fase de bootstrap arquitetural. A Camada 0 já tem coleta real mínima validada e agora opera com execução remota na VM `10.45.0.4` e persistência direta no PostgreSQL oficial `10.45.0.3:5432/topomemory` via `topomemory_app`, sem túnel SSH. A Camada 1 já normaliza `observed_elements` e `observed_relations` e agora inicia a identidade canônica mínima com `network_element` e `identity_decision`, ainda sem embeddings. A regra complementar por hostname/PTR reduz `skipped_no_public_ip` sem substituir a consolidação por IP público, e a regra privada usa vizinhança e posição local sem colidir por IP puro.
+Fase de bootstrap arquitetural. A Camada 0 já tem coleta real mínima validada e agora opera com execução remota na VM `10.45.0.4` e persistência direta no PostgreSQL oficial `10.45.0.3:5432/topomemory` via `topomemory_app`, sem túnel SSH. A Camada 1 já normaliza `observed_elements` e `observed_relations` e já tem o baseline mínimo de identidade canônica documentado em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md): IP público por `canonical_ip`, hostname/PTR forte quando não há IP canônico e IP privado por assinatura determinística local. Ainda não há embeddings, `pgvector` operacional, merge semântico nem grafo.
 
 ## Documentação
 

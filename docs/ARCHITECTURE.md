@@ -55,13 +55,16 @@ A primeira implementação relacional da Camada 1 normaliza apenas as observaç�
 
 ## Identidade canônica mínima
 
-A próxima fatia mínima da Camada 1 adiciona uma consolidação determinística e conservadora:
+A Camada 1 mínima já consolidou um baseline determinístico e conservador:
 
 - `observed_element` público com IP público pode gerar ou reforçar uma linha em `network_element`
+- `observed_element` público sem IP canônico pode consolidar por hostname/PTR forte
+- `observed_element` privado pode consolidar por assinatura determinística local de vizinhança e posição
 - `identity_decision` registra a decisão tomada para cada observação processada
-- IP privado e reservado não entram na consolidação automática nesta rodada
-- hostname sem IP canônico fica explicitamente deferido
+- a consolidação continua conservadora e auditável
 - não há embeddings, semântica pesada nem merge entre IPs diferentes
+
+O resumo único do baseline está em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md).
 
 ## Interface formal da Camada 0
 

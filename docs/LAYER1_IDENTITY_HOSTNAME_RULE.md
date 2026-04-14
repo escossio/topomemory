@@ -82,6 +82,7 @@ Para observações públicas sem IP canônico e com nome forte:
 - não há consolidação automática de IP privado
 - não há abertura do grafo operacional
 - não há normalização agressiva de hostnames genéricos
+- esta regra é parte do baseline mínimo documentado em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md)
 
 ## Validação esperada
 

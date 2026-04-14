@@ -4,6 +4,7 @@
 
 Esta etapa inicia a identidade canônica da Camada 1 de forma conservadora e auditável.
 O foco é consolidar observações públicas em `network_element` por regras determinísticas simples e registrar cada decisão em `identity_decision`.
+O baseline mínimo completo da Camada 1 está resumido em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md).
 
 ## Por que esta rodada é conservadora
 
@@ -66,6 +67,7 @@ Tipos de decisão nesta rodada:
 
 Os IPs privados aparecem como parte da rota e agora podem entrar apenas por regra determinística local, usando a vizinhança do bundle/run e a posição observada.
 A decisão conservadora continua evitando merge por IP puro e deixa as situações sem contexto ou ambíguas para `skipped_private_insufficient_context` e `skipped_private_conflict`.
+Essa regra privada faz parte do baseline mínimo, mas continua sem semântica, embeddings ou correlação frouxa.
 
 ## Limitações conhecidas
 
@@ -76,6 +78,7 @@ A decisão conservadora continua evitando merge por IP puro e deixa as situaçõ
 - não existe grafo operacional aberto a partir desta consolidação
 - veja a regra complementar de hostname/PTR em [LAYER1_IDENTITY_HOSTNAME_RULE.md](/docs/LAYER1_IDENTITY_HOSTNAME_RULE.md)
 - veja a regra complementar de IP privado em [LAYER1_IDENTITY_PRIVATE_RULE.md](/docs/LAYER1_IDENTITY_PRIVATE_RULE.md)
+- veja o resumo único do baseline em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md)
 
 ## Próximos passos prováveis
 

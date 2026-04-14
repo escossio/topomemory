@@ -82,6 +82,15 @@ Não há ainda:
 - embedding
 - grafo operacional
 
+## Como esta etapa se conecta ao baseline
+
+A partir desta normalização, a Camada 1 mínima alimenta o baseline de identidade descrito em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md).
+Esse baseline já combina:
+
+- consolidação pública por `canonical_ip`
+- consolidação pública por hostname/PTR forte
+- consolidação privada por assinatura determinística local
+
 ## Próxima etapa mínima
 
 A próxima fatia é a identidade canônica mínima descrita em [LAYER1_IDENTITY_MINIMUM.md](/docs/LAYER1_IDENTITY_MINIMUM.md).

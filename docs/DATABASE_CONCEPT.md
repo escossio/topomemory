@@ -69,13 +69,14 @@ A etapa seguinte adiciona as primeiras entidades canônicas mínimas e o registr
 
 Nesta rodada:
 
-- a consolidação automática entra apenas para observações públicas
-- IP privado ou reservado fica fora da consolidação automática
-- a correspondência determinística inicial usa `canonical_ip`
-- hostname/PTR pode formar uma identidade canônica complementar quando não houver IP canônico e o nome passar pela normalização conservadora
-- hostname/PTR não substitui a identidade por IP público quando o IP existir
-- IP privado pode formar identidade canônica apenas por vizinhança e posição local no bundle/run
+- a consolidação determinística cobre IP público, hostname/PTR forte e IP privado por contexto local
+- `canonical_ip` continua sendo a chave principal para IP público
+- hostname/PTR só entra como complemento quando não há `canonical_ip`
+- IP privado só entra por assinatura determinística local de vizinhança e posição
+- IP privado não é consolidado por igualdade pura de IP
 - a decisão fica registrada com evidência e motivo textual
+
+O baseline mínimo consolidado está resumido em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md).
 
 ## Observação
 
