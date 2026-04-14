@@ -12,6 +12,8 @@ topomemory organiza observação e operação em um fluxo controlado:
 6. o grafo operacional é projetado a partir da memória e da telemetria;
 7. a operação e a resposta a incidentes usam essa leitura consolidada.
 
+O contrato formal dessa passagem da Camada 0 para a Camada 1 está documentado em [RUN_CONTRACT.md](/docs/RUN_CONTRACT.md) e [INGESTION_BUNDLE.md](/docs/INGESTION_BUNDLE.md).
+
 ## Ordem das camadas
 
 - Camada 0: Ambiente de Coleta Controlado
@@ -27,6 +29,7 @@ topomemory organiza observação e operação em um fluxo controlado:
 - A Camada 0 produz coleta disciplinada e reprodutível.
 - A Camada 1 consolida elementos e relações canônicas.
 - A base conceitual de dependências do serviço alimenta a Camada 2, mas não é uma camada executável separada.
+- A saída oficial da Camada 0 para a Camada 1 é o `ingestion_bundle`.
 - A Camada 2 traduz observação e dependência em leitura operacional da rota.
 - A Camada 3 preserva o tempo como dimensão analítica própria.
 - A Camada 4 projeta o grafo operacional; ela não define a verdade, apenas a representa.
@@ -41,3 +44,8 @@ topomemory organiza observação e operação em um fluxo controlado:
 - Grafo: projeção derivada do modelo canônico.
 - Operação: decisão e ação sobre o sistema.
 
+## Interface formal da Camada 0
+
+- O run de coleta é a unidade mínima da Camada 0.
+- O `ingestion_bundle` é a interface oficial de entrada da Camada 1.
+- Artefatos soltos, por si só, não constituem o contrato de ingestão.

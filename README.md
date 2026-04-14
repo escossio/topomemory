@@ -34,4 +34,5 @@ Fase de bootstrap arquitetural. Ainda não há implementação funcional da cole
 - [Decisões](/docs/DECISIONS.md)
 - [VM 10.45.0.4](/docs/COLLECTOR_VM_10.45.0.4.md)
 - [Modelo conceitual do banco](/docs/DATABASE_CONCEPT.md)
-
+- [Contrato do run](/docs/RUN_CONTRACT.md)
+- [Ingestion bundle](/docs/INGESTION_BUNDLE.md)
