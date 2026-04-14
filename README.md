@@ -19,13 +19,15 @@ O projeto separa observação, memória, saúde, tempo, projeção e ação em c
 ## Componentes principais
 
 - VM oficial de coleta inicial: `10.45.0.4`
-- Banco principal: `PostgreSQL + pgvector`, com database dedicado `topomemory`
+- Banco principal: `PostgreSQL`, com `pgvector` como direção conceitual e database dedicado `topomemory`
 - Prometheus: camada temporal e base de séries observáveis
 - Zabbix: componente operacional de monitoramento, não o cérebro do sistema
 
 ## Status atual
 
 Fase de bootstrap arquitetural. A Camada 0 já tem coleta real mínima validada e opera com execução remota na VM `10.45.0.4` e persistência direta no PostgreSQL oficial `10.45.0.3:5432/topomemory` via `topomemory_app`, sem túnel SSH. A Camada 1 já normaliza `observed_elements` e `observed_relations` e tem o baseline mínimo documentado em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md). Ainda não há embeddings, `pgvector` operacional, merge semântico nem grafo.
+
+Uma frente futura de enriquecimento BGP público também está documentada em [BGP_PUBLIC_ENRICHMENT.md](/docs/BGP_PUBLIC_ENRICHMENT.md), como apoio externo e não como fonte primária da verdade.
 
 ## Documentação
 
@@ -45,3 +47,4 @@ Fase de bootstrap arquitetural. A Camada 0 já tem coleta real mínima validada 
 - [Ingestion bundle](/docs/INGESTION_BUNDLE.md)
 - [Formato do manifesto do run](/docs/RUN_MANIFEST_FORMAT.md)
 - [Formato do ingestion bundle](/docs/INGESTION_BUNDLE_FORMAT.md)
+- [Enriquecimento público de BGP](/docs/BGP_PUBLIC_ENRICHMENT.md)

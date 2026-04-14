@@ -57,6 +57,15 @@ A primeira implementação relacional da Camada 1 normaliza as observações do 
 
 A Camada 1 mínima já consolidou um baseline determinístico e conservador. Ela cobre IP público por `canonical_ip`, hostname/PTR forte quando não há IP canônico e IP privado por assinatura determinística local. O contrato completo, as limitações e os tipos de decisão ficam em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md).
 
+## Enriquecimento externo futuro
+
+Há também uma frente futura de enriquecimento público de BGP para apoiar contexto de ASN, prefixo e visibilidade global.
+
+- fontes como RIPEstat, RouteViews e BGPKIT podem complementar leituras futuras
+- isso não substitui a observação local da Camada 0
+- isso não redefine a verdade canônica da Camada 1
+- o detalhe da frente fica em [BGP_PUBLIC_ENRICHMENT.md](/docs/BGP_PUBLIC_ENRICHMENT.md)
+
 ## Interface formal da Camada 0
 
 - O run de coleta é a unidade mínima da Camada 0.

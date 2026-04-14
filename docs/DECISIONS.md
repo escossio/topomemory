@@ -5,7 +5,7 @@
 - Nome do projeto: `topomemory`
 - Diretório raiz oficial: `/srv/topomemory`
 - Remote oficial: `git@github.com:escossio/topomemory.git`
-- Banco principal: `PostgreSQL + pgvector`
+- Banco principal: `PostgreSQL`; `pgvector` é direção conceitual, ainda não operacional
 - O projeto reutiliza a instância PostgreSQL já existente no ambiente
 - Não haverá nova instância, serviço ou engine de banco nesta fase
 - Database oficial do projeto: `topomemory`
@@ -18,6 +18,8 @@
 - Zabbix é componente operacional, não o cérebro do sistema
 - O grafo é projeção, não fonte da verdade
 - A unidade operacional principal é a rota/entrega, não o hop isolado
+- BGP público é uma frente futura de enriquecimento externo, não substitui a coleta local controlada
+- a observação primária do sistema continua sendo a VM da Camada 0
 
 ## Decisão de persistência
 
