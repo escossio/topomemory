@@ -31,6 +31,8 @@ Uma frente futura de enriquecimento BGP público também está documentada em [B
 
 A Camada 1 também já tem uma superfície de auditoria operacional em SQL e CLI para inspecionar `matched_existing_entity`, `new_entity_created` e `skipped_*` por run e bundle, sem abrir semântica.
 
+Ela também tem uma superfície analítica de comparação entre runs para enxergar elementos comuns, exclusivos e divergência de caminho sem abrir embeddings.
+
 ## Documentação
 
 - [Arquitetura](/docs/ARCHITECTURE.md)
@@ -46,6 +48,7 @@ A Camada 1 também já tem uma superfície de auditoria operacional em SQL e CLI
 - [Ingestão mínima da Camada 0](/docs/LAYER0_INGESTION.md)
 - [Normalização mínima da Camada 1](/docs/LAYER1_MINIMAL_NORMALIZATION.md)
 - [Auditoria operacional da Camada 1](/docs/LAYER1_AUDIT.md)
+- [Comparação entre runs da Camada 1](/docs/LAYER1_RUN_DIFF.md)
 - [Contrato do run](/docs/RUN_CONTRACT.md)
 - [Ingestion bundle](/docs/INGESTION_BUNDLE.md)
 - [Formato do manifesto do run](/docs/RUN_MANIFEST_FORMAT.md)

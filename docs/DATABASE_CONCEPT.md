@@ -77,6 +77,14 @@ A Camada 1 também passa a ter uma superfície SQL de auditoria para leitura ope
 - o objetivo é enxergar por `run_id` e `bundle_id` como cada observação foi tratada
 - isso continua sendo leitura de auditoria; não é uma nova camada semântica
 
+## Comparação entre runs da Camada 1
+
+A Camada 1 também passa a ter uma superfície analítica para comparar dois runs já consolidados.
+
+- a view `topomemory.v_layer1_run_elements` expõe a chave de comparação por identidade resolvida ou assinatura observacional
+- a view `topomemory.v_layer1_run_diff_summary` resume cada run e sua sequência observada
+- o objetivo é comparar estabilidade, diversidade e diferença de caminho sem alterar identidade mínima
+
 ## Observação
 
 Este documento descreve apenas o modelo conceitual inicial. Não é o schema SQL definitivo e não substitui decisões de implementação futura.

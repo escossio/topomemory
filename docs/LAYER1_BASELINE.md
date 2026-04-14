@@ -51,3 +51,11 @@ A frente seguinte, sem abrir semântica, é a auditoria operacional da Camada 1 
 - ela lê o resultado do baseline sem alterar as regras de identidade
 - ela expõe `decision_type`, `confidence`, `reasoning_summary` e o `network_element` resolvido
 - ela ajuda a revisar `matched_existing_entity`, `new_entity_created` e `skipped_*` com clareza operacional
+
+## Frente analítica complementar
+
+Depois da auditoria, a próxima leitura útil é a comparação entre runs já consolidados.
+
+- ela compara observações e identidades resolvidas
+- ela não cria heurística nova
+- ela ajuda a enxergar estabilidade e divergência entre coletas reais
