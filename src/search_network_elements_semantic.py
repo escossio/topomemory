@@ -27,10 +27,13 @@ def search_elements(conn: psycopg.Connection[Any], *, query: str, limit: int) ->
             f"""
             SELECT
               ne.element_id,
+              ne.canonical_label,
               ne.canonical_ip,
               ne.canonical_hostname,
               ne.canonical_org,
               ne.role_hint_current,
+              ne.element_kind,
+              ne.ip_scope,
               nes.semantic_profile_text,
               1 - (nes.embedding_vector <=> %s::vector) AS score,
               (nes.embedding_vector <=> %s::vector) AS distance
@@ -47,10 +50,13 @@ def search_elements(conn: psycopg.Connection[Any], *, query: str, limit: int) ->
 
     columns = [
         "element_id",
+        "canonical_label",
         "canonical_ip",
         "canonical_hostname",
         "canonical_org",
         "role_hint_current",
+        "element_kind",
+        "ip_scope",
         "semantic_profile_text",
         "score",
         "distance",
@@ -61,10 +67,13 @@ def search_elements(conn: psycopg.Connection[Any], *, query: str, limit: int) ->
 def print_results(results: list[dict[str, Any]], *, show_profile: bool) -> None:
     for row in results:
         print(f"element_id={row['element_id']}")
+        print(f"canonical_label={row['canonical_label'] or 'none'}")
         print(f"canonical_ip={row['canonical_ip'] or 'none'}")
         print(f"canonical_hostname={row['canonical_hostname'] or 'none'}")
         print(f"canonical_org={row['canonical_org'] or 'none'}")
         print(f"role_hint_current={row['role_hint_current'] or 'none'}")
+        print(f"element_kind={row['element_kind'] or 'none'}")
+        print(f"ip_scope={row['ip_scope'] or 'none'}")
         print(f"score={row['score']:.6f}")
         print(f"distance={row['distance']:.6f}")
         if show_profile:

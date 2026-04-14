@@ -23,6 +23,10 @@ Thumbs.db
 artifacts/*
 !artifacts/.gitkeep
 !artifacts/README.md
+!artifacts/semantic-eval/
+!artifacts/semantic-eval/README.md
+!artifacts/semantic-eval/*.md
+!artifacts/semantic-eval/*.json
 runs/*
 !runs/.gitkeep
 !runs/README.md
@@ -31,4 +35,3 @@ runs/*
 *.log
 *.tmp
 *.temp
-

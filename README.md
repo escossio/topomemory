@@ -50,6 +50,7 @@ Ela também tem uma superfície analítica de comparação entre runs para enxer
 - [Auditoria operacional da Camada 1](/docs/LAYER1_AUDIT.md)
 - [Comparação entre runs da Camada 1](/docs/LAYER1_RUN_DIFF.md)
 - [Baseline semântico auxiliar da Camada 1](/docs/LAYER1_SEMANTIC_BASELINE.md)
+- [Avaliação da busca semântica da Camada 1](/docs/LAYER1_SEMANTIC_EVAL.md)
 - [Contrato do run](/docs/RUN_CONTRACT.md)
 - [Ingestion bundle](/docs/INGESTION_BUNDLE.md)
 - [Formato do manifesto do run](/docs/RUN_MANIFEST_FORMAT.md)

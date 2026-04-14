@@ -1,0 +1,180 @@
+[
+  {
+    "query_id": "q01_google",
+    "query_text": "google",
+    "category": "hostname_dests",
+    "expected_match_mode": "top1_expected",
+    "expected_element_ids": [
+      "network-element-google-com"
+    ],
+    "expected_label_contains": [
+      "google.com"
+    ],
+    "expected_categories": [
+      "public_destination"
+    ],
+    "notes": "Consulta canônica de destino público óbvio."
+  },
+  {
+    "query_id": "q02_example",
+    "query_text": "example",
+    "category": "hostname_dests",
+    "expected_match_mode": "top1_expected",
+    "expected_element_ids": [
+      "network-element-example-com"
+    ],
+    "expected_label_contains": [
+      "example.com"
+    ],
+    "expected_categories": [
+      "public_destination"
+    ],
+    "notes": "Consulta canônica de destino público óbvio."
+  },
+  {
+    "query_id": "q03_hostname",
+    "query_text": "hostname",
+    "category": "attributes",
+    "expected_match_mode": "top1_expected",
+    "expected_element_ids": [
+      "network-element-example-com"
+    ],
+    "expected_label_contains": [
+      "example.com"
+    ],
+    "expected_categories": [
+      "public_destination"
+    ],
+    "notes": "Termo genérico que ainda tende a recuperar um destino público nomeado."
+  },
+  {
+    "query_id": "q04_google_hostname",
+    "query_text": "google hostname",
+    "category": "combined",
+    "expected_match_mode": "top1_expected",
+    "expected_element_ids": [
+      "network-element-google-com"
+    ],
+    "expected_label_contains": [
+      "google.com"
+    ],
+    "expected_categories": [
+      "public_destination"
+    ],
+    "notes": "Combinação de marca e atributo textual."
+  },
+  {
+    "query_id": "q05_example_destination",
+    "query_text": "example destination",
+    "category": "combined",
+    "expected_match_mode": "top1_expected",
+    "expected_element_ids": [
+      "network-element-example-com"
+    ],
+    "expected_label_contains": [
+      "example.com"
+    ],
+    "expected_categories": [
+      "public_destination"
+    ],
+    "notes": "Combinação de marca e papel de destino."
+  },
+  {
+    "query_id": "q06_public_destination",
+    "query_text": "public destination",
+    "category": "public",
+    "expected_match_mode": "category_contains",
+    "expected_label_contains": [
+      "google.com",
+      "example.com"
+    ],
+    "expected_categories": [
+      "public_destination"
+    ],
+    "notes": "Deve trazer pelo menos um elemento público nomeado com papel de destino."
+  },
+  {
+    "query_id": "q07_public_node",
+    "query_text": "public node",
+    "category": "public",
+    "expected_match_mode": "category_contains",
+    "expected_label_contains": [
+      "172.",
+      "104.",
+      "2606:"
+    ],
+    "expected_categories": [
+      "public_node"
+    ],
+    "notes": "Deve trazer pelo menos um nó público por IP canônico."
+  },
+  {
+    "query_id": "q08_private_hop",
+    "query_text": "private hop",
+    "category": "private",
+    "expected_match_mode": "category_contains",
+    "expected_label_contains": [
+      "private:"
+    ],
+    "expected_categories": [
+      "private_hop"
+    ],
+    "notes": "Deve trazer pelo menos um hop privado já consolidado."
+  },
+  {
+    "query_id": "q09_internal_hop",
+    "query_text": "internal hop",
+    "category": "private",
+    "expected_match_mode": "category_contains",
+    "expected_label_contains": [
+      "private:"
+    ],
+    "expected_categories": [
+      "private_hop"
+    ],
+    "notes": "Sinônimo operacional de hop privado."
+  },
+  {
+    "query_id": "q10_private_node",
+    "query_text": "private node",
+    "category": "private",
+    "expected_match_mode": "category_contains",
+    "expected_label_contains": [
+      "private:"
+    ],
+    "expected_categories": [
+      "private_node"
+    ],
+    "notes": "Consulta estrutural para nós privados da rota."
+  },
+  {
+    "query_id": "q11_private_route_element",
+    "query_text": "private route element",
+    "category": "private",
+    "expected_match_mode": "category_contains",
+    "expected_label_contains": [
+      "private:"
+    ],
+    "expected_categories": [
+      "private_hop"
+    ],
+    "notes": "Consulta mais longa para a mesma região privada do grafo observado."
+  },
+  {
+    "query_id": "q12_private_hop_google",
+    "query_text": "private hop google",
+    "category": "combined",
+    "expected_match_mode": "topk_contains",
+    "expected_element_ids": [
+      "network-element-google-com"
+    ],
+    "expected_label_contains": [
+      "google.com",
+      "private:"
+    ],
+    "expected_categories": [
+      "private_hop"
+    ],
+    "notes": "Caso combinado: marca pública e região privada na mesma consulta."
+  }
+]

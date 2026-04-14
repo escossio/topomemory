@@ -101,3 +101,8 @@ Saída mínima:
 
 Esta frente existe para recuperar contexto com rapidez e para preparar a evolução futura.
 Ela é útil para consulta e enriquecimento, mas continua subordinada ao baseline determinístico da Camada 1.
+
+## Avaliação
+
+A avaliação do baseline semântico fica documentada em [LAYER1_SEMANTIC_EVAL.md](/docs/LAYER1_SEMANTIC_EVAL.md).
+O dataset de queries vive em [schemas/semantic_eval_queries.json](/schemas/semantic_eval_queries.json), e os artefatos de execução ficam em [artifacts/semantic-eval/README.md](/artifacts/semantic-eval/README.md).
