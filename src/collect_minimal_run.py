@@ -7,6 +7,7 @@ import json
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -116,24 +117,77 @@ def run_command(args: list[str], output_path: Path, timeout: int = 60) -> Comman
     )
 
 
-def resolve_dns(target: str, run_dir: Path) -> tuple[CommandResult, list[str]]:
-    dns_path = run_dir / "dns.txt"
-    result = run_command(["dig", "+short", target, "A"], dns_path)
-    ipv4s = []
-    for line in result.stdout.splitlines():
-        candidate = line.strip()
-        if re.fullmatch(r"(?:\d{1,3}\.){3}\d{1,3}", candidate):
-            ipv4s.append(candidate)
+def command_exists(name: str) -> bool:
+    return shutil.which(name) is not None
 
-    v6_result = run_command(["dig", "+short", target, "AAAA"], run_dir / "dns_aaaa.txt")
-    ipv6s = []
-    for line in v6_result.stdout.splitlines():
+
+def unique_preserve_order(items: list[str]) -> list[str]:
+    return list(dict.fromkeys(items))
+
+
+def parse_dig_output(output: str, family: str) -> list[str]:
+    records: list[str] = []
+    for line in output.splitlines():
         candidate = line.strip()
-        if ":" in candidate:
-            ipv6s.append(candidate)
+        if family == "A" and re.fullmatch(r"(?:\d{1,3}\.){3}\d{1,3}", candidate):
+            records.append(candidate)
+        if family == "AAAA" and ":" in candidate:
+            records.append(candidate)
+    return records
+
+
+def parse_host_output(output: str, family: str) -> list[str]:
+    records: list[str] = []
+    for line in output.splitlines():
+        if family == "A":
+            match = re.search(r"has address ([0-9.]+)$", line.strip())
+        else:
+            match = re.search(r"has IPv6 address ([0-9A-Fa-f:]+)$", line.strip())
+        if match:
+            records.append(match.group(1))
+    return records
+
+
+def parse_getent_output(output: str, family: str) -> list[str]:
+    records: list[str] = []
+    for line in output.splitlines():
+        candidate = line.strip().split()
+        if not candidate:
+            continue
+        address = candidate[0]
+        if family == "A" and re.fullmatch(r"(?:\d{1,3}\.){3}\d{1,3}", address):
+            records.append(address)
+        if family == "AAAA" and ":" in address:
+            records.append(address)
+    return records
+
+
+def resolve_dns(target: str, run_dir: Path) -> tuple[CommandResult, list[str], str]:
+    dns_path = run_dir / "dns.txt"
+    if command_exists("dig"):
+        dns_tool = "dig"
+        result = run_command(["dig", "+short", target, "A"], dns_path)
+        v6_result = run_command(["dig", "+short", target, "AAAA"], run_dir / "dns_aaaa.txt")
+        ipv4s = parse_dig_output(result.stdout, "A")
+        ipv6s = parse_dig_output(v6_result.stdout, "AAAA")
+    elif command_exists("host"):
+        dns_tool = "host"
+        result = run_command(["host", target], dns_path)
+        v6_result = run_command(["host", "-t", "AAAA", target], run_dir / "dns_aaaa.txt")
+        ipv4s = parse_host_output(result.stdout, "A")
+        ipv6s = parse_host_output(v6_result.stdout, "AAAA")
+    elif command_exists("getent"):
+        dns_tool = "getent"
+        result = run_command(["getent", "ahostsv4", target], dns_path)
+        v6_result = run_command(["getent", "ahostsv6", target], run_dir / "dns_aaaa.txt")
+        ipv4s = parse_getent_output(result.stdout, "A")
+        ipv6s = parse_getent_output(v6_result.stdout, "AAAA")
+    else:
+        raise CollectionError("nenhuma ferramenta de DNS disponivel (dig, host ou getent)")
 
     dns_combined = [
         f"target: {target}",
+        f"dns_tool: {dns_tool}",
         f"dns_a_returncode: {result.returncode}",
         f"dns_aaaa_returncode: {v6_result.returncode}",
         "",
@@ -146,7 +200,7 @@ def resolve_dns(target: str, run_dir: Path) -> tuple[CommandResult, list[str]]:
     ]
     text_dump(dns_path, "\n".join(dns_combined).rstrip("\n"))
     (run_dir / "dns_aaaa.txt").unlink(missing_ok=True)
-    return result, ipv4s + ipv6s
+    return result, unique_preserve_order(ipv4s + ipv6s), dns_tool
 
 
 def parse_traceroute_hops(output: str) -> list[dict[str, Any]]:
@@ -454,6 +508,7 @@ def build_ingestion_bundle(
 
 def ingest_bundle(manifest_path: Path, bundle_path: Path, database_url: str) -> None:
     ingest_script = REPO_ROOT / "src" / "ingest_run_bundle.py"
+    env = {**os.environ, "DATABASE_URL": database_url}
     if os.geteuid() == 0:
         cmd = [
             "runuser",
@@ -474,7 +529,7 @@ def ingest_bundle(manifest_path: Path, bundle_path: Path, database_url: str) -> 
             str(manifest_path),
             str(bundle_path),
         ]
-    subprocess.run(cmd, check=True, cwd=str(REPO_ROOT))
+    subprocess.run(cmd, check=True, cwd=str(REPO_ROOT), env=env)
 
 
 def main() -> int:
@@ -500,16 +555,18 @@ def main() -> int:
     target_value = args.target.strip()
     target_url = target_value if re.match(r"^https?://", target_value) else f"https://{target_value}"
 
-    tools_enabled = ["dig", "traceroute", "curl"]
+    tools_enabled = ["traceroute", "curl"]
     tools_succeeded: list[str] = []
     tools_failed: list[str] = []
 
     try:
-        dns_result, dns_ips = resolve_dns(target_value, run_dir)
+        dns_result, dns_ips, dns_tool = resolve_dns(target_value, run_dir)
+        if dns_tool not in tools_enabled:
+            tools_enabled.append(dns_tool)
         if dns_result.returncode == 0 and dns_ips:
-            tools_succeeded.append("dig")
+            tools_succeeded.append(dns_tool)
         else:
-            tools_failed.append("dig")
+            tools_failed.append(dns_tool)
 
         trace_result, hops, trace_file_name = trace_route(target_value, run_dir)
         trace_tool = "traceroute" if trace_file_name == "traceroute.txt" else "mtr"
