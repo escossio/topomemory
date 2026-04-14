@@ -9,7 +9,8 @@ from typing import Any
 
 import psycopg
 
-from semantic_support import EMBEDDING_DIMENSIONS, EMBEDDING_MODEL, SEMANTIC_PROFILE_VERSION, embed_text, vector_literal
+from embedding_provider import EMBEDDING_PROVIDER_ENV, EmbeddingProviderError, get_embedding_provider, vector_literal
+from semantic_support import SEMANTIC_PROFILE_VERSION
 
 
 class SemanticEmbeddingError(RuntimeError):
@@ -20,7 +21,7 @@ def db_connect(database_url: str) -> psycopg.Connection[Any]:
     return psycopg.connect(database_url)
 
 
-def load_pending_profiles(conn: psycopg.Connection[Any]) -> list[dict[str, Any]]:
+def load_pending_profiles(conn: psycopg.Connection[Any], *, embedding_model: str) -> list[dict[str, Any]]:
     with conn.cursor() as cur:
         cur.execute(
             """
@@ -32,7 +33,7 @@ def load_pending_profiles(conn: psycopg.Connection[Any]) -> list[dict[str, Any]]
                OR semantic_profile_version <> %s
             ORDER BY element_id
             """,
-            (EMBEDDING_MODEL, SEMANTIC_PROFILE_VERSION),
+            (embedding_model, SEMANTIC_PROFILE_VERSION),
         )
         rows = cur.fetchall()
 
@@ -40,17 +41,17 @@ def load_pending_profiles(conn: psycopg.Connection[Any]) -> list[dict[str, Any]]
     return [dict(zip(columns, row, strict=True)) for row in rows]
 
 
-def persist_embedding(conn: psycopg.Connection[Any], *, element_id: str, vector_text: str) -> None:
+def persist_embedding(conn: psycopg.Connection[Any], *, element_id: str, vector_text: str, embedding_model: str) -> None:
     with conn.cursor() as cur:
         cur.execute(
-            f"""
+            """
             UPDATE topomemory.network_element_semantic
             SET embedding_vector = %s::vector,
                 embedding_model = %s,
                 embedding_created_at = now()
             WHERE element_id = %s
             """,
-            (vector_text, EMBEDDING_MODEL, element_id),
+            (vector_text, embedding_model, element_id),
         )
 
 
@@ -62,19 +63,31 @@ def main() -> int:
     if not args.database_url:
         raise SemanticEmbeddingError("DATABASE_URL não definido")
 
+    try:
+        provider = get_embedding_provider()
+    except EmbeddingProviderError as exc:
+        raise SemanticEmbeddingError(str(exc)) from exc
+
     with db_connect(args.database_url) as conn:
         with conn.transaction():
-            rows = load_pending_profiles(conn)
-            for row in rows:
-                embedding = embed_text(row["semantic_profile_text"])
-                persist_embedding(conn, element_id=row["element_id"], vector_text=vector_literal(embedding))
+            rows = load_pending_profiles(conn, embedding_model=provider.model_name())
+            texts = [row["semantic_profile_text"] for row in rows]
+            embeddings = provider.embed_batch(texts)
+            for row, embedding in zip(rows, embeddings, strict=True):
+                persist_embedding(
+                    conn,
+                    element_id=row["element_id"],
+                    vector_text=vector_literal(embedding),
+                    embedding_model=provider.model_name(),
+                )
 
     print(
         json.dumps(
             {
                 "status": "ok",
                 "semantic_profile_version": SEMANTIC_PROFILE_VERSION,
-                "embedding_model": EMBEDDING_MODEL,
+                "embedding_provider": os.environ.get(EMBEDDING_PROVIDER_ENV, "hash"),
+                "embedding_model": provider.model_name(),
                 "embedded_elements": len(rows),
             },
             ensure_ascii=False,

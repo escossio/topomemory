@@ -9,7 +9,7 @@ from typing import Any
 
 import psycopg
 
-from semantic_support import EMBEDDING_DIMENSIONS, EMBEDDING_MODEL, embed_text, vector_literal
+from embedding_provider import EMBEDDING_PROVIDER_ENV, EmbeddingProviderError, get_embedding_provider, vector_literal
 
 
 class SemanticSearchError(RuntimeError):
@@ -20,8 +20,7 @@ def db_connect(database_url: str) -> psycopg.Connection[Any]:
     return psycopg.connect(database_url)
 
 
-def search_elements(conn: psycopg.Connection[Any], *, query: str, limit: int) -> list[dict[str, Any]]:
-    query_vector = vector_literal(embed_text(query))
+def search_elements(conn: psycopg.Connection[Any], *, query: str, limit: int, embedding_model: str, query_vector: str) -> list[dict[str, Any]]:
     with conn.cursor() as cur:
         cur.execute(
             f"""
@@ -41,10 +40,11 @@ def search_elements(conn: psycopg.Connection[Any], *, query: str, limit: int) ->
             JOIN topomemory.network_element ne
               ON ne.element_id = nes.element_id
             WHERE nes.embedding_vector IS NOT NULL
+              AND nes.embedding_model = %s
             ORDER BY nes.embedding_vector <=> %s::vector, ne.element_id
             LIMIT %s
             """,
-            (query_vector, query_vector, query_vector, limit),
+            (query_vector, query_vector, embedding_model, query_vector, limit),
         )
         rows = cur.fetchall()
 
@@ -100,15 +100,27 @@ def main() -> int:
     if args.limit < 1:
         raise SemanticSearchError("--limit precisa ser >= 1")
 
+    try:
+        provider = get_embedding_provider()
+    except EmbeddingProviderError as exc:
+        raise SemanticSearchError(str(exc)) from exc
+
     with db_connect(args.database_url) as conn:
-        results = search_elements(conn, query=args.query.strip(), limit=args.limit)
+        query_vector = vector_literal(provider.embed_text(args.query.strip()))
+        results = search_elements(
+            conn,
+            query=args.query.strip(),
+            limit=args.limit,
+            embedding_model=provider.model_name(),
+            query_vector=query_vector,
+        )
 
     print(
         json.dumps(
             {
                 "query": args.query.strip(),
-                "embedding_model": EMBEDDING_MODEL,
-                "dimensions": EMBEDDING_DIMENSIONS,
+                "embedding_provider": os.environ.get(EMBEDDING_PROVIDER_ENV, "hash"),
+                "embedding_model": provider.model_name(),
                 "result_count": len(results),
             },
             ensure_ascii=False,

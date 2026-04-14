@@ -36,6 +36,13 @@ Campos principais:
 - representação: vetor determinístico de 128 dimensões
 - estratégia: hashing lexical reprodutível sobre o texto do perfil semântico
 
+## Provider atual
+
+- provider padrão: `hash`
+- seleção por ambiente: `TOPOMEMORY_EMBEDDING_PROVIDER`
+- modelo por ambiente: `TOPOMEMORY_EMBEDDING_MODEL`
+- provider externo futuro: documentado em [LAYER1_SEMANTIC_PROVIDER_ARCH.md](/docs/LAYER1_SEMANTIC_PROVIDER_ARCH.md)
+
 Este modelo foi escolhido porque:
 
 - é determinístico

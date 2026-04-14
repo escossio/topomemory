@@ -1,17 +1,10 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import hashlib
-import math
-import re
 from datetime import datetime
-from typing import Any, Sequence
+from typing import Any
 
-EMBEDDING_DIMENSIONS = 128
-EMBEDDING_MODEL = "topomemory-hash-embedding-v1"
 SEMANTIC_PROFILE_VERSION = "semantic-profile-v1"
-
-TOKEN_RE = re.compile(r"[a-z0-9]+")
 
 
 def format_value(value: Any) -> str:
@@ -69,43 +62,3 @@ def build_semantic_profile_text(row: dict[str, Any]) -> str:
         )}",
     ]
     return "\n".join(profile_lines) + "\n"
-
-
-def tokenize_text(text: str) -> list[str]:
-    return TOKEN_RE.findall(text.lower())
-
-
-def token_features(text: str) -> list[str]:
-    tokens = tokenize_text(text)
-    features: list[str] = []
-    features.extend(tokens)
-    features.extend(f"{left}_{right}" for left, right in zip(tokens, tokens[1:]))
-    features.extend(f"{left}_{middle}_{right}" for left, middle, right in zip(tokens, tokens[1:], tokens[2:]))
-    return features
-
-
-def vector_literal(values: Sequence[float]) -> str:
-    return "[" + ",".join(f"{value:.6f}" for value in values) + "]"
-
-
-def embed_text(text: str, dimensions: int = EMBEDDING_DIMENSIONS) -> list[float]:
-    vector = [0.0] * dimensions
-    features = token_features(text)
-    if not features:
-        return vector
-
-    for feature in features:
-        digest = hashlib.sha256(feature.encode("utf-8")).digest()
-        index = int.from_bytes(digest[:4], "big") % dimensions
-        sign = 1.0 if digest[4] & 1 else -1.0
-        weight = 1.0
-        if "_" in feature:
-            weight = 0.75
-        if feature.count("_") >= 2:
-            weight = 0.5
-        vector[index] += sign * weight
-
-    norm = math.sqrt(sum(value * value for value in vector))
-    if norm == 0:
-        return vector
-    return [value / norm for value in vector]

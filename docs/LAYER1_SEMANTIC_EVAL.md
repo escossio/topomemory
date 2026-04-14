@@ -43,6 +43,7 @@ O dataset também registra:
 set -euo pipefail
 PW=$(cat "$HOME/topomemory_app.password")
 export DATABASE_URL="postgresql://topomemory_app:${PW}@10.45.0.3:5432/topomemory"
+export TOPOMEMORY_EMBEDDING_PROVIDER=hash
 python3 src/evaluate_semantic_search.py \
   --queries-file schemas/semantic_eval_queries.json \
   --limit 5 \
@@ -60,6 +61,7 @@ python3 src/evaluate_semantic_search.py \
 ## Limitações do baseline atual
 
 - o embedding atual é lexical-hash determinístico
+- o provider ativo padrão é hash e permanece local
 - a qualidade semântica ainda depende fortemente de termos literais presentes no perfil
 - a avaliação não mede recall geral do banco
 - a avaliação não muda a identidade determinística

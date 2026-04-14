@@ -12,6 +12,7 @@ from typing import Any
 
 import psycopg
 
+from embedding_provider import EMBEDDING_PROVIDER_ENV, EmbeddingProviderError, get_embedding_provider, vector_literal
 from search_network_elements_semantic import search_elements
 
 
@@ -176,6 +177,8 @@ def render_markdown(summary: dict[str, Any], results: list[QueryResult], queries
         "",
         f"- queries_file: `{queries_file}`",
         f"- limit: `{limit}`",
+        f"- embedding_provider: `{summary['embedding_provider']}`",
+        f"- embedding_model: `{summary['embedding_model']}`",
         f"- total_queries: `{summary['total_queries']}`",
         f"- total_pass: `{summary['total_pass']}`",
         f"- total_fail: `{summary['total_fail']}`",
@@ -220,6 +223,10 @@ def main() -> int:
 
     if not args.database_url:
         raise SemanticEvalError("DATABASE_URL não definido")
+    try:
+        provider = get_embedding_provider()
+    except EmbeddingProviderError as exc:
+        raise SemanticEvalError(str(exc)) from exc
 
     queries_path = Path(args.queries_file)
     queries = load_queries(queries_path)
@@ -227,7 +234,14 @@ def main() -> int:
 
     with db_connect(args.database_url) as conn:
         for spec in queries:
-            rows = search_elements(conn, query=spec["query_text"], limit=args.limit)
+            query_vector = vector_literal(provider.embed_text(spec["query_text"]))
+            rows = search_elements(
+                conn,
+                query=spec["query_text"],
+                limit=args.limit,
+                embedding_model=provider.model_name(),
+                query_vector=query_vector,
+            )
             passed, hit_position, matched = evaluate_query(rows, spec)
             results.append(
                 QueryResult(
@@ -256,6 +270,8 @@ def main() -> int:
     summary = {
         "queries_file": str(queries_path),
         "limit": args.limit,
+        "embedding_provider": os.environ.get(EMBEDDING_PROVIDER_ENV, "hash"),
+        "embedding_model": provider.model_name(),
         "total_queries": total_queries,
         "total_pass": total_pass,
         "total_fail": total_fail,
@@ -290,6 +306,15 @@ def main() -> int:
     if args.markdown_out:
         Path(args.markdown_out).write_text(report_md, encoding="utf-8")
 
+    print(
+        json.dumps(
+            {
+                "summary": summary,
+            },
+            ensure_ascii=False,
+            default=str,
+        )
+    )
     print(json.dumps(summary, ensure_ascii=False, indent=2, default=str))
     for result in results:
         print(

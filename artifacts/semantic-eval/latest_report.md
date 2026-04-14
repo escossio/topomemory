@@ -2,6 +2,8 @@
 
 - queries_file: `schemas/semantic_eval_queries.json`
 - limit: `5`
+- embedding_provider: `hash`
+- embedding_model: `topomemory-hash-embedding-v1`
 - total_queries: `12`
 - total_pass: `11`
 - total_fail: `1`
