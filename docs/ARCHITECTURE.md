@@ -51,7 +51,17 @@ A primeira implementação relacional da Camada 1 normaliza apenas as observaç�
 - O vínculo com `bundle_id` e `run_id` permanece explícito.
 - `element_index` e `relation_index` preservam a identidade local dentro do bundle.
 - `raw_json` permanece disponível para auditoria.
-- Não há, nesta fase, consolidação canônica nem correlação semântica pesada.
+- Nesta subfatia inicial, ainda não havia consolidação canônica nem correlação semântica pesada.
+
+## Identidade canônica mínima
+
+A próxima fatia mínima da Camada 1 adiciona uma consolidação determinística e conservadora:
+
+- `observed_element` público com IP público pode gerar ou reforçar uma linha em `network_element`
+- `identity_decision` registra a decisão tomada para cada observação processada
+- IP privado e reservado não entram na consolidação automática nesta rodada
+- hostname sem IP canônico fica explicitamente deferido
+- não há embeddings, semântica pesada nem merge entre IPs diferentes
 
 ## Interface formal da Camada 0
 

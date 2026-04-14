@@ -25,7 +25,7 @@ O projeto separa observação, memória, saúde, tempo, projeção e ação em c
 
 ## Status atual
 
-Fase de bootstrap arquitetural. A Camada 0 já tem coleta real mínima validada e a Camada 1 começou pela normalização mínima de `observed_elements` e `observed_relations` em persistência relacional própria; a persistência reutiliza a instância PostgreSQL já existente, sem nova stack de banco.
+Fase de bootstrap arquitetural. A Camada 0 já tem coleta real mínima validada. A Camada 1 já normaliza `observed_elements` e `observed_relations` e agora inicia a identidade canônica mínima com `network_element` e `identity_decision`, ainda sem embeddings e sem consolidar IP privado automaticamente.
 
 ## Documentação
 

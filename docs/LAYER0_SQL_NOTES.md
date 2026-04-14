@@ -58,9 +58,10 @@ O SQL inicial foi escrito para bater com:
 
 ## Limitações conhecidas
 
-- Não há migrations adicionais além da baseline versionada.
+- Não há migrations adicionais da Camada 0 além da baseline versionada.
+- A Camada 1 já possui migrations próprias para observações normalizadas e identidade mínima.
 - A baseline oficial versionada é a migration `001_layer0_initial.up.sql`.
 - Não há seed de dados.
 - Não há lógica de aplicação para manter `updated_at`; o SQL inicial usa trigger.
-- Não há normalização da Camada 1.
+- O SQL inicial da Camada 0 não faz normalização da Camada 1; isso fica nas migrations posteriores.
 - O SQL inicial é deliberadamente simples e evolutivo, não definitivo.

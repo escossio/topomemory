@@ -81,3 +81,7 @@ Não há ainda:
 - unificação de elementos repetidos entre runs
 - embedding
 - grafo operacional
+
+## Próxima etapa mínima
+
+A próxima fatia é a identidade canônica mínima descrita em [LAYER1_IDENTITY_MINIMUM.md](/docs/LAYER1_IDENTITY_MINIMUM.md).

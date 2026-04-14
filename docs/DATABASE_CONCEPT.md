@@ -56,6 +56,21 @@ A primeira etapa relacional da Camada 1 normaliza as observações já persistid
 
 Nesta etapa ainda não há entidade canônica consolidada, correlação semântica ou grafo operacional.
 
+## Camada 1 identidade mínima
+
+A etapa seguinte adiciona as primeiras entidades canônicas mínimas e o registro auditável das decisões de identidade.
+
+- `network_element`
+- `identity_decision`
+
+Nesta rodada:
+
+- a consolidação automática entra apenas para observações públicas
+- IP privado ou reservado fica fora da consolidação automática
+- a correspondência determinística inicial usa `canonical_ip`
+- hostname sem IP canônico é explicitamente deferido
+- a decisão fica registrada com evidência e motivo textual
+
 ## Observação
 
 Este documento descreve apenas o modelo conceitual inicial. Não é o schema SQL definitivo e não substitui decisões de implementação futura.
