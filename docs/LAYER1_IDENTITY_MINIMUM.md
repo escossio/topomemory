@@ -20,8 +20,9 @@ O foco é consolidar observações públicas em `network_element` por regras det
 
 - se a observação tiver IP privado ou reservado, a consolidação automática é adiada
 - se a observação tiver IP público, a chave inicial de correspondência é `canonical_ip`
-- se a observação pública não tiver IP canônico, ela é deferida de forma explícita
+- se a observação pública não tiver IP canônico, hostname/PTR pode formar uma identidade canônica própria de forma determinística quando o nome passar pela normalização conservadora
 - hostname, ASN e org podem reforçar a leitura de um IP já consolidado, mas não criam merge por si só
+- hostname/PTR não substitui `canonical_ip` quando o IP público existir
 
 ## Escopo de `network_element`
 
@@ -55,6 +56,8 @@ Tipos de decisão nesta rodada:
 - `new_entity_created`
 - `skipped_private_scope`
 - `skipped_no_public_ip`
+- `skipped_hostname_weak`
+- `skipped_hostname_conflict`
 
 ## Por que IP privado não entra ainda
 
@@ -63,12 +66,13 @@ A decisão conservadora reduz risco de fusão errada e deixa a regra privada par
 
 ## Limitações conhecidas
 
-- hostnames públicos sem IP canônico ficam deferidos nesta rodada
 - não existe correlação semântica entre entidades
 - não existe decisão probabilística
 - não existe `pgvector`
 - não existe merge por equivalência textual ampla
 - não existe grafo operacional aberto a partir desta consolidação
+
+Veja a regra complementar detalhada em [LAYER1_IDENTITY_HOSTNAME_RULE.md](/docs/LAYER1_IDENTITY_HOSTNAME_RULE.md).
 
 ## Próximos passos prováveis
 

@@ -22,6 +22,16 @@ class ConsolidationError(Exception):
 IP_CANDIDATE_RE = re.compile(
     r"((?:\d{1,3}\.){3}\d{1,3})|([0-9A-Fa-f]{0,4}(?::[0-9A-Fa-f]{0,4}){2,})"
 )
+HOSTNAME_RE = re.compile(
+    r"^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?))*$"
+)
+WEAK_HOSTNAME_EXACTS = {
+    "localhost",
+    "localhost.localdomain",
+    "localdomain",
+    "local",
+    "unknown",
+}
 
 
 @dataclass(frozen=True)
@@ -32,6 +42,7 @@ class ObservedElement:
     element_index: int
     observed_ip: str | None
     observed_hostname: str | None
+    observed_ptr: str | None
     observed_asn: str | None
     observed_org: str | None
     source_type: str
@@ -93,6 +104,7 @@ def load_observed_elements(conn: psycopg.Connection[Any], args: argparse.Namespa
               oe.element_index,
               oe.observed_ip,
               oe.observed_hostname,
+              oe.observed_ptr,
               oe.observed_asn,
               oe.observed_org,
               oe.source_type,
@@ -120,6 +132,7 @@ def load_observed_elements(conn: psycopg.Connection[Any], args: argparse.Namespa
             element_index,
             observed_ip,
             observed_hostname,
+            observed_ptr,
             observed_asn,
             observed_org,
             source_type,
@@ -138,6 +151,7 @@ def load_observed_elements(conn: psycopg.Connection[Any], args: argparse.Namespa
                 element_index=element_index,
                 observed_ip=observed_ip,
                 observed_hostname=observed_hostname,
+                observed_ptr=observed_ptr,
                 observed_asn=observed_asn,
                 observed_org=observed_org,
                 source_type=source_type,
@@ -158,6 +172,49 @@ def normalize_text(value: str | None) -> str | None:
         return None
     stripped = value.strip()
     return stripped or None
+
+
+def normalize_hostname(value: str | None) -> str | None:
+    candidate = normalize_text(value)
+    if candidate is None:
+        return None
+    candidate = candidate.lower().rstrip(".")
+    if not candidate:
+        return None
+    if " " in candidate or "/" in candidate or "\\" in candidate:
+        return None
+    return candidate
+
+
+def is_strong_hostname(value: str | None) -> bool:
+    candidate = normalize_hostname(value)
+    if candidate is None:
+        return False
+    if candidate in WEAK_HOSTNAME_EXACTS:
+        return False
+    if candidate.count(".") < 1:
+        return False
+    if len(candidate) > 253:
+        return False
+    return bool(HOSTNAME_RE.fullmatch(candidate))
+
+
+def preferred_hostname(element: ObservedElement) -> tuple[str | None, str | None]:
+    normalized_hostname = normalize_hostname(element.observed_hostname)
+    normalized_ptr = normalize_hostname(element.observed_ptr)
+
+    hostname_strong = normalized_hostname if is_strong_hostname(normalized_hostname) else None
+    ptr_strong = normalized_ptr if is_strong_hostname(normalized_ptr) else None
+
+    if hostname_strong and ptr_strong and hostname_strong != ptr_strong:
+        return None, "hostname_ptr_conflict"
+    if hostname_strong:
+        return hostname_strong, None
+    if ptr_strong:
+        return ptr_strong, None
+    if normalized_hostname or normalized_ptr:
+        return None, "hostname_weak"
+    return None, None
 
 
 def extract_ip_value(value: str | None) -> str | None:
@@ -255,6 +312,10 @@ def confidence_for(decision_type: str) -> float:
     return 0.000
 
 
+def numeric3(value: Any) -> str:
+    return f"{value:.3f}"
+
+
 def load_network_element_by_ip(conn: psycopg.Connection[Any], canonical_ip: str) -> dict[str, Any] | None:
     with conn.cursor() as cur:
         cur.execute(
@@ -300,6 +361,54 @@ def load_network_element_by_ip(conn: psycopg.Connection[Any], canonical_ip: str)
     }
 
 
+def load_network_element_by_hostname(conn: psycopg.Connection[Any], canonical_hostname: str) -> dict[str, Any] | None:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT
+              element_id,
+              canonical_label,
+              element_kind,
+              ip_scope,
+              canonical_ip,
+              canonical_hostname,
+              canonical_asn,
+              canonical_org,
+              confidence_current,
+              role_hint_current,
+              first_seen_at,
+              last_seen_at,
+              is_active
+            FROM topomemory.network_element
+            WHERE canonical_hostname = %s
+              AND canonical_ip IS NULL
+            ORDER BY first_seen_at ASC, element_id ASC
+            LIMIT 1
+            """,
+            (canonical_hostname,),
+        )
+        row = cur.fetchone()
+
+    if row is None:
+        return None
+
+    return {
+        "element_id": row[0],
+        "canonical_label": row[1],
+        "element_kind": row[2],
+        "ip_scope": row[3],
+        "canonical_ip": row[4],
+        "canonical_hostname": row[5],
+        "canonical_asn": row[6],
+        "canonical_org": row[7],
+        "confidence_current": row[8],
+        "role_hint_current": row[9],
+        "first_seen_at": row[10],
+        "last_seen_at": row[11],
+        "is_active": row[12],
+    }
+
+
 def upsert_network_element(
     conn: psycopg.Connection[Any],
     *,
@@ -316,6 +425,47 @@ def upsert_network_element(
     first_seen_at: datetime,
     last_seen_at: datetime,
 ) -> None:
+    existing = None
+    if canonical_ip is not None:
+        existing = load_network_element_by_ip(conn, canonical_ip)
+    elif canonical_hostname is not None:
+        existing = load_network_element_by_hostname(conn, canonical_hostname)
+
+    desired = {
+        "element_id": element_id,
+        "canonical_label": canonical_label,
+        "element_kind": element_kind,
+        "ip_scope": ip_scope,
+        "canonical_ip": canonical_ip,
+        "canonical_hostname": canonical_hostname,
+        "canonical_asn": canonical_asn,
+        "canonical_org": canonical_org,
+        "confidence_current": confidence_current,
+        "role_hint_current": role_hint_current,
+        "first_seen_at": first_seen_at,
+        "last_seen_at": last_seen_at,
+    }
+
+    if existing is not None:
+        existing_fingerprint = {
+            "element_id": existing["element_id"],
+            "canonical_label": existing["canonical_label"],
+            "element_kind": existing["element_kind"],
+            "ip_scope": existing["ip_scope"],
+            "canonical_ip": existing["canonical_ip"],
+            "canonical_hostname": existing["canonical_hostname"],
+            "canonical_asn": existing["canonical_asn"],
+            "canonical_org": existing["canonical_org"],
+            "confidence_current": numeric3(existing["confidence_current"]),
+            "role_hint_current": existing["role_hint_current"],
+            "first_seen_at": existing["first_seen_at"],
+            "last_seen_at": existing["last_seen_at"],
+        }
+        desired_fingerprint = dict(desired)
+        desired_fingerprint["confidence_current"] = numeric3(desired_fingerprint["confidence_current"])
+        if existing_fingerprint == desired_fingerprint:
+            return
+
     with conn.cursor() as cur:
         cur.execute(
             """
@@ -373,24 +523,69 @@ def upsert_network_element(
               last_seen_at = GREATEST(topomemory.network_element.last_seen_at, EXCLUDED.last_seen_at),
               is_active = TRUE
             """,
-            {
-                "element_id": element_id,
-                "canonical_label": canonical_label,
-                "element_kind": element_kind,
-                "ip_scope": ip_scope,
-                "canonical_ip": canonical_ip,
-                "canonical_hostname": canonical_hostname,
-                "canonical_asn": canonical_asn,
-                "canonical_org": canonical_org,
-                "confidence_current": confidence_current,
-                "role_hint_current": role_hint_current,
-                "first_seen_at": first_seen_at,
-                "last_seen_at": last_seen_at,
-            },
+            desired,
         )
 
 
+def load_decision_by_observed_element_id(
+    conn: psycopg.Connection[Any], observed_element_id: str
+) -> dict[str, Any] | None:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT
+              identity_decision_id,
+              observed_element_id,
+              run_id,
+              bundle_id,
+              decision_type,
+              matched_element_id,
+              new_element_id,
+              confidence,
+              reasoning_summary,
+              evidence_json,
+              decided_at
+            FROM topomemory.identity_decision
+            WHERE observed_element_id = %s
+            """,
+            (observed_element_id,),
+        )
+        row = cur.fetchone()
+
+    if row is None:
+        return None
+
+    return {
+        "identity_decision_id": row[0],
+        "observed_element_id": row[1],
+        "run_id": row[2],
+        "bundle_id": row[3],
+        "decision_type": row[4],
+        "matched_element_id": row[5],
+        "new_element_id": row[6],
+        "confidence": row[7],
+        "reasoning_summary": row[8],
+        "evidence_json": row[9],
+        "decided_at": row[10],
+    }
+
+
 def upsert_decision(conn: psycopg.Connection[Any], payload: dict[str, Any]) -> None:
+    existing = load_decision_by_observed_element_id(conn, payload["observed_element_id"])
+    if existing is not None:
+        if existing["decision_type"] != "skipped_no_public_ip":
+            return
+        if (
+            existing["decision_type"] == payload["decision_type"]
+            and existing["matched_element_id"] == payload["matched_element_id"]
+            and existing["new_element_id"] == payload["new_element_id"]
+            and numeric3(existing["confidence"]) == numeric3(payload["confidence"])
+            and existing["reasoning_summary"] == payload["reasoning_summary"]
+            and existing["evidence_json"] == payload["evidence_json"]
+            and existing["decided_at"] == payload["decided_at"]
+        ):
+            return
+
     with conn.cursor() as cur:
         cur.execute(
             """
@@ -441,9 +636,14 @@ def upsert_decision(conn: psycopg.Connection[Any], payload: dict[str, Any]) -> N
 def consolidate(conn: psycopg.Connection[Any], elements: list[ObservedElement]) -> dict[str, int]:
     counters = {
         "observed_elements": 0,
-        "public_consolidated": 0,
-        "public_matched": 0,
-        "public_new": 0,
+        "public_ip_consolidated": 0,
+        "public_ip_matched": 0,
+        "public_ip_new": 0,
+        "hostname_consolidated": 0,
+        "hostname_matched": 0,
+        "hostname_new": 0,
+        "hostname_skipped_weak": 0,
+        "hostname_skipped_conflict": 0,
         "private_skipped": 0,
         "hostname_deferred": 0,
     }
@@ -453,6 +653,8 @@ def consolidate(conn: psycopg.Connection[Any], elements: list[ObservedElement]) 
         scope = classify_scope(element)
         decided_at = element.observed_at
         normalized_hostname = normalize_text(element.observed_hostname)
+        normalized_ptr = normalize_text(element.observed_ptr)
+        selected_hostname, hostname_issue = preferred_hostname(element)
 
         if scope == "private":
             counters["private_skipped"] += 1
@@ -480,56 +682,154 @@ def consolidate(conn: psycopg.Connection[Any], elements: list[ObservedElement]) 
             upsert_decision(conn, decision_payload)
             continue
 
-        if not element.observed_ip:
-            counters["hostname_deferred"] += 1
-            decision_type = "skipped_no_public_ip"
-            reasoning_summary = "observação pública sem IP canônico determinístico; a consolidação desta rodada é somente por IP público."
+        canonical_ip = extract_ip_value(element.observed_ip)
+        if canonical_ip is None:
+            if hostname_issue == "hostname_ptr_conflict":
+                counters["hostname_skipped_conflict"] += 1
+                decision_type = "skipped_hostname_conflict"
+                reasoning_summary = "hostname e PTR fortes divergiram entre si; consolidação adiada para evitar merge ambíguo."
+                decision_payload = {
+                    "identity_decision_id": f"iddec-{element.observed_element_id}",
+                    "observed_element_id": element.observed_element_id,
+                    "run_id": element.run_id,
+                    "bundle_id": element.bundle_id,
+                    "decision_type": decision_type,
+                    "matched_element_id": None,
+                    "new_element_id": None,
+                    "confidence": confidence_for(decision_type),
+                    "reasoning_summary": reasoning_summary,
+                    "evidence_json": {
+                        "observed_ip": None,
+                        "observed_hostname": normalized_hostname,
+                        "observed_ptr": normalized_ptr,
+                        "selected_hostname": selected_hostname,
+                        "source_type": element.source_type,
+                        "scope": scope,
+                        "rule": "hostname_ptr_conflict",
+                    },
+                    "decided_at": decided_at,
+                }
+                upsert_decision(conn, decision_payload)
+                continue
+
+            if selected_hostname is None:
+                counters["hostname_skipped_weak"] += 1
+                decision_type = "skipped_hostname_weak"
+                reasoning_summary = "observação pública sem IP canônico e sem hostname/PTR forte o bastante para consolidar nesta rodada."
+                decision_payload = {
+                    "identity_decision_id": f"iddec-{element.observed_element_id}",
+                    "observed_element_id": element.observed_element_id,
+                    "run_id": element.run_id,
+                    "bundle_id": element.bundle_id,
+                    "decision_type": decision_type,
+                    "matched_element_id": None,
+                    "new_element_id": None,
+                    "confidence": confidence_for(decision_type),
+                    "reasoning_summary": reasoning_summary,
+                    "evidence_json": {
+                        "observed_ip": None,
+                        "observed_hostname": normalized_hostname,
+                        "observed_ptr": normalized_ptr,
+                        "selected_hostname": None,
+                        "source_type": element.source_type,
+                        "scope": scope,
+                        "rule": "hostname_ptr_weak",
+                    },
+                    "decided_at": decided_at,
+                }
+                upsert_decision(conn, decision_payload)
+                continue
+
+            counters["hostname_consolidated"] += 1
+            canonical_hostname = selected_hostname
+            existing = load_network_element_by_hostname(conn, canonical_hostname)
+            element_kind = element_kind_for(element, scope)
+            role_hint_current = role_hint_for(element)
+            canonical_label = canonical_hostname
+            element_id = existing["element_id"] if existing else stable_id("network-element", canonical_hostname)
+            confidence = confidence_for("matched_existing_entity" if existing else "new_entity_created")
+
+            if existing:
+                counters["hostname_matched"] += 1
+                decision_type = "matched_existing_entity"
+                reasoning_summary = "hostname/PTR forte já possuía entidade canônica própria; a observação reforça a identidade existente sem merge com IP."
+                matched_element_id = existing["element_id"]
+                new_element_id = None
+                first_seen_at = existing["first_seen_at"]
+            else:
+                counters["hostname_new"] += 1
+                decision_type = "new_entity_created"
+                reasoning_summary = "observação pública sem IP canônico, mas com hostname/PTR forte o bastante para criar identidade canônica determinística."
+                matched_element_id = None
+                new_element_id = element_id
+                first_seen_at = element.observed_at
+
+            upsert_network_element(
+                conn,
+                element_id=element_id,
+                canonical_label=canonical_label,
+                element_kind=element_kind,
+                ip_scope="public",
+                canonical_ip=None,
+                canonical_hostname=canonical_hostname,
+                canonical_asn=normalize_text(element.observed_asn),
+                canonical_org=normalize_text(element.observed_org),
+                confidence_current=confidence,
+                role_hint_current=role_hint_current,
+                first_seen_at=first_seen_at,
+                last_seen_at=element.observed_at,
+            )
+
             decision_payload = {
                 "identity_decision_id": f"iddec-{element.observed_element_id}",
                 "observed_element_id": element.observed_element_id,
                 "run_id": element.run_id,
                 "bundle_id": element.bundle_id,
                 "decision_type": decision_type,
-                "matched_element_id": None,
-                "new_element_id": None,
-                "confidence": confidence_for(decision_type),
+                "matched_element_id": matched_element_id,
+                "new_element_id": new_element_id,
+                "confidence": confidence,
                 "reasoning_summary": reasoning_summary,
                 "evidence_json": {
                     "observed_ip": None,
                     "observed_hostname": normalized_hostname,
+                    "observed_ptr": normalized_ptr,
+                    "selected_hostname": canonical_hostname,
                     "source_type": element.source_type,
                     "scope": scope,
-                    "rule": "hostname_only_deferred",
+                    "element_kind": element_kind,
+                    "rule": "hostname_ptr_canonical_match",
+                    "matched_existing": existing is not None,
                 },
                 "decided_at": decided_at,
             }
             upsert_decision(conn, decision_payload)
             continue
 
-        canonical_ip = canonicalize_ip(element.observed_ip)
         existing = load_network_element_by_ip(conn, canonical_ip)
         canonical_hostname = None
         if existing and existing["canonical_hostname"] is not None:
             canonical_hostname = existing["canonical_hostname"]
-        elif normalized_hostname and element.source_type == "target":
-            canonical_hostname = normalized_hostname
+        else:
+            if selected_hostname is not None:
+                canonical_hostname = selected_hostname
 
         element_kind = element_kind_for(element, scope)
         role_hint_current = role_hint_for(element)
         confidence = confidence_for("matched_existing_entity" if existing else "new_entity_created")
-        canonical_label = canonical_ip if not canonical_hostname else canonical_hostname
+        canonical_label = canonical_ip
         element_id = existing["element_id"] if existing else stable_id("network-element", canonical_ip)
 
         if existing:
-            counters["public_matched"] += 1
-            counters["public_consolidated"] += 1
+            counters["public_ip_matched"] += 1
+            counters["public_ip_consolidated"] += 1
             decision_type = "matched_existing_entity"
             reasoning_summary = "IP público já possuía entidade canônica; a observação reforça a identidade existente sem merge semântico."
             matched_element_id = existing["element_id"]
             new_element_id = None
         else:
-            counters["public_new"] += 1
-            counters["public_consolidated"] += 1
+            counters["public_ip_new"] += 1
+            counters["public_ip_consolidated"] += 1
             decision_type = "new_entity_created"
             reasoning_summary = "IP público novo sem correspondência canônica anterior; entidade criada de forma determinística por canonical_ip."
             matched_element_id = None
@@ -565,6 +865,8 @@ def consolidate(conn: psycopg.Connection[Any], elements: list[ObservedElement]) 
                 "observed_ip": element.observed_ip,
                 "canonical_ip": canonical_ip,
                 "observed_hostname": normalized_hostname,
+                "observed_ptr": normalized_ptr,
+                "selected_hostname": canonical_hostname,
                 "observed_asn": normalize_text(element.observed_asn),
                 "observed_org": normalize_text(element.observed_org),
                 "source_type": element.source_type,

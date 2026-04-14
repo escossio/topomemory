@@ -72,7 +72,8 @@ Nesta rodada:
 - a consolidação automática entra apenas para observações públicas
 - IP privado ou reservado fica fora da consolidação automática
 - a correspondência determinística inicial usa `canonical_ip`
-- hostname sem IP canônico é explicitamente deferido
+- hostname/PTR pode formar uma identidade canônica complementar quando não houver IP canônico e o nome passar pela normalização conservadora
+- hostname/PTR não substitui a identidade por IP público quando o IP existir
 - a decisão fica registrada com evidência e motivo textual
 
 ## Observação
