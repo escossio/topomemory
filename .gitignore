@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+.pytest_cache/
+
+# JavaScript / frontend
+node_modules/
+
+# Editor / SO
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Saídas temporárias do projeto
+artifacts/*
+!artifacts/.gitkeep
+!artifacts/README.md
+runs/*
+!runs/.gitkeep
+!runs/README.md
+
+# Logs e temporários
+*.log
+*.tmp
+*.temp
+
