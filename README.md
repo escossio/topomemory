@@ -25,7 +25,7 @@ O projeto separa observação, memória, saúde, tempo, projeção e ação em c
 
 ## Status atual
 
-Fase de bootstrap arquitetural. Ainda não há implementação funcional da coleta nem schema SQL definitivo; o repositório está sendo preparado para crescimento disciplinado.
+Fase de bootstrap arquitetural. A Camada 0 já tem schema conceitual persistível documentado; ainda não há implementação funcional da coleta nem schema SQL definitivo.
 
 ## Documentação
 
@@ -34,6 +34,7 @@ Fase de bootstrap arquitetural. Ainda não há implementação funcional da cole
 - [Decisões](/docs/DECISIONS.md)
 - [VM 10.45.0.4](/docs/COLLECTOR_VM_10.45.0.4.md)
 - [Modelo conceitual do banco](/docs/DATABASE_CONCEPT.md)
+- [Schema conceitual da Camada 0](/docs/COLLECTION_SCHEMA_CONCEPT.md)
 - [Contrato do run](/docs/RUN_CONTRACT.md)
 - [Ingestion bundle](/docs/INGESTION_BUNDLE.md)
 - [Formato do manifesto do run](/docs/RUN_MANIFEST_FORMAT.md)

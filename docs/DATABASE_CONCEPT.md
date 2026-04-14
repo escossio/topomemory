@@ -8,22 +8,19 @@ O banco principal do projeto é `PostgreSQL + pgvector`.
 
 O modelo separa observação bruta de entidade canônica. A mesma coisa observada várias vezes pode gerar múltiplas observações, mas converge para uma identidade canônica quando o sistema decide isso com base em evidências.
 
-## Blocos principais do modelo
+## Camada 0: schema conceitual próprio
+
+A Camada 0 já possui um schema conceitual persistível separado, documentado em [COLLECTION_SCHEMA_CONCEPT.md](/docs/COLLECTION_SCHEMA_CONCEPT.md).
+
+## Blocos principais da Camada 0
 
 - `collector`
 - `run`
-- `network_element`
-- `network_observation`
-- `observation_relation`
-- `element_relation`
-- `identity_decision`
-- `element_role_history`
-- `service_identity`
-- `service_delivery_observation`
-- `route_observation`
-- `route_membership`
+- `run_artifact`
+- `ingestion_bundle`
+- `observed_element_stub` (futuro, se necessário)
+- `observed_relation_stub` (futuro, se necessário)
 
 ## Observação
 
 Este documento descreve apenas o modelo conceitual inicial. Não é o schema SQL definitivo e não substitui decisões de implementação futura.
-
