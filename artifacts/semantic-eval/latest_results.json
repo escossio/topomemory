@@ -2,12 +2,12 @@
   "summary": {
     "queries_file": "schemas/semantic_eval_queries.json",
     "limit": 5,
-    "embedding_provider": "hash",
-    "embedding_model": "topomemory-hash-embedding-v1",
+    "embedding_provider": "openai",
+    "embedding_model": "text-embedding-3-small",
     "total_queries": 12,
-    "total_pass": 11,
-    "total_fail": 1,
-    "hit_rate": 0.9166666666666666,
+    "total_pass": 8,
+    "total_fail": 4,
+    "hit_rate": 0.6666666666666666,
     "mean_first_hit_position": 1
   },
   "results": [
@@ -37,56 +37,56 @@
           "role_hint_current": "destination",
           "element_kind": "destination",
           "ip_scope": "public",
-          "score": 0.21771226603413707,
-          "distance": 0.7822877339658629
+          "score": 0.27154810974197463,
+          "distance": 0.7284518902580254
         },
         {
-          "element_id": "network-element-private-3a90795d7b253323412f06986452cdf7b04a79799f64d42701c6bee337774894",
-          "canonical_label": "private:public_home_page:2:3a90795d7b25",
+          "element_id": "network-element-example-com",
+          "canonical_label": "example.com",
           "canonical_ip": null,
+          "canonical_hostname": "example.com",
+          "canonical_org": null,
+          "role_hint_current": "destination",
+          "element_kind": "destination",
+          "ip_scope": "public",
+          "score": 0.22434834207651466,
+          "distance": 0.7756516579234853
+        },
+        {
+          "element_id": "network-element-2800-3f0-4004-816-200e",
+          "canonical_label": "2800:3f0:4004:816::200e",
+          "canonical_ip": "2800:3f0:4004:816::200e",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.11181397971857132,
-          "distance": 0.8881860202814287
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.19408067773550086,
+          "distance": 0.8059193222644991
         },
         {
-          "element_id": "network-element-private-5ba94f953381adcab3c590db351bef18fbcaca4406df8aa27e1c43258e68e7bb",
-          "canonical_label": "private:public_home_page:3:5ba94f953381",
-          "canonical_ip": null,
+          "element_id": "network-element-104-20-23-154",
+          "canonical_label": "104.20.23.154",
+          "canonical_ip": "104.20.23.154",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.10857491075705794,
-          "distance": 0.8914250892429421
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.19230251582530455,
+          "distance": 0.8076974841746954
         },
         {
-          "element_id": "network-element-private-bddfd0b694656c19477775be628d8cce892af43b27dec0bcdea57b4ebebc4029",
-          "canonical_label": "private:public_home_page:4:bddfd0b69465",
-          "canonical_ip": null,
+          "element_id": "network-element-172-66-147-243",
+          "canonical_label": "172.66.147.243",
+          "canonical_ip": "172.66.147.243",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.10823707573684294,
-          "distance": 0.8917629242631571
-        },
-        {
-          "element_id": "network-element-private-316352014af1021ffe146d48ca41598e97b69078be3f83c0fe44f3aa541c82ad",
-          "canonical_label": "private:public_home_page:5:316352014af1",
-          "canonical_ip": null,
-          "canonical_hostname": null,
-          "canonical_org": null,
-          "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.1066670129697056,
-          "distance": 0.8933329870302944
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.1915011861278627,
+          "distance": 0.8084988138721373
         }
       ],
       "matched_expectations": {
@@ -97,7 +97,8 @@
           "network-element-google-com"
         ],
         "categories": [
-          "network-element-google-com"
+          "network-element-google-com",
+          "network-element-example-com"
         ]
       },
       "notes": "Consulta canônica de destino público óbvio."
@@ -128,56 +129,56 @@
           "role_hint_current": "destination",
           "element_kind": "destination",
           "ip_scope": "public",
-          "score": 0.21811592229036691,
-          "distance": 0.7818840777096331
+          "score": 0.15197069638642025,
+          "distance": 0.8480293036135798
         },
         {
-          "element_id": "network-element-172-66-147-243",
-          "canonical_label": "172.66.147.243",
-          "canonical_ip": "172.66.147.243",
-          "canonical_hostname": null,
-          "canonical_org": null,
-          "role_hint_current": "unknown",
-          "element_kind": "public_node",
-          "ip_scope": "public",
-          "score": 0.051043030496266906,
-          "distance": 0.9489569695037331
-        },
-        {
-          "element_id": "network-element-private-e5e4eb362082983b48697c3dbcd90c19a3cd458a670fdbeba332847de775f73b",
-          "canonical_label": "private:public_home_page:7:e5e4eb362082",
+          "element_id": "network-element-private-d1f108f975366192392317b35d4ba688a29b4e4bb638d418eef28a3a4e5ec9c7",
+          "canonical_label": "private:public_home_page:1:d1f108f97536",
           "canonical_ip": null,
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
           "element_kind": "unknown",
           "ip_scope": "private",
-          "score": 0.04047801061809564,
-          "distance": 0.9595219893819044
+          "score": 0.07096534138257193,
+          "distance": 0.9290346586174281
         },
         {
-          "element_id": "network-element-private-9f3c970cdcbecb41f657da1a2d47fb784a678842c4e75425bfbad143aba91a08",
-          "canonical_label": "private:public_home_page:4:9f3c970cdcbe",
+          "element_id": "network-element-private-2e495a249e3d9207a143c08d075faa37712153d5cb5628fcc7eefe004f89131c",
+          "canonical_label": "private:public_home_page:2:2e495a249e3d",
           "canonical_ip": null,
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
           "element_kind": "unknown",
           "ip_scope": "private",
-          "score": 0.027785994731904462,
-          "distance": 0.9722140052680955
+          "score": 0.07087072055353738,
+          "distance": 0.9291292794464626
         },
         {
-          "element_id": "network-element-104-20-23-154",
-          "canonical_label": "104.20.23.154",
-          "canonical_ip": "104.20.23.154",
+          "element_id": "network-element-private-bdef74789757bc3517d15b2e534025ec140fd6c37e9dbb5a333f4b544225b3da",
+          "canonical_label": "private:public_home_page:4:bdef74789757",
+          "canonical_ip": null,
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "public_node",
-          "ip_scope": "public",
-          "score": 0.0,
-          "distance": 1.0
+          "element_kind": "unknown",
+          "ip_scope": "private",
+          "score": 0.07054263224549406,
+          "distance": 0.9294573677545059
+        },
+        {
+          "element_id": "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
+          "canonical_label": "private:public_home_page:8:eadc32ff4b93",
+          "canonical_ip": null,
+          "canonical_hostname": null,
+          "canonical_org": null,
+          "role_hint_current": "unknown",
+          "element_kind": "unknown",
+          "ip_scope": "private",
+          "score": 0.0703258279877379,
+          "distance": 0.9296741720122621
         }
       ],
       "matched_expectations": {
@@ -207,9 +208,57 @@
       "expected_categories": [
         "public_destination"
       ],
-      "pass": true,
-      "first_hit_position": 1,
+      "pass": false,
+      "first_hit_position": 5,
       "returned_topk": [
+        {
+          "element_id": "network-element-2606-4700-10-6814-179a",
+          "canonical_label": "2606:4700:10::6814:179a",
+          "canonical_ip": "2606:4700:10::6814:179a",
+          "canonical_hostname": null,
+          "canonical_org": null,
+          "role_hint_current": "unknown",
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.32577035378764707,
+          "distance": 0.6742296462123529
+        },
+        {
+          "element_id": "network-element-2606-4700-10-ac42-93f3",
+          "canonical_label": "2606:4700:10::ac42:93f3",
+          "canonical_ip": "2606:4700:10::ac42:93f3",
+          "canonical_hostname": null,
+          "canonical_org": null,
+          "role_hint_current": "unknown",
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.31431858736421103,
+          "distance": 0.685681412635789
+        },
+        {
+          "element_id": "network-element-104-20-23-154",
+          "canonical_label": "104.20.23.154",
+          "canonical_ip": "104.20.23.154",
+          "canonical_hostname": null,
+          "canonical_org": null,
+          "role_hint_current": "unknown",
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.3067295308874465,
+          "distance": 0.6932704691125535
+        },
+        {
+          "element_id": "network-element-172-66-147-243",
+          "canonical_label": "172.66.147.243",
+          "canonical_ip": "172.66.147.243",
+          "canonical_hostname": null,
+          "canonical_org": null,
+          "role_hint_current": "unknown",
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.30212953387387675,
+          "distance": 0.6978704661261232
+        },
         {
           "element_id": "network-element-example-com",
           "canonical_label": "example.com",
@@ -219,56 +268,8 @@
           "role_hint_current": "destination",
           "element_kind": "destination",
           "ip_scope": "public",
-          "score": 0.16358694544306418,
-          "distance": 0.8364130545569358
-        },
-        {
-          "element_id": "network-element-google-com",
-          "canonical_label": "google.com",
-          "canonical_ip": null,
-          "canonical_hostname": "google.com",
-          "canonical_org": null,
-          "role_hint_current": "destination",
-          "element_kind": "destination",
-          "ip_scope": "public",
-          "score": 0.16328420325089765,
-          "distance": 0.8367157967491023
-        },
-        {
-          "element_id": "network-element-172-217-172-14",
-          "canonical_label": "172.217.172.14",
-          "canonical_ip": "172.217.172.14",
-          "canonical_hostname": null,
-          "canonical_org": null,
-          "role_hint_current": "unknown",
-          "element_kind": "public_node",
-          "ip_scope": "public",
-          "score": 0.1138639971613884,
-          "distance": 0.8861360028386116
-        },
-        {
-          "element_id": "network-element-private-c21b673b8f940b58970aa33cedd1d6c5ca8e33c3503f2d6617a413de92ba9b30",
-          "canonical_label": "private:public_home_page:6:c21b673b8f94",
-          "canonical_ip": null,
-          "canonical_hostname": null,
-          "canonical_org": null,
-          "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.08131198621178048,
-          "distance": 0.9186880137882195
-        },
-        {
-          "element_id": "network-element-private-05ec915d0b776042bda134d188d231dbae95791a91e6579d22b5f42d05a853df",
-          "canonical_label": "private:public_home_page:5:05ec915d0b77",
-          "canonical_ip": null,
-          "canonical_hostname": null,
-          "canonical_org": null,
-          "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.056372015207295845,
-          "distance": 0.9436279847927042
+          "score": 0.30110685766801937,
+          "distance": 0.6988931423319806
         }
       ],
       "matched_expectations": {
@@ -279,8 +280,7 @@
           "network-element-example-com"
         ],
         "categories": [
-          "network-element-example-com",
-          "network-element-google-com"
+          "network-element-example-com"
         ]
       },
       "notes": "Termo genérico que ainda tende a recuperar um destino público nomeado."
@@ -299,80 +299,74 @@
       "expected_categories": [
         "public_destination"
       ],
-      "pass": true,
-      "first_hit_position": 1,
+      "pass": false,
+      "first_hit_position": null,
       "returned_topk": [
         {
-          "element_id": "network-element-google-com",
-          "canonical_label": "google.com",
-          "canonical_ip": null,
-          "canonical_hostname": "google.com",
+          "element_id": "network-element-2606-4700-10-6814-179a",
+          "canonical_label": "2606:4700:10::6814:179a",
+          "canonical_ip": "2606:4700:10::6814:179a",
+          "canonical_hostname": null,
           "canonical_org": null,
-          "role_hint_current": "destination",
-          "element_kind": "destination",
+          "role_hint_current": "unknown",
+          "element_kind": "public_node",
           "ip_scope": "public",
-          "score": 0.2316314544285114,
-          "distance": 0.7683685455714886
+          "score": 0.3053921056325375,
+          "distance": 0.6946078943674625
         },
         {
-          "element_id": "network-element-private-5ba94f953381adcab3c590db351bef18fbcaca4406df8aa27e1c43258e68e7bb",
-          "canonical_label": "private:public_home_page:3:5ba94f953381",
-          "canonical_ip": null,
+          "element_id": "network-element-2606-4700-10-ac42-93f3",
+          "canonical_label": "2606:4700:10::ac42:93f3",
+          "canonical_ip": "2606:4700:10::ac42:93f3",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.09538087700671993,
-          "distance": 0.9046191229932801
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.29639685593382836,
+          "distance": 0.7036031440661716
         },
         {
-          "element_id": "network-element-private-bddfd0b694656c19477775be628d8cce892af43b27dec0bcdea57b4ebebc4029",
-          "canonical_label": "private:public_home_page:4:bddfd0b69465",
-          "canonical_ip": null,
+          "element_id": "network-element-2800-3f0-4004-816-200e",
+          "canonical_label": "2800:3f0:4004:816::200e",
+          "canonical_ip": "2800:3f0:4004:816::200e",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.09508335150781289,
-          "distance": 0.9049166484921871
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.2940791163955776,
+          "distance": 0.7059208836044224
         },
         {
-          "element_id": "network-element-private-316352014af1021ffe146d48ca41598e97b69078be3f83c0fe44f3aa541c82ad",
-          "canonical_label": "private:public_home_page:5:316352014af1",
-          "canonical_ip": null,
+          "element_id": "network-element-104-20-23-154",
+          "canonical_label": "104.20.23.154",
+          "canonical_ip": "104.20.23.154",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.09370444061603689,
-          "distance": 0.9062955593839631
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.28880893239152483,
+          "distance": 0.7111910676084752
         },
         {
-          "element_id": "network-element-private-4945e1d83c09a927bb2c78a5b5ed5a42d048d37d6d9e06ff510c65308b30281c",
-          "canonical_label": "private:public_home_page:1:4945e1d83c09",
-          "canonical_ip": null,
+          "element_id": "network-element-172-66-147-243",
+          "canonical_label": "172.66.147.243",
+          "canonical_ip": "172.66.147.243",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.09320807646465656,
-          "distance": 0.9067919235353434
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.2853937156532874,
+          "distance": 0.7146062843467126
         }
       ],
       "matched_expectations": {
-        "element_ids": [
-          "network-element-google-com"
-        ],
-        "labels": [
-          "network-element-google-com"
-        ],
-        "categories": [
-          "network-element-google-com"
-        ]
+        "element_ids": [],
+        "labels": [],
+        "categories": []
       },
       "notes": "Combinação de marca e atributo textual."
     },
@@ -402,8 +396,8 @@
           "role_hint_current": "destination",
           "element_kind": "destination",
           "ip_scope": "public",
-          "score": 0.32786625721466667,
-          "distance": 0.6721337427853333
+          "score": 0.43579935588960905,
+          "distance": 0.564200644110391
         },
         {
           "element_id": "network-element-google-com",
@@ -414,44 +408,44 @@
           "role_hint_current": "destination",
           "element_kind": "destination",
           "ip_scope": "public",
-          "score": 0.19125530090935927,
-          "distance": 0.8087446990906407
+          "score": 0.3420988110169716,
+          "distance": 0.6579011889830284
         },
         {
-          "element_id": "network-element-private-056aaea4ce5ae87524a26df5bc4dd58d6c985128aa0c4c5555874e9f83b96a06",
-          "canonical_label": "private:public_home_page:2:056aaea4ce5a",
-          "canonical_ip": null,
+          "element_id": "network-element-2606-4700-10-6814-179a",
+          "canonical_label": "2606:4700:10::6814:179a",
+          "canonical_ip": "2606:4700:10::6814:179a",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.12836208014143347,
-          "distance": 0.8716379198585665
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.33809681674338976,
+          "distance": 0.6619031832566102
         },
         {
-          "element_id": "network-element-private-e5e4eb362082983b48697c3dbcd90c19a3cd458a670fdbeba332847de775f73b",
-          "canonical_label": "private:public_home_page:7:e5e4eb362082",
-          "canonical_ip": null,
+          "element_id": "network-element-2800-3f0-4004-816-200e",
+          "canonical_label": "2800:3f0:4004:816::200e",
+          "canonical_ip": "2800:3f0:4004:816::200e",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.1201098090933852,
-          "distance": 0.8798901909066148
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.33195429735935367,
+          "distance": 0.6680457026406463
         },
         {
-          "element_id": "network-element-private-12fccf0c3e70a3e6cdad4324415e7e624c9d1ea9a2d59eced7e52de7f997200e",
-          "canonical_label": "private:public_home_page:6:12fccf0c3e70",
-          "canonical_ip": null,
+          "element_id": "network-element-2606-4700-10-ac42-93f3",
+          "canonical_label": "2606:4700:10::ac42:93f3",
+          "canonical_ip": "2606:4700:10::ac42:93f3",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.1076698735095929,
-          "distance": 0.8923301264904071
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.33134724747601263,
+          "distance": 0.6686527525239874
         }
       ],
       "matched_expectations": {
@@ -493,44 +487,8 @@
           "role_hint_current": "destination",
           "element_kind": "destination",
           "ip_scope": "public",
-          "score": 0.23631894833110123,
-          "distance": 0.7636810516688988
-        },
-        {
-          "element_id": "network-element-google-com",
-          "canonical_label": "google.com",
-          "canonical_ip": null,
-          "canonical_hostname": "google.com",
-          "canonical_org": null,
-          "role_hint_current": "destination",
-          "element_kind": "destination",
-          "ip_scope": "public",
-          "score": 0.23588156957739814,
-          "distance": 0.7641184304226019
-        },
-        {
-          "element_id": "network-element-private-12fccf0c3e70a3e6cdad4324415e7e624c9d1ea9a2d59eced7e52de7f997200e",
-          "canonical_label": "private:public_home_page:6:12fccf0c3e70",
-          "canonical_ip": null,
-          "canonical_hostname": null,
-          "canonical_org": null,
-          "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.20705725476846648,
-          "distance": 0.7929427452315335
-        },
-        {
-          "element_id": "network-element-private-bddfd0b694656c19477775be628d8cce892af43b27dec0bcdea57b4ebebc4029",
-          "canonical_label": "private:public_home_page:4:bddfd0b69465",
-          "canonical_ip": null,
-          "canonical_hostname": null,
-          "canonical_org": null,
-          "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.16903729948758484,
-          "distance": 0.8309627005124152
+          "score": 0.3457390732230998,
+          "distance": 0.6542609267769002
         },
         {
           "element_id": "network-element-2800-3f0-4004-816-200e",
@@ -541,19 +499,53 @@
           "role_hint_current": "unknown",
           "element_kind": "public_node",
           "ip_scope": "public",
-          "score": 0.15945115603689053,
-          "distance": 0.8405488439631095
+          "score": 0.3152071570891406,
+          "distance": 0.6847928429108594
+        },
+        {
+          "element_id": "network-element-2606-4700-10-6814-179a",
+          "canonical_label": "2606:4700:10::6814:179a",
+          "canonical_ip": "2606:4700:10::6814:179a",
+          "canonical_hostname": null,
+          "canonical_org": null,
+          "role_hint_current": "unknown",
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.3144488824164511,
+          "distance": 0.6855511175835489
+        },
+        {
+          "element_id": "network-element-2606-4700-10-ac42-93f3",
+          "canonical_label": "2606:4700:10::ac42:93f3",
+          "canonical_ip": "2606:4700:10::ac42:93f3",
+          "canonical_hostname": null,
+          "canonical_org": null,
+          "role_hint_current": "unknown",
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.30910267879568065,
+          "distance": 0.6908973212043193
+        },
+        {
+          "element_id": "network-element-104-20-23-154",
+          "canonical_label": "104.20.23.154",
+          "canonical_ip": "104.20.23.154",
+          "canonical_hostname": null,
+          "canonical_org": null,
+          "role_hint_current": "unknown",
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.305727624273163,
+          "distance": 0.694272375726837
         }
       ],
       "matched_expectations": {
         "element_ids": [],
         "labels": [
-          "network-element-example-com",
-          "network-element-google-com"
+          "network-element-example-com"
         ],
         "categories": [
-          "network-element-example-com",
-          "network-element-google-com"
+          "network-element-example-com"
         ]
       },
       "notes": "Deve trazer pelo menos um elemento público nomeado com papel de destino."
@@ -576,6 +568,18 @@
       "first_hit_position": 1,
       "returned_topk": [
         {
+          "element_id": "network-element-2606-4700-10-6814-179a",
+          "canonical_label": "2606:4700:10::6814:179a",
+          "canonical_ip": "2606:4700:10::6814:179a",
+          "canonical_hostname": null,
+          "canonical_org": null,
+          "role_hint_current": "unknown",
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.2815345031420696,
+          "distance": 0.7184654968579304
+        },
+        {
           "element_id": "network-element-2606-4700-10-ac42-93f3",
           "canonical_label": "2606:4700:10::ac42:93f3",
           "canonical_ip": "2606:4700:10::ac42:93f3",
@@ -584,8 +588,8 @@
           "role_hint_current": "unknown",
           "element_kind": "public_node",
           "ip_scope": "public",
-          "score": 0.32970838723830176,
-          "distance": 0.6702916127616982
+          "score": 0.27674151897263444,
+          "distance": 0.7232584810273656
         },
         {
           "element_id": "network-element-2800-3f0-4004-816-200e",
@@ -596,32 +600,8 @@
           "role_hint_current": "unknown",
           "element_kind": "public_node",
           "ip_scope": "public",
-          "score": 0.2769414140902955,
-          "distance": 0.7230585859097045
-        },
-        {
-          "element_id": "network-element-2606-4700-10-6814-179a",
-          "canonical_label": "2606:4700:10::6814:179a",
-          "canonical_ip": "2606:4700:10::6814:179a",
-          "canonical_hostname": null,
-          "canonical_org": null,
-          "role_hint_current": "unknown",
-          "element_kind": "public_node",
-          "ip_scope": "public",
-          "score": 0.22809148671969415,
-          "distance": 0.7719085132803059
-        },
-        {
-          "element_id": "network-element-172-217-172-14",
-          "canonical_label": "172.217.172.14",
-          "canonical_ip": "172.217.172.14",
-          "canonical_hostname": null,
-          "canonical_org": null,
-          "role_hint_current": "unknown",
-          "element_kind": "public_node",
-          "ip_scope": "public",
-          "score": 0.22406124604843847,
-          "distance": 0.7759387539515615
+          "score": 0.27542647977907864,
+          "distance": 0.7245735202209214
         },
         {
           "element_id": "network-element-104-20-23-154",
@@ -632,24 +612,36 @@
           "role_hint_current": "unknown",
           "element_kind": "public_node",
           "ip_scope": "public",
-          "score": 0.2158594558155308,
-          "distance": 0.7841405441844692
+          "score": 0.2730089199398402,
+          "distance": 0.7269910800601598
+        },
+        {
+          "element_id": "network-element-172-66-147-243",
+          "canonical_label": "172.66.147.243",
+          "canonical_ip": "172.66.147.243",
+          "canonical_hostname": null,
+          "canonical_org": null,
+          "role_hint_current": "unknown",
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.2726677932321264,
+          "distance": 0.7273322067678736
         }
       ],
       "matched_expectations": {
         "element_ids": [],
         "labels": [
-          "network-element-2606-4700-10-ac42-93f3",
           "network-element-2606-4700-10-6814-179a",
-          "network-element-172-217-172-14",
-          "network-element-104-20-23-154"
+          "network-element-2606-4700-10-ac42-93f3",
+          "network-element-104-20-23-154",
+          "network-element-172-66-147-243"
         ],
         "categories": [
+          "network-element-2606-4700-10-6814-179a",
           "network-element-2606-4700-10-ac42-93f3",
           "network-element-2800-3f0-4004-816-200e",
-          "network-element-2606-4700-10-6814-179a",
-          "network-element-172-217-172-14",
-          "network-element-104-20-23-154"
+          "network-element-104-20-23-154",
+          "network-element-172-66-147-243"
         ]
       },
       "notes": "Deve trazer pelo menos um nó público por IP canônico."
@@ -670,81 +662,81 @@
       "first_hit_position": 1,
       "returned_topk": [
         {
-          "element_id": "network-element-private-29aa95ada5a94b4b0c9c5efbd89c0f653b2fa6ef6e32fb2fddc501ce1098b4bc",
-          "canonical_label": "private:public_home_page:3:29aa95ada5a9",
+          "element_id": "network-element-private-4933ed6d0b1a178122f167355cf9bfb31ddd3c2cfaad6a9fd74655d89a6025b1",
+          "canonical_label": "private:public_home_page:1:4933ed6d0b1a",
           "canonical_ip": null,
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
           "element_kind": "unknown",
           "ip_scope": "private",
-          "score": 0.12350665112978032,
-          "distance": 0.8764933488702197
+          "score": 0.2884350449612797,
+          "distance": 0.7115649550387203
         },
         {
-          "element_id": "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
-          "canonical_label": "private:public_home_page:8:eadc32ff4b93",
+          "element_id": "network-element-private-351ededb3ab4a698ed1adc70fc72691933295480663fc816724a1cab6d8acf43",
+          "canonical_label": "private:public_home_page:6:351ededb3ab4",
           "canonical_ip": null,
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
           "element_kind": "unknown",
           "ip_scope": "private",
-          "score": 0.1158744029587041,
-          "distance": 0.8841255970412959
+          "score": 0.28357651256004957,
+          "distance": 0.7164234874399504
         },
         {
-          "element_id": "network-element-private-d4d7f6fed55e978a09777557c4d91129ac4ff4340648d65b87ec9fe2542cb4c6",
-          "canonical_label": "private:public_home_page:5:d4d7f6fed55e",
+          "element_id": "network-element-private-9f3c970cdcbecb41f657da1a2d47fb784a678842c4e75425bfbad143aba91a08",
+          "canonical_label": "private:public_home_page:4:9f3c970cdcbe",
           "canonical_ip": null,
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
           "element_kind": "unknown",
           "ip_scope": "private",
-          "score": 0.11557995584131553,
-          "distance": 0.8844200441586845
+          "score": 0.2833396725016357,
+          "distance": 0.7166603274983643
         },
         {
-          "element_id": "network-element-private-05ec915d0b776042bda134d188d231dbae95791a91e6579d22b5f42d05a853df",
-          "canonical_label": "private:public_home_page:5:05ec915d0b77",
+          "element_id": "network-element-private-316352014af1021ffe146d48ca41598e97b69078be3f83c0fe44f3aa541c82ad",
+          "canonical_label": "private:public_home_page:5:316352014af1",
           "canonical_ip": null,
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
           "element_kind": "unknown",
           "ip_scope": "private",
-          "score": 0.1078462827160348,
-          "distance": 0.8921537172839652
+          "score": 0.283196652727414,
+          "distance": 0.716803347272586
         },
         {
-          "element_id": "network-element-private-2e495a249e3d9207a143c08d075faa37712153d5cb5628fcc7eefe004f89131c",
-          "canonical_label": "private:public_home_page:2:2e495a249e3d",
+          "element_id": "network-element-private-62bb8aa57d5fbde1d52936c314a7993e372bf79fe6e90004241a1c1845ee8976",
+          "canonical_label": "private:public_home_page:5:62bb8aa57d5f",
           "canonical_ip": null,
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
           "element_kind": "unknown",
           "ip_scope": "private",
-          "score": 0.10769619597965951,
-          "distance": 0.8923038040203405
+          "score": 0.2810963542209558,
+          "distance": 0.7189036457790442
         }
       ],
       "matched_expectations": {
         "element_ids": [],
         "labels": [
-          "network-element-private-29aa95ada5a94b4b0c9c5efbd89c0f653b2fa6ef6e32fb2fddc501ce1098b4bc",
-          "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
-          "network-element-private-d4d7f6fed55e978a09777557c4d91129ac4ff4340648d65b87ec9fe2542cb4c6",
-          "network-element-private-05ec915d0b776042bda134d188d231dbae95791a91e6579d22b5f42d05a853df",
-          "network-element-private-2e495a249e3d9207a143c08d075faa37712153d5cb5628fcc7eefe004f89131c"
+          "network-element-private-4933ed6d0b1a178122f167355cf9bfb31ddd3c2cfaad6a9fd74655d89a6025b1",
+          "network-element-private-351ededb3ab4a698ed1adc70fc72691933295480663fc816724a1cab6d8acf43",
+          "network-element-private-9f3c970cdcbecb41f657da1a2d47fb784a678842c4e75425bfbad143aba91a08",
+          "network-element-private-316352014af1021ffe146d48ca41598e97b69078be3f83c0fe44f3aa541c82ad",
+          "network-element-private-62bb8aa57d5fbde1d52936c314a7993e372bf79fe6e90004241a1c1845ee8976"
         ],
         "categories": [
-          "network-element-private-29aa95ada5a94b4b0c9c5efbd89c0f653b2fa6ef6e32fb2fddc501ce1098b4bc",
-          "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
-          "network-element-private-d4d7f6fed55e978a09777557c4d91129ac4ff4340648d65b87ec9fe2542cb4c6",
-          "network-element-private-05ec915d0b776042bda134d188d231dbae95791a91e6579d22b5f42d05a853df",
-          "network-element-private-2e495a249e3d9207a143c08d075faa37712153d5cb5628fcc7eefe004f89131c"
+          "network-element-private-4933ed6d0b1a178122f167355cf9bfb31ddd3c2cfaad6a9fd74655d89a6025b1",
+          "network-element-private-351ededb3ab4a698ed1adc70fc72691933295480663fc816724a1cab6d8acf43",
+          "network-element-private-9f3c970cdcbecb41f657da1a2d47fb784a678842c4e75425bfbad143aba91a08",
+          "network-element-private-316352014af1021ffe146d48ca41598e97b69078be3f83c0fe44f3aa541c82ad",
+          "network-element-private-62bb8aa57d5fbde1d52936c314a7993e372bf79fe6e90004241a1c1845ee8976"
         ]
       },
       "notes": "Deve trazer pelo menos um hop privado já consolidado."
@@ -765,28 +757,40 @@
       "first_hit_position": 1,
       "returned_topk": [
         {
-          "element_id": "network-element-private-29aa95ada5a94b4b0c9c5efbd89c0f653b2fa6ef6e32fb2fddc501ce1098b4bc",
-          "canonical_label": "private:public_home_page:3:29aa95ada5a9",
+          "element_id": "network-element-private-4933ed6d0b1a178122f167355cf9bfb31ddd3c2cfaad6a9fd74655d89a6025b1",
+          "canonical_label": "private:public_home_page:1:4933ed6d0b1a",
           "canonical_ip": null,
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
           "element_kind": "unknown",
           "ip_scope": "private",
-          "score": 0.004333329856399337,
-          "distance": 0.9956666701436007
+          "score": 0.21184837672493073,
+          "distance": 0.7881516232750693
         },
         {
-          "element_id": "network-element-private-e5e4eb362082983b48697c3dbcd90c19a3cd458a670fdbeba332847de775f73b",
-          "canonical_label": "private:public_home_page:7:e5e4eb362082",
+          "element_id": "network-element-private-316352014af1021ffe146d48ca41598e97b69078be3f83c0fe44f3aa541c82ad",
+          "canonical_label": "private:public_home_page:5:316352014af1",
           "canonical_ip": null,
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
           "element_kind": "unknown",
           "ip_scope": "private",
-          "score": 0.004214173329674442,
-          "distance": 0.9957858266703256
+          "score": 0.207626990502511,
+          "distance": 0.792373009497489
+        },
+        {
+          "element_id": "network-element-private-056aaea4ce5ae87524a26df5bc4dd58d6c985128aa0c4c5555874e9f83b96a06",
+          "canonical_label": "private:public_home_page:2:056aaea4ce5a",
+          "canonical_ip": null,
+          "canonical_hostname": null,
+          "canonical_org": null,
+          "role_hint_current": "unknown",
+          "element_kind": "unknown",
+          "ip_scope": "private",
+          "score": 0.2073877048053816,
+          "distance": 0.7926122951946184
         },
         {
           "element_id": "network-element-private-06ded8985cc2eb5dc1b2130a35234064b7ec14d1ae22614c936fdd816a9f1469",
@@ -797,49 +801,37 @@
           "role_hint_current": "unknown",
           "element_kind": "unknown",
           "ip_scope": "private",
-          "score": 0.003952269924498819,
-          "distance": 0.9960477300755012
+          "score": 0.2069418770276119,
+          "distance": 0.7930581229723881
         },
         {
-          "element_id": "network-element-private-62bb8aa57d5fbde1d52936c314a7993e372bf79fe6e90004241a1c1845ee8976",
-          "canonical_label": "private:public_home_page:5:62bb8aa57d5f",
+          "element_id": "network-element-private-b259df6b1d7190d6c9a0c16a4ca1dd22a1d9842283cc5f0fed274327fd7158b6",
+          "canonical_label": "private:public_home_page:3:b259df6b1d71",
           "canonical_ip": null,
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
           "element_kind": "unknown",
           "ip_scope": "private",
-          "score": -0.01194199722791267,
-          "distance": 1.0119419972279127
-        },
-        {
-          "element_id": "network-element-private-250bbfb8d6e6d4f3b7f81ea6a8fef3280eab37a4473f7c9c7b5fb0826f8b2cd7",
-          "canonical_label": "private:public_home_page:5:250bbfb8d6e6",
-          "canonical_ip": null,
-          "canonical_hostname": null,
-          "canonical_org": null,
-          "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": -0.01202961573357797,
-          "distance": 1.012029615733578
+          "score": 0.20552277087425708,
+          "distance": 0.7944772291257429
         }
       ],
       "matched_expectations": {
         "element_ids": [],
         "labels": [
-          "network-element-private-29aa95ada5a94b4b0c9c5efbd89c0f653b2fa6ef6e32fb2fddc501ce1098b4bc",
-          "network-element-private-e5e4eb362082983b48697c3dbcd90c19a3cd458a670fdbeba332847de775f73b",
+          "network-element-private-4933ed6d0b1a178122f167355cf9bfb31ddd3c2cfaad6a9fd74655d89a6025b1",
+          "network-element-private-316352014af1021ffe146d48ca41598e97b69078be3f83c0fe44f3aa541c82ad",
+          "network-element-private-056aaea4ce5ae87524a26df5bc4dd58d6c985128aa0c4c5555874e9f83b96a06",
           "network-element-private-06ded8985cc2eb5dc1b2130a35234064b7ec14d1ae22614c936fdd816a9f1469",
-          "network-element-private-62bb8aa57d5fbde1d52936c314a7993e372bf79fe6e90004241a1c1845ee8976",
-          "network-element-private-250bbfb8d6e6d4f3b7f81ea6a8fef3280eab37a4473f7c9c7b5fb0826f8b2cd7"
+          "network-element-private-b259df6b1d7190d6c9a0c16a4ca1dd22a1d9842283cc5f0fed274327fd7158b6"
         ],
         "categories": [
-          "network-element-private-29aa95ada5a94b4b0c9c5efbd89c0f653b2fa6ef6e32fb2fddc501ce1098b4bc",
-          "network-element-private-e5e4eb362082983b48697c3dbcd90c19a3cd458a670fdbeba332847de775f73b",
+          "network-element-private-4933ed6d0b1a178122f167355cf9bfb31ddd3c2cfaad6a9fd74655d89a6025b1",
+          "network-element-private-316352014af1021ffe146d48ca41598e97b69078be3f83c0fe44f3aa541c82ad",
+          "network-element-private-056aaea4ce5ae87524a26df5bc4dd58d6c985128aa0c4c5555874e9f83b96a06",
           "network-element-private-06ded8985cc2eb5dc1b2130a35234064b7ec14d1ae22614c936fdd816a9f1469",
-          "network-element-private-62bb8aa57d5fbde1d52936c314a7993e372bf79fe6e90004241a1c1845ee8976",
-          "network-element-private-250bbfb8d6e6d4f3b7f81ea6a8fef3280eab37a4473f7c9c7b5fb0826f8b2cd7"
+          "network-element-private-b259df6b1d7190d6c9a0c16a4ca1dd22a1d9842283cc5f0fed274327fd7158b6"
         ]
       },
       "notes": "Sinônimo operacional de hop privado."
@@ -856,44 +848,20 @@
       "expected_categories": [
         "private_node"
       ],
-      "pass": true,
-      "first_hit_position": 1,
+      "pass": false,
+      "first_hit_position": null,
       "returned_topk": [
         {
-          "element_id": "network-element-private-2e495a249e3d9207a143c08d075faa37712153d5cb5628fcc7eefe004f89131c",
-          "canonical_label": "private:public_home_page:2:2e495a249e3d",
-          "canonical_ip": null,
+          "element_id": "network-element-2606-4700-10-6814-179a",
+          "canonical_label": "2606:4700:10::6814:179a",
+          "canonical_ip": "2606:4700:10::6814:179a",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.18682004675330277,
-          "distance": 0.8131799532466972
-        },
-        {
-          "element_id": "network-element-private-c036d9813ccca06af905a3d9636dde84ec52979b82a5c6d6699e27ef0d02cff8",
-          "canonical_label": "private:public_home_page:1:c036d9813ccc",
-          "canonical_ip": null,
-          "canonical_hostname": null,
-          "canonical_org": null,
-          "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.18248501942012074,
-          "distance": 0.8175149805798793
-        },
-        {
-          "element_id": "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
-          "canonical_label": "private:public_home_page:8:eadc32ff4b93",
-          "canonical_ip": null,
-          "canonical_hostname": null,
-          "canonical_org": null,
-          "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.17907836943453748,
-          "distance": 0.8209216305654625
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.28125115547499635,
+          "distance": 0.7187488445250036
         },
         {
           "element_id": "network-element-2606-4700-10-ac42-93f3",
@@ -904,36 +872,50 @@
           "role_hint_current": "unknown",
           "element_kind": "public_node",
           "ip_scope": "public",
-          "score": 0.17859202197743385,
-          "distance": 0.8214079780225662
+          "score": 0.27715813933823297,
+          "distance": 0.722841860661767
         },
         {
-          "element_id": "network-element-private-05ec915d0b776042bda134d188d231dbae95791a91e6579d22b5f42d05a853df",
-          "canonical_label": "private:public_home_page:5:05ec915d0b77",
-          "canonical_ip": null,
+          "element_id": "network-element-104-20-23-154",
+          "canonical_label": "104.20.23.154",
+          "canonical_ip": "104.20.23.154",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.16066876796969054,
-          "distance": 0.8393312320303095
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.27629754362029735,
+          "distance": 0.7237024563797027
+        },
+        {
+          "element_id": "network-element-172-66-147-243",
+          "canonical_label": "172.66.147.243",
+          "canonical_ip": "172.66.147.243",
+          "canonical_hostname": null,
+          "canonical_org": null,
+          "role_hint_current": "unknown",
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.27284707663411667,
+          "distance": 0.7271529233658833
+        },
+        {
+          "element_id": "network-element-172-217-172-14",
+          "canonical_label": "172.217.172.14",
+          "canonical_ip": "172.217.172.14",
+          "canonical_hostname": null,
+          "canonical_org": null,
+          "role_hint_current": "unknown",
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.2717060827244423,
+          "distance": 0.7282939172755577
         }
       ],
       "matched_expectations": {
         "element_ids": [],
-        "labels": [
-          "network-element-private-2e495a249e3d9207a143c08d075faa37712153d5cb5628fcc7eefe004f89131c",
-          "network-element-private-c036d9813ccca06af905a3d9636dde84ec52979b82a5c6d6699e27ef0d02cff8",
-          "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
-          "network-element-private-05ec915d0b776042bda134d188d231dbae95791a91e6579d22b5f42d05a853df"
-        ],
-        "categories": [
-          "network-element-private-2e495a249e3d9207a143c08d075faa37712153d5cb5628fcc7eefe004f89131c",
-          "network-element-private-c036d9813ccca06af905a3d9636dde84ec52979b82a5c6d6699e27ef0d02cff8",
-          "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
-          "network-element-private-05ec915d0b776042bda134d188d231dbae95791a91e6579d22b5f42d05a853df"
-        ]
+        "labels": [],
+        "categories": []
       },
       "notes": "Consulta estrutural para nós privados da rota."
     },
@@ -949,86 +931,74 @@
       "expected_categories": [
         "private_hop"
       ],
-      "pass": true,
-      "first_hit_position": 1,
+      "pass": false,
+      "first_hit_position": null,
       "returned_topk": [
         {
-          "element_id": "network-element-private-351ededb3ab4a698ed1adc70fc72691933295480663fc816724a1cab6d8acf43",
-          "canonical_label": "private:public_home_page:6:351ededb3ab4",
+          "element_id": "network-element-example-com",
+          "canonical_label": "example.com",
           "canonical_ip": null,
-          "canonical_hostname": null,
+          "canonical_hostname": "example.com",
           "canonical_org": null,
-          "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.2640266418457331,
-          "distance": 0.7359733581542669
+          "role_hint_current": "destination",
+          "element_kind": "destination",
+          "ip_scope": "public",
+          "score": 0.40328317521257584,
+          "distance": 0.5967168247874242
         },
         {
-          "element_id": "network-element-private-250bbfb8d6e6d4f3b7f81ea6a8fef3280eab37a4473f7c9c7b5fb0826f8b2cd7",
-          "canonical_label": "private:public_home_page:5:250bbfb8d6e6",
-          "canonical_ip": null,
+          "element_id": "network-element-172-66-147-243",
+          "canonical_label": "172.66.147.243",
+          "canonical_ip": "172.66.147.243",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.26393179844591574,
-          "distance": 0.7360682015540843
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.36726750194248914,
+          "distance": 0.6327324980575109
         },
         {
-          "element_id": "network-element-private-2f8ac85719139a946e97d3ef53526212b19f3323c26a1da3c688df130abd42ca",
-          "canonical_label": "private:public_home_page:2:2f8ac8571913",
-          "canonical_ip": null,
+          "element_id": "network-element-2606-4700-10-6814-179a",
+          "canonical_label": "2606:4700:10::6814:179a",
+          "canonical_ip": "2606:4700:10::6814:179a",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.2583877424269998,
-          "distance": 0.7416122575730002
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.3659616627968735,
+          "distance": 0.6340383372031265
         },
         {
-          "element_id": "network-element-private-b259df6b1d7190d6c9a0c16a4ca1dd22a1d9842283cc5f0fed274327fd7158b6",
-          "canonical_label": "private:public_home_page:3:b259df6b1d71",
-          "canonical_ip": null,
+          "element_id": "network-element-2606-4700-10-ac42-93f3",
+          "canonical_label": "2606:4700:10::ac42:93f3",
+          "canonical_ip": "2606:4700:10::ac42:93f3",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.2557038471611349,
-          "distance": 0.7442961528388651
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.36316949467061177,
+          "distance": 0.6368305053293882
         },
         {
-          "element_id": "network-element-private-bdef74789757bc3517d15b2e534025ec140fd6c37e9dbb5a333f4b544225b3da",
-          "canonical_label": "private:public_home_page:4:bdef74789757",
-          "canonical_ip": null,
+          "element_id": "network-element-104-20-23-154",
+          "canonical_label": "104.20.23.154",
+          "canonical_ip": "104.20.23.154",
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.25070074183929614,
-          "distance": 0.7492992581607039
+          "element_kind": "public_node",
+          "ip_scope": "public",
+          "score": 0.3600938689716947,
+          "distance": 0.6399061310283053
         }
       ],
       "matched_expectations": {
         "element_ids": [],
-        "labels": [
-          "network-element-private-351ededb3ab4a698ed1adc70fc72691933295480663fc816724a1cab6d8acf43",
-          "network-element-private-250bbfb8d6e6d4f3b7f81ea6a8fef3280eab37a4473f7c9c7b5fb0826f8b2cd7",
-          "network-element-private-2f8ac85719139a946e97d3ef53526212b19f3323c26a1da3c688df130abd42ca",
-          "network-element-private-b259df6b1d7190d6c9a0c16a4ca1dd22a1d9842283cc5f0fed274327fd7158b6",
-          "network-element-private-bdef74789757bc3517d15b2e534025ec140fd6c37e9dbb5a333f4b544225b3da"
-        ],
-        "categories": [
-          "network-element-private-351ededb3ab4a698ed1adc70fc72691933295480663fc816724a1cab6d8acf43",
-          "network-element-private-250bbfb8d6e6d4f3b7f81ea6a8fef3280eab37a4473f7c9c7b5fb0826f8b2cd7",
-          "network-element-private-2f8ac85719139a946e97d3ef53526212b19f3323c26a1da3c688df130abd42ca",
-          "network-element-private-b259df6b1d7190d6c9a0c16a4ca1dd22a1d9842283cc5f0fed274327fd7158b6",
-          "network-element-private-bdef74789757bc3517d15b2e534025ec140fd6c37e9dbb5a333f4b544225b3da"
-        ]
+        "labels": [],
+        "categories": []
       },
       "notes": "Consulta mais longa para a mesma região privada do grafo observado."
     },
@@ -1047,9 +1017,21 @@
       "expected_categories": [
         "private_hop"
       ],
-      "pass": false,
+      "pass": true,
       "first_hit_position": 1,
       "returned_topk": [
+        {
+          "element_id": "network-element-google-com",
+          "canonical_label": "google.com",
+          "canonical_ip": null,
+          "canonical_hostname": "google.com",
+          "canonical_org": null,
+          "role_hint_current": "destination",
+          "element_kind": "destination",
+          "ip_scope": "public",
+          "score": 0.27344094614155656,
+          "distance": 0.7265590538584434
+        },
         {
           "element_id": "network-element-private-316352014af1021ffe146d48ca41598e97b69078be3f83c0fe44f3aa541c82ad",
           "canonical_label": "private:public_home_page:5:316352014af1",
@@ -1059,73 +1041,62 @@
           "role_hint_current": "unknown",
           "element_kind": "unknown",
           "ip_scope": "private",
-          "score": 0.17848758395988396,
-          "distance": 0.821512416040116
+          "score": 0.272624112468984,
+          "distance": 0.727375887531016
         },
         {
-          "element_id": "network-element-private-5ba94f953381adcab3c590db351bef18fbcaca4406df8aa27e1c43258e68e7bb",
-          "canonical_label": "private:public_home_page:3:5ba94f953381",
+          "element_id": "network-element-private-4933ed6d0b1a178122f167355cf9bfb31ddd3c2cfaad6a9fd74655d89a6025b1",
+          "canonical_label": "private:public_home_page:1:4933ed6d0b1a",
           "canonical_ip": null,
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
           "element_kind": "unknown",
           "ip_scope": "private",
-          "score": 0.17519180987355665,
-          "distance": 0.8248081901264434
+          "score": 0.2721921183968887,
+          "distance": 0.7278078816031113
         },
         {
-          "element_id": "network-element-private-bddfd0b694656c19477775be628d8cce892af43b27dec0bcdea57b4ebebc4029",
-          "canonical_label": "private:public_home_page:4:bddfd0b69465",
+          "element_id": "network-element-private-351ededb3ab4a698ed1adc70fc72691933295480663fc816724a1cab6d8acf43",
+          "canonical_label": "private:public_home_page:6:351ededb3ab4",
           "canonical_ip": null,
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
           "element_kind": "unknown",
           "ip_scope": "private",
-          "score": 0.17464657912664705,
-          "distance": 0.825353420873353
+          "score": 0.2684183128191997,
+          "distance": 0.7315816871808003
         },
         {
-          "element_id": "network-element-private-4945e1d83c09a927bb2c78a5b5ed5a42d048d37d6d9e06ff510c65308b30281c",
-          "canonical_label": "private:public_home_page:1:4945e1d83c09",
+          "element_id": "network-element-private-62bb8aa57d5fbde1d52936c314a7993e372bf79fe6e90004241a1c1845ee8976",
+          "canonical_label": "private:public_home_page:5:62bb8aa57d5f",
           "canonical_ip": null,
           "canonical_hostname": null,
           "canonical_org": null,
           "role_hint_current": "unknown",
           "element_kind": "unknown",
           "ip_scope": "private",
-          "score": 0.17120200905808047,
-          "distance": 0.8287979909419195
-        },
-        {
-          "element_id": "network-element-private-12fccf0c3e70a3e6cdad4324415e7e624c9d1ea9a2d59eced7e52de7f997200e",
-          "canonical_label": "private:public_home_page:6:12fccf0c3e70",
-          "canonical_ip": null,
-          "canonical_hostname": null,
-          "canonical_org": null,
-          "role_hint_current": "unknown",
-          "element_kind": "unknown",
-          "ip_scope": "private",
-          "score": 0.17114243471573976,
-          "distance": 0.8288575652842602
+          "score": 0.2658366997302315,
+          "distance": 0.7341633002697685
         }
       ],
       "matched_expectations": {
-        "element_ids": [],
+        "element_ids": [
+          "network-element-google-com"
+        ],
         "labels": [
+          "network-element-google-com",
           "network-element-private-316352014af1021ffe146d48ca41598e97b69078be3f83c0fe44f3aa541c82ad",
-          "network-element-private-5ba94f953381adcab3c590db351bef18fbcaca4406df8aa27e1c43258e68e7bb",
-          "network-element-private-bddfd0b694656c19477775be628d8cce892af43b27dec0bcdea57b4ebebc4029",
-          "network-element-private-4945e1d83c09a927bb2c78a5b5ed5a42d048d37d6d9e06ff510c65308b30281c",
-          "network-element-private-12fccf0c3e70a3e6cdad4324415e7e624c9d1ea9a2d59eced7e52de7f997200e"
+          "network-element-private-4933ed6d0b1a178122f167355cf9bfb31ddd3c2cfaad6a9fd74655d89a6025b1",
+          "network-element-private-351ededb3ab4a698ed1adc70fc72691933295480663fc816724a1cab6d8acf43",
+          "network-element-private-62bb8aa57d5fbde1d52936c314a7993e372bf79fe6e90004241a1c1845ee8976"
         ],
         "categories": [
           "network-element-private-316352014af1021ffe146d48ca41598e97b69078be3f83c0fe44f3aa541c82ad",
-          "network-element-private-5ba94f953381adcab3c590db351bef18fbcaca4406df8aa27e1c43258e68e7bb",
-          "network-element-private-bddfd0b694656c19477775be628d8cce892af43b27dec0bcdea57b4ebebc4029",
-          "network-element-private-4945e1d83c09a927bb2c78a5b5ed5a42d048d37d6d9e06ff510c65308b30281c",
-          "network-element-private-12fccf0c3e70a3e6cdad4324415e7e624c9d1ea9a2d59eced7e52de7f997200e"
+          "network-element-private-4933ed6d0b1a178122f167355cf9bfb31ddd3c2cfaad6a9fd74655d89a6025b1",
+          "network-element-private-351ededb3ab4a698ed1adc70fc72691933295480663fc816724a1cab6d8acf43",
+          "network-element-private-62bb8aa57d5fbde1d52936c314a7993e372bf79fe6e90004241a1c1845ee8976"
         ]
       },
       "notes": "Caso combinado: marca pública e região privada na mesma consulta."

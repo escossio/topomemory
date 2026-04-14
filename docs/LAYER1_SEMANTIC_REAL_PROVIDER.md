@@ -31,8 +31,15 @@ O provider real mantém:
 ## Falha controlada
 
 Se `OPENAI_API_KEY` não estiver configurada, a inicialização falha de forma explícita.
-Nesta rodada a chave foi encontrada e carregada com sucesso, mas a conta retornou `insufficient_quota` ao tentar gerar embeddings.
+Nesta rodada a chave foi encontrada e carregada com sucesso, o provider foi ativado, 40 elementos foram reindexados e o benchmark fixo foi reexecutado.
 Não há fallback silencioso para outro motor.
+
+## Resultado observado
+
+- hit_rate agregado: `0.6666666666666666`
+- mean_first_hit_position: `1`
+- `q12_private_hop_google`: `pass`
+- leitura operacional: o provider real melhorou o caso combinado `q12`, mas piorou a estabilidade global em relação ao baseline hash
 
 ## Reindexação
 

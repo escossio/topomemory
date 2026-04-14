@@ -68,6 +68,13 @@ python3 src/evaluate_semantic_search.py \
 - a avaliação não muda a identidade determinística
 - a avaliação não usa LLM externo
 
+## Rodada atual
+
+- provider executado: `openai`
+- modelo executado: `text-embedding-3-small`
+- hit_rate observado: `0.6666666666666666`
+- `q12_private_hop_google`: `pass`
+
 ## Leitura esperada
 
 Este benchmark deve ser usado como referência comparativa para futuros motores mais fortes, mantendo o mesmo dataset e a mesma metodologia sempre que possível.
