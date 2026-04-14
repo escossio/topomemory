@@ -42,6 +42,22 @@ Quando nenhuma variável é definida, o sistema mantém o comportamento atual co
 - provider: `hash`
 - modelo: `topomemory-hash-embedding-v1`
 
+## Provider real
+
+O provider real desta árvore é `openai`.
+
+Ele usa a API de embeddings da OpenAI por meio do SDK Python instalado no ambiente.
+
+Variáveis esperadas:
+
+- `OPENAI_API_KEY` obrigatório
+- `OPENAI_BASE_URL` opcional
+- `TOPOMEMORY_EMBEDDING_MODEL` opcional, com padrão `text-embedding-3-small`
+
+Para manter o contrato da tabela semântica, a chamada solicita `dimensions=128`, preservando o tamanho do vetor já adotado na tabela `topomemory.network_element_semantic`.
+
+Quando `OPENAI_API_KEY` estiver ausente, a inicialização falha de forma explícita e não tenta fallback silencioso.
+
 ## Provider hash
 
 O `HashEmbeddingProvider` encapsula o comportamento atual.
@@ -92,4 +108,3 @@ O provider semântico:
 - não muda auditoria
 - não muda `identity_decision`
 - não muda `network_element`
-

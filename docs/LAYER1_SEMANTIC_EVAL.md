@@ -62,6 +62,7 @@ python3 src/evaluate_semantic_search.py \
 
 - o embedding atual é lexical-hash determinístico
 - o provider ativo padrão é hash e permanece local
+- um provider real `openai` pode ser ativado via `TOPOMEMORY_EMBEDDING_PROVIDER=openai` quando `OPENAI_API_KEY` estiver configurada
 - a qualidade semântica ainda depende fortemente de termos literais presentes no perfil
 - a avaliação não mede recall geral do banco
 - a avaliação não muda a identidade determinística

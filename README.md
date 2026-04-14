@@ -52,6 +52,7 @@ Ela também tem uma superfície analítica de comparação entre runs para enxer
 - [Baseline semântico auxiliar da Camada 1](/docs/LAYER1_SEMANTIC_BASELINE.md)
 - [Avaliação da busca semântica da Camada 1](/docs/LAYER1_SEMANTIC_EVAL.md)
 - [Arquitetura de provider semântico](/docs/LAYER1_SEMANTIC_PROVIDER_ARCH.md)
+- [Provider real da camada semântica](/docs/LAYER1_SEMANTIC_REAL_PROVIDER.md)
 - [Troca de motor semântico](/docs/LAYER1_SEMANTIC_MOTOR_CHANGE.md)
 - [Contrato do run](/docs/RUN_CONTRACT.md)
 - [Ingestion bundle](/docs/INGESTION_BUNDLE.md)

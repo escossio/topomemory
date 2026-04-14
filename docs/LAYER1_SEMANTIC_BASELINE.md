@@ -42,6 +42,7 @@ Campos principais:
 - seleção por ambiente: `TOPOMEMORY_EMBEDDING_PROVIDER`
 - modelo por ambiente: `TOPOMEMORY_EMBEDDING_MODEL`
 - provider externo futuro: documentado em [LAYER1_SEMANTIC_PROVIDER_ARCH.md](/docs/LAYER1_SEMANTIC_PROVIDER_ARCH.md)
+- provider real disponível: `openai`, documentado em [LAYER1_SEMANTIC_REAL_PROVIDER.md](/docs/LAYER1_SEMANTIC_REAL_PROVIDER.md)
 
 Este modelo foi escolhido porque:
 
