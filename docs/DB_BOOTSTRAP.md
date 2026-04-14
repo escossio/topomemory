@@ -10,6 +10,7 @@
 
 1. Aplicar a migration baseline: [sql/migrations/001_layer0_initial.up.sql](/sql/migrations/001_layer0_initial.up.sql)
 2. Aplicar a seed mínima do collector: [sql/seeds/001_collector_vm_10.45.0.4.sql](/sql/seeds/001_collector_vm_10.45.0.4.sql)
+3. Aplicar os GRANTs mínimos da Camada 0: [sql/001_layer0_minimum_grants.sql](/sql/001_layer0_minimum_grants.sql)
 
 ## Baseline
 
@@ -32,6 +33,17 @@ A seed mínima registra o collector oficial inicial da Camada 0:
 - `network_context` com a identificação operacional básica
 - `is_active = true`
 
+## GRANTs mínimos
+
+O role de ingestão usa o mínimo necessário para persistir a coleta real:
+
+- `USAGE` no schema `topomemory`
+- `SELECT`, `INSERT`, `UPDATE`, `DELETE` nas tabelas `topomemory.collector`, `topomemory.run`, `topomemory.run_artifact` e `topomemory.ingestion_bundle`
+
+O arquivo oficial é:
+
+- [sql/001_layer0_minimum_grants.sql](/sql/001_layer0_minimum_grants.sql)
+
 ## Observação sobre escopo lógico
 
 O bootstrap funciona tanto em:
@@ -52,3 +64,4 @@ A migration versionada oficial é [sql/migrations/001_layer0_initial.up.sql](/sq
 - Não há framework de migration.
 - Não há seed adicional além do collector oficial inicial.
 - Não há pipeline de coleta usando essas tabelas ainda.
+- A conexão operacional inicial da VM usa túnel SSH reverso enquanto o PostgreSQL permanecer escutando apenas em `127.0.0.1`.

@@ -37,6 +37,7 @@ Fase de bootstrap arquitetural. A Camada 0 já tem schema conceitual persistíve
 - [Schema conceitual da Camada 0](/docs/COLLECTION_SCHEMA_CONCEPT.md)
 - [Notas do SQL inicial da Camada 0](/docs/LAYER0_SQL_NOTES.md)
 - [Bootstrap do banco](/docs/DB_BOOTSTRAP.md)
+- [Bootstrap operacional da Camada 0](/docs/LAYER0_OPERATIONAL_BOOTSTRAP.md)
 - [Ingestão mínima da Camada 0](/docs/LAYER0_INGESTION.md)
 - [Contrato do run](/docs/RUN_CONTRACT.md)
 - [Ingestion bundle](/docs/INGESTION_BUNDLE.md)

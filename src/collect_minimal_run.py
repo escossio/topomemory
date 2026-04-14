@@ -542,7 +542,7 @@ def main() -> int:
     parser.add_argument("--bundle-version", default=DEFAULT_BUNDLE_VERSION)
     parser.add_argument("--bundle-id", default=None)
     parser.add_argument("--run-base-dir", default="runs")
-    parser.add_argument("--database-url", default=DEFAULT_DATABASE_URL)
+    parser.add_argument("--database-url", default=os.environ.get("DATABASE_URL", DEFAULT_DATABASE_URL))
     parser.add_argument("--skip-ingest", action="store_true")
     args = parser.parse_args()
 

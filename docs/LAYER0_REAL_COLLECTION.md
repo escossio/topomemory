@@ -20,6 +20,7 @@ Esta rodada prova a primeira coleta real mínima da Camada 0 usando a origem ofi
 ## Script de coleta
 
 - `src/collect_minimal_run.py`
+- `scripts/run_layer0_remote.sh`
 
 O script:
 
@@ -33,6 +34,7 @@ O script:
 - faz fallback de DNS quando `dig` não existir no host
 - repassa `DATABASE_URL` explicitamente para o CLI de ingestão mesmo fora de `root`
 - chama `src/ingest_run_bundle.py` ao final, salvo `--skip-ingest`
+- pode ser executado por `scripts/run_layer0_remote.sh` para envio controlado ao host oficial
 
 ## Como rodar
 
@@ -53,9 +55,10 @@ Fluxo mínimo validado:
 
 - acesso canônico por `ssh -i /lab/projects/livecopilot/lab/vms/livecopilot-validation/admin_sshkey codex@10.45.0.4`
 - pasta temporária limpa na VM: `/tmp/topomemory-runner`
-- cópia mínima usada na VM:
+- envio mínimo usado na VM:
   - `src/collect_minimal_run.py`
   - `src/ingest_run_bundle.py`
+  - via `tar` controlado por `scripts/run_layer0_remote.sh`
 - alvo mantido em `example.com`
 - cenário mantido em `home_page`
 
@@ -105,6 +108,12 @@ O CLI persiste:
 - `topomemory.run`
 - `topomemory.run_artifact`
 - `topomemory.ingestion_bundle`
+
+## Bootstrap operacional
+
+O procedimento formal do fluxo endurecido está em:
+
+- [docs/LAYER0_OPERATIONAL_BOOTSTRAP.md](/docs/LAYER0_OPERATIONAL_BOOTSTRAP.md)
 
 ## Validação no banco
 
