@@ -111,7 +111,7 @@ CREATE TABLE ingestion_bundle (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT bundle_id_not_blank CHECK (btrim(bundle_id) <> ''),
   CONSTRAINT bundle_version_not_blank CHECK (btrim(bundle_version) <> ''),
-  CONSTRAINT ingestion_confidence_valid CHECK (ingestion_confidence IN ('high', 'medium', 'low', 'rejected')),
+  CONSTRAINT ingestion_confidence_valid CHECK (ingestion_confidence IN ('minimal', 'complete', 'rejected')),
   CONSTRAINT run_context_json_is_object CHECK (jsonb_typeof(run_context_json) = 'object'),
   CONSTRAINT observed_elements_json_is_array CHECK (jsonb_typeof(observed_elements_json) = 'array'),
   CONSTRAINT observed_relations_json_is_array CHECK (jsonb_typeof(observed_relations_json) = 'array'),
