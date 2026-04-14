@@ -23,6 +23,7 @@ O foco é consolidar observações públicas em `network_element` por regras det
 - se a observação pública não tiver IP canônico, hostname/PTR pode formar uma identidade canônica própria de forma determinística quando o nome passar pela normalização conservadora
 - hostname, ASN e org podem reforçar a leitura de um IP já consolidado, mas não criam merge por si só
 - hostname/PTR não substitui `canonical_ip` quando o IP público existir
+- se a observação for privada, a identidade passa a depender de vizinhança e posição local no bundle/run, conforme a regra detalhada em [LAYER1_IDENTITY_PRIVATE_RULE.md](/docs/LAYER1_IDENTITY_PRIVATE_RULE.md)
 
 ## Escopo de `network_element`
 
@@ -58,11 +59,13 @@ Tipos de decisão nesta rodada:
 - `skipped_no_public_ip`
 - `skipped_hostname_weak`
 - `skipped_hostname_conflict`
+- `skipped_private_insufficient_context`
+- `skipped_private_conflict`
 
 ## Por que IP privado não entra ainda
 
-Os IPs privados aparecem como parte da rota, mas esta rodada não quer misturar alcance interno com identidade canônica pública.
-A decisão conservadora reduz risco de fusão errada e deixa a regra privada para uma etapa posterior, com mais contexto.
+Os IPs privados aparecem como parte da rota e agora podem entrar apenas por regra determinística local, usando a vizinhança do bundle/run e a posição observada.
+A decisão conservadora continua evitando merge por IP puro e deixa as situações sem contexto ou ambíguas para `skipped_private_insufficient_context` e `skipped_private_conflict`.
 
 ## Limitações conhecidas
 
@@ -71,8 +74,8 @@ A decisão conservadora reduz risco de fusão errada e deixa a regra privada par
 - não existe `pgvector`
 - não existe merge por equivalência textual ampla
 - não existe grafo operacional aberto a partir desta consolidação
-
-Veja a regra complementar detalhada em [LAYER1_IDENTITY_HOSTNAME_RULE.md](/docs/LAYER1_IDENTITY_HOSTNAME_RULE.md).
+- veja a regra complementar de hostname/PTR em [LAYER1_IDENTITY_HOSTNAME_RULE.md](/docs/LAYER1_IDENTITY_HOSTNAME_RULE.md)
+- veja a regra complementar de IP privado em [LAYER1_IDENTITY_PRIVATE_RULE.md](/docs/LAYER1_IDENTITY_PRIVATE_RULE.md)
 
 ## Próximos passos prováveis
 

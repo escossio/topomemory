@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import ipaddress
 import json
 import os
@@ -43,6 +44,8 @@ class ObservedElement:
     observed_ip: str | None
     observed_hostname: str | None
     observed_ptr: str | None
+    hop_index: int | None
+    service_context: str | None
     observed_asn: str | None
     observed_org: str | None
     source_type: str
@@ -52,6 +55,17 @@ class ObservedElement:
     target_value: str
     service_hint: str
     scenario: str
+
+
+@dataclass(frozen=True)
+class ObservedRelation:
+    run_id: str
+    relation_index: int
+    from_element_index: int
+    to_element_index: int
+    relation_type: str
+    relation_order: int
+    confidence_hint: float | None
 
 
 def parse_timestamp(value: str, field_name: str) -> datetime:
@@ -105,6 +119,8 @@ def load_observed_elements(conn: psycopg.Connection[Any], args: argparse.Namespa
               oe.observed_ip,
               oe.observed_hostname,
               oe.observed_ptr,
+              oe.hop_index,
+              oe.service_context,
               oe.observed_asn,
               oe.observed_org,
               oe.source_type,
@@ -133,6 +149,8 @@ def load_observed_elements(conn: psycopg.Connection[Any], args: argparse.Namespa
             observed_ip,
             observed_hostname,
             observed_ptr,
+            hop_index,
+            service_context,
             observed_asn,
             observed_org,
             source_type,
@@ -152,6 +170,8 @@ def load_observed_elements(conn: psycopg.Connection[Any], args: argparse.Namespa
                 observed_ip=observed_ip,
                 observed_hostname=observed_hostname,
                 observed_ptr=observed_ptr,
+                hop_index=hop_index,
+                service_context=service_context,
                 observed_asn=observed_asn,
                 observed_org=observed_org,
                 source_type=source_type,
@@ -165,6 +185,52 @@ def load_observed_elements(conn: psycopg.Connection[Any], args: argparse.Namespa
         )
 
     return result
+
+
+def load_observed_relations(conn: psycopg.Connection[Any], args: argparse.Namespace) -> list[ObservedRelation]:
+    where_clause = ""
+    params: tuple[Any, ...] = ()
+
+    if args.run_id:
+        where_clause = "orl.run_id = %s"
+        params = (args.run_id,)
+    elif args.bundle_id:
+        where_clause = "orl.bundle_id = %s"
+        params = (args.bundle_id,)
+    else:
+        where_clause = "NOT EXISTS (SELECT 1 FROM topomemory.identity_decision id WHERE id.run_id = orl.run_id)"
+
+    with conn.cursor() as cur:
+        cur.execute(
+            f"""
+            SELECT
+              orl.run_id,
+              orl.relation_index,
+              orl.from_element_index,
+              orl.to_element_index,
+              orl.relation_type,
+              orl.relation_order,
+              orl.confidence_hint
+            FROM topomemory.observed_relation orl
+            WHERE {where_clause}
+            ORDER BY orl.run_id, orl.relation_index
+            """,
+            params,
+        )
+        rows = cur.fetchall()
+
+    return [
+        ObservedRelation(
+            run_id=row[0],
+            relation_index=row[1],
+            from_element_index=row[2],
+            to_element_index=row[3],
+            relation_type=row[4],
+            relation_order=row[5],
+            confidence_hint=row[6],
+        )
+        for row in rows
+    ]
 
 
 def normalize_text(value: str | None) -> str | None:
@@ -215,6 +281,13 @@ def preferred_hostname(element: ObservedElement) -> tuple[str | None, str | None
     if normalized_hostname or normalized_ptr:
         return None, "hostname_weak"
     return None, None
+
+
+def normalized_service_context(element: ObservedElement) -> str | None:
+    candidate = normalize_text(element.service_context)
+    if candidate is not None:
+        return candidate
+    return normalize_text(element.service_hint)
 
 
 def extract_ip_value(value: str | None) -> str | None:
@@ -316,6 +389,117 @@ def numeric3(value: Any) -> str:
     return f"{value:.3f}"
 
 
+def public_identity_key_for_element(element: ObservedElement) -> str:
+    candidate_ip = extract_ip_value(element.observed_ip)
+    if candidate_ip and is_public_ip(candidate_ip):
+        return f"ip:{candidate_ip}"
+
+    hostname, _ = preferred_hostname(element)
+    if hostname is not None:
+        return f"host:{hostname}"
+
+    return f"idx:{element.run_id}:{element.element_index}"
+
+
+def element_identity_key(value: str) -> str:
+    digest = hashlib.sha256(value.encode("utf-8")).hexdigest()
+    return digest
+
+
+def private_identity_key_for_element(
+    element: ObservedElement,
+    previous_neighbor_key: str | None,
+    next_neighbor_key: str | None,
+) -> str | None:
+    candidate_ip = extract_ip_value(element.observed_ip)
+    if candidate_ip is None:
+        return None
+    try:
+        ip = ipaddress.ip_address(candidate_ip)
+    except ValueError:
+        return None
+    if not (
+        ip.is_private
+        or ip.is_loopback
+        or ip.is_link_local
+        or ip.is_multicast
+        or ip.is_reserved
+        or ip.is_unspecified
+        or ip.is_global is False
+    ):
+        return None
+
+    service_context = normalized_service_context(element)
+    hop_index = element.hop_index
+    if service_context is None or hop_index is None:
+        return None
+    if previous_neighbor_key is None and next_neighbor_key is None:
+        return None
+
+    parts = [
+        candidate_ip,
+        str(hop_index),
+        previous_neighbor_key or "missing-prev",
+        next_neighbor_key or "missing-next",
+        service_context,
+    ]
+    return element_identity_key("|".join(parts))
+
+
+def build_bundle_index(elements: list[ObservedElement]) -> dict[tuple[str, int], ObservedElement]:
+    return {(element.run_id, element.element_index): element for element in elements}
+
+
+def build_relation_neighbors(relations: list[ObservedRelation]) -> dict[str, dict[int, dict[str, list[int]]]]:
+    result: dict[str, dict[int, dict[str, list[int]]]] = {}
+    for relation in relations:
+        run_map = result.setdefault(relation.run_id, {})
+        from_bucket = run_map.setdefault(relation.from_element_index, {"prev": [], "next": []})
+        to_bucket = run_map.setdefault(relation.to_element_index, {"prev": [], "next": []})
+        if relation.relation_type == "precedes":
+            from_bucket["next"].append(relation.to_element_index)
+            to_bucket["prev"].append(relation.from_element_index)
+    return result
+
+
+def select_single_candidate(candidates: list[int]) -> int | None | str:
+    unique_candidates = sorted(set(candidates))
+    if not unique_candidates:
+        return None
+    if len(unique_candidates) > 1:
+        return "conflict"
+    return unique_candidates[0]
+
+
+def resolve_neighbor_key(
+    *,
+    current: ObservedElement,
+    direction: str,
+    bundle_index: dict[tuple[str, int], ObservedElement],
+    relation_neighbors: dict[str, dict[int, dict[str, list[int]]]],
+) -> str | None | str:
+    relation_bucket = relation_neighbors.get(current.run_id, {}).get(current.element_index, {})
+    candidate_indexes = relation_bucket.get(direction, [])
+    chosen_index = select_single_candidate(candidate_indexes)
+    if chosen_index == "conflict":
+        return "conflict"
+    if isinstance(chosen_index, int):
+        neighbor = bundle_index.get((current.run_id, chosen_index))
+        if neighbor is not None:
+            return public_identity_key_for_element(neighbor)
+
+    fallback_index = current.element_index - 1 if direction == "prev" else current.element_index + 1
+    fallback = bundle_index.get((current.run_id, fallback_index))
+    if fallback is None:
+        return None
+    return public_identity_key_for_element(fallback)
+
+
+def private_canonical_label(element: ObservedElement, private_key: str) -> str:
+    hop = element.hop_index if element.hop_index is not None else "na"
+    return f"private:{element.service_context or element.service_hint}:{hop}:{private_key[:12]}"
+
+
 def load_network_element_by_ip(conn: psycopg.Connection[Any], canonical_ip: str) -> dict[str, Any] | None:
     with conn.cursor() as cur:
         cur.execute(
@@ -338,6 +522,51 @@ def load_network_element_by_ip(conn: psycopg.Connection[Any], canonical_ip: str)
             WHERE canonical_ip = %s
             """,
             (canonical_ip,),
+        )
+        row = cur.fetchone()
+
+    if row is None:
+        return None
+
+    return {
+        "element_id": row[0],
+        "canonical_label": row[1],
+        "element_kind": row[2],
+        "ip_scope": row[3],
+        "canonical_ip": row[4],
+        "canonical_hostname": row[5],
+        "canonical_asn": row[6],
+        "canonical_org": row[7],
+        "confidence_current": row[8],
+        "role_hint_current": row[9],
+        "first_seen_at": row[10],
+        "last_seen_at": row[11],
+        "is_active": row[12],
+    }
+
+
+def load_network_element_by_element_id(conn: psycopg.Connection[Any], element_id: str) -> dict[str, Any] | None:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT
+              element_id,
+              canonical_label,
+              element_kind,
+              ip_scope,
+              canonical_ip,
+              canonical_hostname,
+              canonical_asn,
+              canonical_org,
+              confidence_current,
+              role_hint_current,
+              first_seen_at,
+              last_seen_at,
+              is_active
+            FROM topomemory.network_element
+            WHERE element_id = %s
+            """,
+            (element_id,),
         )
         row = cur.fetchone()
 
@@ -430,6 +659,8 @@ def upsert_network_element(
         existing = load_network_element_by_ip(conn, canonical_ip)
     elif canonical_hostname is not None:
         existing = load_network_element_by_hostname(conn, canonical_hostname)
+    else:
+        existing = load_network_element_by_element_id(conn, element_id)
 
     desired = {
         "element_id": element_id,
@@ -572,8 +803,14 @@ def load_decision_by_observed_element_id(
 
 def upsert_decision(conn: psycopg.Connection[Any], payload: dict[str, Any]) -> None:
     existing = load_decision_by_observed_element_id(conn, payload["observed_element_id"])
+    updatable_legacy_types = {
+        "skipped_private_scope",
+        "skipped_no_public_ip",
+        "skipped_hostname_weak",
+        "skipped_hostname_conflict",
+    }
     if existing is not None:
-        if existing["decision_type"] != "skipped_no_public_ip":
+        if existing["decision_type"] not in updatable_legacy_types:
             return
         if (
             existing["decision_type"] == payload["decision_type"]
@@ -633,7 +870,173 @@ def upsert_decision(conn: psycopg.Connection[Any], payload: dict[str, Any]) -> N
         )
 
 
-def consolidate(conn: psycopg.Connection[Any], elements: list[ObservedElement]) -> dict[str, int]:
+def handle_private_observation(
+    conn: psycopg.Connection[Any],
+    *,
+    element: ObservedElement,
+    decided_at: datetime,
+    bundle_index: dict[tuple[str, int], ObservedElement],
+    relation_neighbors: dict[str, dict[int, dict[str, list[int]]]],
+    counters: dict[str, int],
+) -> None:
+    normalized_hostname = normalize_text(element.observed_hostname)
+    normalized_ptr = normalize_text(element.observed_ptr)
+    service_context = normalized_service_context(element)
+
+    previous_neighbor_key = resolve_neighbor_key(
+        current=element,
+        direction="prev",
+        bundle_index=bundle_index,
+        relation_neighbors=relation_neighbors,
+    )
+    next_neighbor_key = resolve_neighbor_key(
+        current=element,
+        direction="next",
+        bundle_index=bundle_index,
+        relation_neighbors=relation_neighbors,
+    )
+
+    if previous_neighbor_key == "conflict" or next_neighbor_key == "conflict":
+        counters["private_skipped_conflict"] += 1
+        decision_type = "skipped_private_conflict"
+        reasoning_summary = "vizinhança privada ambígua no bundle; a consolidação foi adiada para evitar colisão entre contextos."
+        decision_payload = {
+            "identity_decision_id": f"iddec-{element.observed_element_id}",
+            "observed_element_id": element.observed_element_id,
+            "run_id": element.run_id,
+            "bundle_id": element.bundle_id,
+            "decision_type": decision_type,
+            "matched_element_id": None,
+            "new_element_id": None,
+            "confidence": confidence_for(decision_type),
+            "reasoning_summary": reasoning_summary,
+            "evidence_json": {
+                "observed_ip": element.observed_ip,
+                "observed_hostname": normalized_hostname,
+                "observed_ptr": normalized_ptr,
+                "service_context": service_context,
+                "hop_index": element.hop_index,
+                "previous_neighbor_key": None if previous_neighbor_key == "conflict" else previous_neighbor_key,
+                "next_neighbor_key": None if next_neighbor_key == "conflict" else next_neighbor_key,
+                "source_type": element.source_type,
+                "scope": "private",
+                "rule": "private_neighbor_conflict",
+            },
+            "decided_at": decided_at,
+        }
+        upsert_decision(conn, decision_payload)
+        return
+
+    private_key = private_identity_key_for_element(
+        element,
+        previous_neighbor_key=previous_neighbor_key if isinstance(previous_neighbor_key, str) else None,
+        next_neighbor_key=next_neighbor_key if isinstance(next_neighbor_key, str) else None,
+    )
+    if private_key is None:
+        counters["private_skipped_insufficient_context"] += 1
+        decision_type = "skipped_private_insufficient_context"
+        reasoning_summary = "observação privada sem contexto local suficiente para uma assinatura determinística conservadora."
+        decision_payload = {
+            "identity_decision_id": f"iddec-{element.observed_element_id}",
+            "observed_element_id": element.observed_element_id,
+            "run_id": element.run_id,
+            "bundle_id": element.bundle_id,
+            "decision_type": decision_type,
+            "matched_element_id": None,
+            "new_element_id": None,
+            "confidence": confidence_for(decision_type),
+            "reasoning_summary": reasoning_summary,
+            "evidence_json": {
+                "observed_ip": element.observed_ip,
+                "observed_hostname": normalized_hostname,
+                "observed_ptr": normalized_ptr,
+                "service_context": service_context,
+                "hop_index": element.hop_index,
+                "previous_neighbor_key": previous_neighbor_key,
+                "next_neighbor_key": next_neighbor_key,
+                "source_type": element.source_type,
+                "scope": "private",
+                "rule": "private_context_insufficient",
+            },
+            "decided_at": decided_at,
+        }
+        upsert_decision(conn, decision_payload)
+        return
+
+    element_id = f"network-element-private-{private_key}"
+    existing = load_network_element_by_element_id(conn, element_id)
+    canonical_label = private_canonical_label(element, private_key)
+    element_kind = element_kind_for(element, "private")
+    role_hint_current = role_hint_for(element)
+    confidence = confidence_for("matched_existing_entity" if existing else "new_entity_created")
+
+    if existing:
+        counters["private_matched"] += 1
+        counters["private_consolidated"] += 1
+        decision_type = "matched_existing_entity"
+        reasoning_summary = "observação privada combinou com assinatura local determinística já consolidada; identidade reforçada sem merge semântico."
+        matched_element_id = existing["element_id"]
+        new_element_id = None
+        first_seen_at = existing["first_seen_at"]
+    else:
+        counters["private_new"] += 1
+        counters["private_consolidated"] += 1
+        decision_type = "new_entity_created"
+        reasoning_summary = "observação privada recebeu assinatura local determinística suficiente para criar identidade canônica restrita ao contexto."
+        matched_element_id = None
+        new_element_id = element_id
+        first_seen_at = element.observed_at
+
+    upsert_network_element(
+        conn,
+        element_id=element_id,
+        canonical_label=canonical_label,
+        element_kind=element_kind,
+        ip_scope="private",
+        canonical_ip=None,
+        canonical_hostname=None,
+        canonical_asn=None,
+        canonical_org=None,
+        confidence_current=confidence,
+        role_hint_current=role_hint_current,
+        first_seen_at=first_seen_at,
+        last_seen_at=element.observed_at,
+    )
+
+    decision_payload = {
+        "identity_decision_id": f"iddec-{element.observed_element_id}",
+        "observed_element_id": element.observed_element_id,
+        "run_id": element.run_id,
+        "bundle_id": element.bundle_id,
+        "decision_type": decision_type,
+        "matched_element_id": matched_element_id,
+        "new_element_id": new_element_id,
+        "confidence": confidence,
+        "reasoning_summary": reasoning_summary,
+        "evidence_json": {
+            "observed_ip": element.observed_ip,
+            "private_identity_key": private_key,
+            "observed_hostname": normalized_hostname,
+            "observed_ptr": normalized_ptr,
+            "service_context": service_context,
+            "hop_index": element.hop_index,
+            "previous_neighbor_key": previous_neighbor_key,
+            "next_neighbor_key": next_neighbor_key,
+            "source_type": element.source_type,
+            "scope": "private",
+            "rule": "private_neighbor_position_signature",
+            "matched_existing": existing is not None,
+        },
+        "decided_at": decided_at,
+    }
+    upsert_decision(conn, decision_payload)
+
+
+def consolidate(
+    conn: psycopg.Connection[Any],
+    elements: list[ObservedElement],
+    relations: list[ObservedRelation],
+) -> dict[str, int]:
     counters = {
         "observed_elements": 0,
         "public_ip_consolidated": 0,
@@ -644,9 +1047,15 @@ def consolidate(conn: psycopg.Connection[Any], elements: list[ObservedElement]) 
         "hostname_new": 0,
         "hostname_skipped_weak": 0,
         "hostname_skipped_conflict": 0,
-        "private_skipped": 0,
-        "hostname_deferred": 0,
+        "private_consolidated": 0,
+        "private_matched": 0,
+        "private_new": 0,
+        "private_skipped_insufficient_context": 0,
+        "private_skipped_conflict": 0,
     }
+
+    bundle_index = build_bundle_index(elements)
+    relation_neighbors = build_relation_neighbors(relations)
 
     for element in elements:
         counters["observed_elements"] += 1
@@ -657,29 +1066,14 @@ def consolidate(conn: psycopg.Connection[Any], elements: list[ObservedElement]) 
         selected_hostname, hostname_issue = preferred_hostname(element)
 
         if scope == "private":
-            counters["private_skipped"] += 1
-            decision_type = "skipped_private_scope"
-            reasoning_summary = "observação em escopo privado ou reservado; consolidação automática adiada para etapa posterior."
-            decision_payload = {
-                "identity_decision_id": f"iddec-{element.observed_element_id}",
-                "observed_element_id": element.observed_element_id,
-                "run_id": element.run_id,
-                "bundle_id": element.bundle_id,
-                "decision_type": decision_type,
-                "matched_element_id": None,
-                "new_element_id": None,
-                "confidence": confidence_for(decision_type),
-                "reasoning_summary": reasoning_summary,
-                "evidence_json": {
-                    "observed_ip": element.observed_ip,
-                    "observed_hostname": normalized_hostname,
-                    "source_type": element.source_type,
-                    "scope": scope,
-                    "rule": "private_scope_skipped",
-                },
-                "decided_at": decided_at,
-            }
-            upsert_decision(conn, decision_payload)
+            handle_private_observation(
+                conn,
+                element=element,
+                decided_at=decided_at,
+                bundle_index=bundle_index,
+                relation_neighbors=relation_neighbors,
+                counters=counters,
+            )
             continue
 
         canonical_ip = extract_ip_value(element.observed_ip)
@@ -902,11 +1296,12 @@ def main() -> int:
 
     with db_connect(args.database_url) as conn:
         elements = load_observed_elements(conn, args)
+        relations = load_observed_relations(conn, args)
         if not elements:
             print(json.dumps({"status": "noop", "message": "nenhuma observed_element encontrada"}, ensure_ascii=False))
             return 0
 
-        summary = consolidate(conn, elements)
+        summary = consolidate(conn, elements, relations)
         conn.commit()
 
     print(json.dumps({"status": "ok", **summary}, ensure_ascii=False, default=str, indent=2))

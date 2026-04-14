@@ -74,6 +74,7 @@ Nesta rodada:
 - a correspondência determinística inicial usa `canonical_ip`
 - hostname/PTR pode formar uma identidade canônica complementar quando não houver IP canônico e o nome passar pela normalização conservadora
 - hostname/PTR não substitui a identidade por IP público quando o IP existir
+- IP privado pode formar identidade canônica apenas por vizinhança e posição local no bundle/run
 - a decisão fica registrada com evidência e motivo textual
 
 ## Observação
