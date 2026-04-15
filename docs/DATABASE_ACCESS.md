@@ -41,6 +41,28 @@ O `pg_hba.conf` precisa conter uma regra específica para o projeto:
 host    topomemory    topomemory_app    10.45.0.0/16    scram-sha-256
 ```
 
+## Acesso operacional do pgAdmin containerizado
+
+Quando o `pgAdmin` roda em container Docker no host do PostgreSQL, a origem TCP chega pela bridge local do Docker, e não pela rede `10.45.0.0/16`.
+
+No ambiente operacional desta frente, o container `pgadmin4` usa a rede:
+
+- subnet Docker: `172.18.0.0/16`
+- origem observada do container: `172.18.0.2`
+
+Para permitir o login do usuário operacional `leonardo` a partir desse `pgAdmin`, a regra mínima aplicada no `pg_hba.conf` é:
+
+```conf
+host    all    leonardo    172.18.0.0/16    scram-sha-256
+```
+
+Essa exceção é restrita:
+
+- ao usuário `leonardo`
+- à subnet Docker local `172.18.0.0/16`
+- sem uso de `0.0.0.0/0`
+- sem uso de `trust`
+
 ## Bootstrap lógico
 
 As etapas lógicas do banco do projeto são:
