@@ -73,10 +73,13 @@ python3 src/evaluate_semantic_search.py \
 - provider executado: `openai`
 - modelo executado: `text-embedding-3-small`
 - variante vencedora: `hybrid_private_page8_focus`
+- baseline ativo documentado: `hybrid_private_page8_focus`
 - hit_rate observado: `1.0`
 - `q10_private_node`: `pass`
 - `q12_private_hop_google`: `pass`
+- ciclo semântico desta frente encerrado com `12/12`
 
 ## Leitura esperada
 
 Este benchmark deve ser usado como referência comparativa para futuros motores mais fortes, mantendo o mesmo dataset e a mesma metodologia sempre que possível.
+O valor de referência oficial desta consolidação é `12/12`, com `hit_rate = 1.0`, sem qualquer mudança no dataset de avaliação.

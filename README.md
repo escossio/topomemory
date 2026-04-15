@@ -25,7 +25,7 @@ O projeto separa observação, memória, saúde, tempo, projeção e ação em c
 
 ## Status atual
 
-Fase de bootstrap arquitetural. A Camada 0 já tem coleta real mínima validada e opera com execução remota na VM `10.45.0.4` e persistência direta no PostgreSQL oficial `10.45.0.3:5432/topomemory` via `topomemory_app`, sem túnel SSH. A Camada 1 já normaliza `observed_elements` e `observed_relations` e tem o baseline mínimo documentado em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md). A identidade determinística segue como fonte da verdade; a frente semântica agora existe em tabela própria, como consulta auxiliar, sem merge automático, e o perfil vencedor atual é `hybrid_private_page8_focus` sobre `openai`.
+Fase de bootstrap arquitetural. A Camada 0 já tem coleta real mínima validada e opera com execução remota na VM `10.45.0.4` e persistência direta no PostgreSQL oficial `10.45.0.3:5432/topomemory` via `topomemory_app`, sem túnel SSH. A Camada 1 já normaliza `observed_elements` e `observed_relations` e tem o baseline mínimo documentado em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md). A identidade determinística segue como fonte da verdade; a frente semântica agora existe em tabela própria, como consulta auxiliar, sem merge automático, e o baseline ativo congelado nesta frente é `hybrid_private_page8_focus` sobre `openai`, com benchmark fixo `12/12` documentado em [LAYER1_SEMANTIC_HANDOFF.md](/docs/LAYER1_SEMANTIC_HANDOFF.md).
 
 Uma frente futura de enriquecimento BGP público também está documentada em [BGP_PUBLIC_ENRICHMENT.md](/docs/BGP_PUBLIC_ENRICHMENT.md), como apoio externo e não como fonte primária da verdade.
 
@@ -52,6 +52,7 @@ Ela também tem uma superfície analítica de comparação entre runs para enxer
 - [Baseline semântico auxiliar da Camada 1](/docs/LAYER1_SEMANTIC_BASELINE.md)
 - [Avaliação da busca semântica da Camada 1](/docs/LAYER1_SEMANTIC_EVAL.md)
 - [Tuning de perfis semânticos da Camada 1](/docs/LAYER1_SEMANTIC_PROFILE_TUNING.md)
+- [Handoff final da camada semântica](/docs/LAYER1_SEMANTIC_HANDOFF.md)
 - [Arquitetura de provider semântico](/docs/LAYER1_SEMANTIC_PROVIDER_ARCH.md)
 - [Provider real da camada semântica](/docs/LAYER1_SEMANTIC_REAL_PROVIDER.md)
 - [Troca de motor semântico](/docs/LAYER1_SEMANTIC_MOTOR_CHANGE.md)

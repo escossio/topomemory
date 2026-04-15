@@ -53,6 +53,12 @@ Melhor variante encontrada nesta rodada:
 - `changed_profiles = 1`
 - `embedded_elements = 1`
 
+Estado final congelado:
+
+- variante ativa: `hybrid_private_page8_focus`
+- baseline semântico ativo: `hybrid_private_page8_focus`
+- ciclo de tuning encerrado nesta frente
+
 ## Leitura operacional
 
 - `hybrid` ficou como controle: `11/12`, preservando `q03_hostname`, `q04_google_hostname`, `q11_private_route_element` e `q12_private_hop_google`, mas ainda falhando em `q10_private_node`.
@@ -65,3 +71,4 @@ Melhor variante encontrada nesta rodada:
 O problema residual não estava na identidade determinística nem no provider, e sim no alcance do reforço textual privado.
 Quando os perfis públicos ficam idênticos ao `hybrid`, o tuning localizado passa a funcionar sem contaminar hostname público.
 Para produção, `hybrid_private_page8_focus` continua preferível porque resolve `q10_private_node` com o menor impacto operacional possível.
+Nesta consolidação, essa variante passou a ser o baseline ativo e a frente não deve abrir nova rodada de ranking sem mudança explícita de escopo.

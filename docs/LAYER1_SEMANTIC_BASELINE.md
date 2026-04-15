@@ -45,6 +45,8 @@ Campos principais:
 - provider real disponível: `openai`, documentado em [LAYER1_SEMANTIC_REAL_PROVIDER.md](/docs/LAYER1_SEMANTIC_REAL_PROVIDER.md)
 - fonte operacional usada nesta rodada: `livecopilot-semantic-api.service` com `EnvironmentFile=/etc/livecopilot-semantic.env`
 - variante vencedora atual do tuning: `hybrid_private_page8_focus`, configurada por `TOPOMEMORY_SEMANTIC_PROFILE_VARIANT`
+- baseline ativo congelado nesta frente: `hybrid_private_page8_focus`
+- benchmark fixo oficial desta frente: `12/12`, `hit_rate = 1.0`
 - controle operacional atual para comparação focalizada: `hybrid`
 - resultado do controle `hybrid`: `11/12`, com falha residual em `q10_private_node`
 - resultado da vencedora focalizada: `12/12`, com reindexação de apenas `1` elemento privado
@@ -115,6 +117,7 @@ Saída mínima:
 
 Esta frente existe para recuperar contexto com rapidez e para preparar a evolução futura.
 Ela é útil para consulta e enriquecimento, mas continua subordinada ao baseline determinístico da Camada 1.
+O ciclo atual foi encerrado com `hybrid_private_page8_focus` como baseline ativo, sem reabrir tuning ou alterar a identidade canônica.
 
 ## Avaliação
 
