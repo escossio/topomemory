@@ -1,96 +1,347 @@
 {
+  "round": "2026-04-15 private q10 focus",
   "baseline_hash": {
     "total_pass": 11,
     "total_fail": 1,
     "hit_rate": 0.9166666666666666,
+    "q03_hostname": "pass",
+    "q04_google_hostname": "pass",
     "q10_private_node": "fail",
+    "q11_private_route_element": "pass",
     "q12_private_hop_google": "pass"
   },
-  "baseline_openai_initial": {
-    "total_pass": 8,
-    "total_fail": 4,
-    "hit_rate": 0.6666666666666666,
-    "q03_hostname": "fail",
-    "q04_google_hostname": "fail",
-    "q10_private_node": "fail",
-    "q11_private_route_element": "fail",
-    "q12_private_hop_google": "pass"
+  "baseline_openai_hybrid": {
+    "variant": "hybrid",
+    "changed_profiles": 0,
+    "indexed_elements": 40,
+    "private_elements": 32,
+    "focused_private_elements": 0,
+    "embedded_elements": 0,
+    "summary": {
+      "queries_file": "schemas/semantic_eval_queries.json",
+      "limit": 5,
+      "profile_variant": "hybrid",
+      "embedding_provider": "openai",
+      "embedding_model": "text-embedding-3-small",
+      "total_queries": 12,
+      "total_pass": 11,
+      "total_fail": 1,
+      "hit_rate": 0.9166666666666666,
+      "mean_first_hit_position": 1.0909090909090908
+    },
+    "spotlight": {
+      "q03_hostname": {
+        "pass": true,
+        "first_hit_position": 1,
+        "top1": "network-element-example-com",
+        "topk": [
+          "network-element-example-com",
+          "network-element-2606-4700-10-6814-179a",
+          "network-element-2606-4700-10-ac42-93f3",
+          "network-element-104-20-23-154",
+          "network-element-172-66-147-243"
+        ]
+      },
+      "q04_google_hostname": {
+        "pass": true,
+        "first_hit_position": 1,
+        "top1": "network-element-google-com",
+        "topk": [
+          "network-element-google-com",
+          "network-element-2800-3f0-4004-816-200e",
+          "network-element-example-com",
+          "network-element-2606-4700-10-6814-179a",
+          "network-element-2606-4700-10-ac42-93f3"
+        ]
+      },
+      "q10_private_node": {
+        "pass": false,
+        "first_hit_position": null,
+        "top1": "network-element-2606-4700-10-6814-179a",
+        "topk": [
+          "network-element-2606-4700-10-6814-179a",
+          "network-element-2606-4700-10-ac42-93f3",
+          "network-element-104-20-23-154",
+          "network-element-2800-3f0-4004-816-200e",
+          "network-element-172-217-172-14"
+        ]
+      },
+      "q11_private_route_element": {
+        "pass": true,
+        "first_hit_position": 2,
+        "top1": "network-element-example-com",
+        "topk": [
+          "network-element-example-com",
+          "network-element-private-d70b9c217705396f81b3f93e1ab46e94d9ede1fa1313ec668ff4389634bae23f",
+          "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
+          "network-element-private-55afc7506da5592137f56e42a9810de982b0437f3257140986173827ae2a56ce",
+          "network-element-private-bdef74789757bc3517d15b2e534025ec140fd6c37e9dbb5a333f4b544225b3da"
+        ]
+      },
+      "q12_private_hop_google": {
+        "pass": true,
+        "first_hit_position": 1,
+        "top1": "network-element-google-com",
+        "topk": [
+          "network-element-google-com",
+          "network-element-private-5ba94f953381adcab3c590db351bef18fbcaca4406df8aa27e1c43258e68e7bb",
+          "network-element-private-924fb7435fc86393014b7ca32e8071f6013ee4f2e069ca8889d7865a0b2b31ca",
+          "network-element-private-bddfd0b694656c19477775be628d8cce892af43b27dec0bcdea57b4ebebc4029",
+          "network-element-private-29aa95ada5a94b4b0c9c5efbd89c0f653b2fa6ef6e32fb2fddc501ce1098b4bc"
+        ]
+      }
+    }
   },
   "variants": [
     {
-      "variant": "control",
-      "total_pass": 8,
-      "total_fail": 4,
-      "hit_rate": 0.6666666666666666,
-      "q03_hostname": "fail",
-      "q04_google_hostname": "fail",
-      "q10_private_node": "fail",
-      "q11_private_route_element": "fail",
-      "q12_private_hop_google": "pass"
-    },
-    {
-      "variant": "hybrid",
-      "total_pass": 11,
-      "total_fail": 1,
-      "hit_rate": 0.9166666666666666,
-      "q03_hostname": "pass",
-      "q04_google_hostname": "pass",
-      "q10_private_node": "fail",
-      "q11_private_route_element": "pass",
-      "q12_private_hop_google": "pass"
-    },
-    {
       "variant": "hybrid_private_emphasis",
-      "total_pass": 11,
-      "total_fail": 1,
-      "hit_rate": 0.9166666666666666,
-      "q03_hostname": "pass",
-      "q04_google_hostname": "pass",
-      "q10_private_node": "fail",
-      "q11_private_route_element": "pass",
-      "q12_private_hop_google": "pass"
+      "changed_profiles": 32,
+      "indexed_elements": 40,
+      "private_elements": 32,
+      "focused_private_elements": 32,
+      "embedded_elements": 32,
+      "summary": {
+        "queries_file": "schemas/semantic_eval_queries.json",
+        "limit": 5,
+        "profile_variant": "hybrid_private_emphasis",
+        "embedding_provider": "openai",
+        "embedding_model": "text-embedding-3-small",
+        "total_queries": 12,
+        "total_pass": 12,
+        "total_fail": 0,
+        "hit_rate": 1.0,
+        "mean_first_hit_position": 1
+      },
+      "spotlight": {
+        "q03_hostname": {
+          "pass": true,
+          "first_hit_position": 1,
+          "top1": "network-element-example-com",
+          "topk": [
+            "network-element-example-com",
+            "network-element-2606-4700-10-6814-179a",
+            "network-element-2606-4700-10-ac42-93f3",
+            "network-element-104-20-23-154",
+            "network-element-172-66-147-243"
+          ]
+        },
+        "q04_google_hostname": {
+          "pass": true,
+          "first_hit_position": 1,
+          "top1": "network-element-google-com",
+          "topk": [
+            "network-element-google-com",
+            "network-element-2800-3f0-4004-816-200e",
+            "network-element-example-com",
+            "network-element-2606-4700-10-6814-179a",
+            "network-element-2606-4700-10-ac42-93f3"
+          ]
+        },
+        "q10_private_node": {
+          "pass": true,
+          "first_hit_position": 1,
+          "top1": "network-element-private-e5e4eb362082983b48697c3dbcd90c19a3cd458a670fdbeba332847de775f73b",
+          "topk": [
+            "network-element-private-e5e4eb362082983b48697c3dbcd90c19a3cd458a670fdbeba332847de775f73b",
+            "network-element-private-056aaea4ce5ae87524a26df5bc4dd58d6c985128aa0c4c5555874e9f83b96a06",
+            "network-element-private-bdef74789757bc3517d15b2e534025ec140fd6c37e9dbb5a333f4b544225b3da",
+            "network-element-private-bddfd0b694656c19477775be628d8cce892af43b27dec0bcdea57b4ebebc4029",
+            "network-element-private-3a90795d7b253323412f06986452cdf7b04a79799f64d42701c6bee337774894"
+          ]
+        },
+        "q11_private_route_element": {
+          "pass": true,
+          "first_hit_position": 1,
+          "top1": "network-element-private-c036d9813ccca06af905a3d9636dde84ec52979b82a5c6d6699e27ef0d02cff8",
+          "topk": [
+            "network-element-private-c036d9813ccca06af905a3d9636dde84ec52979b82a5c6d6699e27ef0d02cff8",
+            "network-element-private-55afc7506da5592137f56e42a9810de982b0437f3257140986173827ae2a56ce",
+            "network-element-private-bdef74789757bc3517d15b2e534025ec140fd6c37e9dbb5a333f4b544225b3da",
+            "network-element-private-d70b9c217705396f81b3f93e1ab46e94d9ede1fa1313ec668ff4389634bae23f",
+            "network-element-private-bddfd0b694656c19477775be628d8cce892af43b27dec0bcdea57b4ebebc4029"
+          ]
+        },
+        "q12_private_hop_google": {
+          "pass": true,
+          "first_hit_position": 1,
+          "top1": "network-element-google-com",
+          "topk": [
+            "network-element-google-com",
+            "network-element-private-29aa95ada5a94b4b0c9c5efbd89c0f653b2fa6ef6e32fb2fddc501ce1098b4bc",
+            "network-element-private-9f3c970cdcbecb41f657da1a2d47fb784a678842c4e75425bfbad143aba91a08",
+            "network-element-private-4933ed6d0b1a178122f167355cf9bfb31ddd3c2cfaad6a9fd74655d89a6025b1",
+            "network-element-private-056aaea4ce5ae87524a26df5bc4dd58d6c985128aa0c4c5555874e9f83b96a06"
+          ]
+        }
+      }
     },
     {
-      "variant": "hybrid_private_boost",
-      "total_pass": 9,
-      "total_fail": 3,
-      "hit_rate": 0.75,
-      "q03_hostname": "pass",
-      "q04_google_hostname": "fail",
-      "q06_public_destination": "fail",
-      "q07_public_node": "fail",
-      "q10_private_node": "pass",
-      "q11_private_route_element": "pass",
-      "q12_private_hop_google": "pass"
-    },
-    {
-      "variant": "hybrid_private_node_focus",
-      "total_pass": 10,
-      "total_fail": 2,
-      "hit_rate": 0.8333333333333334,
-      "q03_hostname": "pass",
-      "q04_google_hostname": "pass",
-      "q06_public_destination": "fail",
-      "q07_public_node": "fail",
-      "q10_private_node": "pass",
-      "q11_private_route_element": "pass",
-      "q12_private_hop_google": "pass"
+      "variant": "hybrid_private_signature",
+      "changed_profiles": 32,
+      "indexed_elements": 40,
+      "private_elements": 32,
+      "focused_private_elements": 32,
+      "embedded_elements": 32,
+      "summary": {
+        "queries_file": "schemas/semantic_eval_queries.json",
+        "limit": 5,
+        "profile_variant": "hybrid_private_signature",
+        "embedding_provider": "openai",
+        "embedding_model": "text-embedding-3-small",
+        "total_queries": 12,
+        "total_pass": 11,
+        "total_fail": 1,
+        "hit_rate": 0.9166666666666666,
+        "mean_first_hit_position": 1
+      },
+      "spotlight": {
+        "q03_hostname": {
+          "pass": true,
+          "first_hit_position": 1,
+          "top1": "network-element-example-com",
+          "topk": [
+            "network-element-example-com",
+            "network-element-2606-4700-10-6814-179a",
+            "network-element-2606-4700-10-ac42-93f3",
+            "network-element-104-20-23-154",
+            "network-element-172-66-147-243"
+          ]
+        },
+        "q04_google_hostname": {
+          "pass": true,
+          "first_hit_position": 1,
+          "top1": "network-element-google-com",
+          "topk": [
+            "network-element-google-com",
+            "network-element-2800-3f0-4004-816-200e",
+            "network-element-example-com",
+            "network-element-2606-4700-10-6814-179a",
+            "network-element-2606-4700-10-ac42-93f3"
+          ]
+        },
+        "q10_private_node": {
+          "pass": true,
+          "first_hit_position": 1,
+          "top1": "network-element-private-bddfd0b694656c19477775be628d8cce892af43b27dec0bcdea57b4ebebc4029",
+          "topk": [
+            "network-element-private-bddfd0b694656c19477775be628d8cce892af43b27dec0bcdea57b4ebebc4029",
+            "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
+            "network-element-private-bdef74789757bc3517d15b2e534025ec140fd6c37e9dbb5a333f4b544225b3da",
+            "network-element-private-9f3c970cdcbecb41f657da1a2d47fb784a678842c4e75425bfbad143aba91a08",
+            "network-element-private-e5e4eb362082983b48697c3dbcd90c19a3cd458a670fdbeba332847de775f73b"
+          ]
+        },
+        "q11_private_route_element": {
+          "pass": true,
+          "first_hit_position": 1,
+          "top1": "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
+          "topk": [
+            "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
+            "network-element-private-250bbfb8d6e6d4f3b7f81ea6a8fef3280eab37a4473f7c9c7b5fb0826f8b2cd7",
+            "network-element-private-bddfd0b694656c19477775be628d8cce892af43b27dec0bcdea57b4ebebc4029",
+            "network-element-private-bdef74789757bc3517d15b2e534025ec140fd6c37e9dbb5a333f4b544225b3da",
+            "network-element-private-351ededb3ab4a698ed1adc70fc72691933295480663fc816724a1cab6d8acf43"
+          ]
+        },
+        "q12_private_hop_google": {
+          "pass": false,
+          "first_hit_position": 1,
+          "top1": "network-element-private-29aa95ada5a94b4b0c9c5efbd89c0f653b2fa6ef6e32fb2fddc501ce1098b4bc",
+          "topk": [
+            "network-element-private-29aa95ada5a94b4b0c9c5efbd89c0f653b2fa6ef6e32fb2fddc501ce1098b4bc",
+            "network-element-private-316352014af1021ffe146d48ca41598e97b69078be3f83c0fe44f3aa541c82ad",
+            "network-element-private-351ededb3ab4a698ed1adc70fc72691933295480663fc816724a1cab6d8acf43",
+            "network-element-private-250bbfb8d6e6d4f3b7f81ea6a8fef3280eab37a4473f7c9c7b5fb0826f8b2cd7",
+            "network-element-private-b259df6b1d7190d6c9a0c16a4ca1dd22a1d9842283cc5f0fed274327fd7158b6"
+          ]
+        }
+      }
     },
     {
       "variant": "hybrid_private_page8_focus",
-      "total_pass": 12,
-      "total_fail": 0,
-      "hit_rate": 1.0,
-      "mean_first_hit_position": 1.1666666666666667,
-      "q03_hostname": "pass",
-      "q04_google_hostname": "pass",
-      "q06_public_destination": "pass",
-      "q07_public_node": "pass",
-      "q10_private_node": "pass",
-      "q11_private_route_element": "pass",
-      "q12_private_hop_google": "pass",
-      "focus_rule": "private rows with canonical_label containing :8: only"
+      "changed_profiles": 1,
+      "indexed_elements": 40,
+      "private_elements": 32,
+      "focused_private_elements": 1,
+      "embedded_elements": 1,
+      "summary": {
+        "queries_file": "schemas/semantic_eval_queries.json",
+        "limit": 5,
+        "profile_variant": "hybrid_private_page8_focus",
+        "embedding_provider": "openai",
+        "embedding_model": "text-embedding-3-small",
+        "total_queries": 12,
+        "total_pass": 12,
+        "total_fail": 0,
+        "hit_rate": 1.0,
+        "mean_first_hit_position": 1.1666666666666667
+      },
+      "spotlight": {
+        "q03_hostname": {
+          "pass": true,
+          "first_hit_position": 1,
+          "top1": "network-element-example-com",
+          "topk": [
+            "network-element-example-com",
+            "network-element-2606-4700-10-6814-179a",
+            "network-element-2606-4700-10-ac42-93f3",
+            "network-element-104-20-23-154",
+            "network-element-172-66-147-243"
+          ]
+        },
+        "q04_google_hostname": {
+          "pass": true,
+          "first_hit_position": 1,
+          "top1": "network-element-google-com",
+          "topk": [
+            "network-element-google-com",
+            "network-element-2800-3f0-4004-816-200e",
+            "network-element-example-com",
+            "network-element-2606-4700-10-6814-179a",
+            "network-element-2606-4700-10-ac42-93f3"
+          ]
+        },
+        "q10_private_node": {
+          "pass": true,
+          "first_hit_position": 1,
+          "top1": "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
+          "topk": [
+            "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
+            "network-element-2606-4700-10-6814-179a",
+            "network-element-2606-4700-10-ac42-93f3",
+            "network-element-104-20-23-154",
+            "network-element-2800-3f0-4004-816-200e"
+          ]
+        },
+        "q11_private_route_element": {
+          "pass": true,
+          "first_hit_position": 1,
+          "top1": "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
+          "topk": [
+            "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
+            "network-element-example-com",
+            "network-element-private-d70b9c217705396f81b3f93e1ab46e94d9ede1fa1313ec668ff4389634bae23f",
+            "network-element-private-55afc7506da5592137f56e42a9810de982b0437f3257140986173827ae2a56ce",
+            "network-element-private-bdef74789757bc3517d15b2e534025ec140fd6c37e9dbb5a333f4b544225b3da"
+          ]
+        },
+        "q12_private_hop_google": {
+          "pass": true,
+          "first_hit_position": 1,
+          "top1": "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
+          "topk": [
+            "network-element-private-eadc32ff4b935e402b0951fa8b7faf7554fdc5f70cef842fd63e05c581e04e18",
+            "network-element-google-com",
+            "network-element-private-5ba94f953381adcab3c590db351bef18fbcaca4406df8aa27e1c43258e68e7bb",
+            "network-element-private-924fb7435fc86393014b7ca32e8071f6013ee4f2e069ca8889d7865a0b2b31ca",
+            "network-element-private-bddfd0b694656c19477775be628d8cce892af43b27dec0bcdea57b4ebebc4029"
+          ]
+        }
+      }
     }
   ],
-  "winner": "hybrid_private_page8_focus"
+  "winner": {
+    "variant": "hybrid_private_page8_focus",
+    "reason": "fecha 12/12 como o reforco amplo, preserva q03/q04/q11/q12 e reindexa so 1 elemento privado"
+  }
 }

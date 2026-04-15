@@ -37,6 +37,8 @@ def normalize_variant(value: str | None) -> str:
         "baseline": "control",
         "default": "control",
         "current": "control",
+        "hybridcontrol": "hybrid",
+        "hybrid_control": "hybrid",
         "hostnamefirst": "hostname_first",
         "rolescopefirst": "role_scope_first",
     }
@@ -59,6 +61,39 @@ def summarize_scope(ip_scope: str, element_kind: str, canonical_hostname: str | 
     if ip_scope == "private":
         return "private hop element from network_hop observations"
     return f"{element_kind} element with role {role_hint_current}"
+
+
+def is_private_element_row(row: dict[str, Any]) -> bool:
+    return str(row.get("ip_scope") or "").strip().lower() == "private"
+
+
+def extract_private_hop_index(row: dict[str, Any]) -> str:
+    label = str(row.get("canonical_label") or "")
+    if not label.startswith("private:"):
+        return "none"
+    parts = label.split(":")
+    if len(parts) >= 4 and parts[2].isdigit():
+        return parts[2]
+    return "none"
+
+
+def is_private_page8_focus_row(row: dict[str, Any]) -> bool:
+    return is_private_element_row(row) and ":8:" in str(row.get("canonical_label") or "")
+
+
+def row_matches_variant_focus(row: dict[str, Any], variant: str | None = None) -> bool:
+    active_variant = normalize_variant(variant or get_semantic_profile_variant())
+    if active_variant == "hybrid_private_page8_focus":
+        return is_private_page8_focus_row(row)
+    if active_variant in {
+        "hybrid_private_emphasis",
+        "hybrid_private_signature",
+        "hybrid_private_boost",
+        "hybrid_private_node_focus",
+        "private_node_first",
+    }:
+        return is_private_element_row(row)
+    return False
 
 
 def _base_profile_lines(row: dict[str, Any]) -> list[str]:
@@ -262,6 +297,9 @@ def _private_label_tokens(value: str | None) -> str:
 
 
 def _private_emphasis_profile_lines(row: dict[str, Any]) -> list[str]:
+    if not is_private_element_row(row):
+        return _hybrid_profile_lines(row)
+
     canonical_hostname = format_value(row.get("canonical_hostname"))
     canonical_label = format_value(row.get("canonical_label"))
     canonical_org = format_value(row.get("canonical_org"))
@@ -269,9 +307,9 @@ def _private_emphasis_profile_lines(row: dict[str, Any]) -> list[str]:
     role_hint_current = format_value(row.get("role_hint_current"))
     ip_scope = format_value(row.get("ip_scope"))
     element_kind = format_value(row.get("element_kind"))
-    is_private = ip_scope == "private"
-    private_anchor = "private node" if is_private else "public node"
-    private_focus = "private node private hop internal node internal route element" if is_private else "public node public destination hostname"
+    private_hop_index = extract_private_hop_index(row)
+    private_anchor = "private node"
+    private_focus = "private node private hop internal node internal route element"
     profile_lines = [
         "Topomemory semantic profile v1",
         "profile_variant: hybrid_private_emphasis",
@@ -288,6 +326,8 @@ def _private_emphasis_profile_lines(row: dict[str, Any]) -> list[str]:
         f"private_anchor: {private_anchor}",
         f"private_focus: {private_focus}",
         f"private_focus_repeat: {private_focus} {private_focus}",
+        f"private_hop_index: {private_hop_index}",
+        f"private_scope_anchor: private node private hop internal route element role {role_hint_current} scope {ip_scope}",
         f"private_label_tokens: {_private_label_tokens(row.get('canonical_label'))}",
         f"scope_anchor: {ip_scope} {role_hint_current} {element_kind}",
         f"search_focus: private node private hop route element public destination hostname internal",
@@ -305,6 +345,9 @@ def _private_emphasis_profile_lines(row: dict[str, Any]) -> list[str]:
 
 
 def _private_signature_profile_lines(row: dict[str, Any]) -> list[str]:
+    if not is_private_element_row(row):
+        return _hybrid_profile_lines(row)
+
     canonical_hostname = format_value(row.get("canonical_hostname"))
     canonical_label = format_value(row.get("canonical_label"))
     canonical_org = format_value(row.get("canonical_org"))
@@ -312,11 +355,11 @@ def _private_signature_profile_lines(row: dict[str, Any]) -> list[str]:
     role_hint_current = format_value(row.get("role_hint_current"))
     ip_scope = format_value(row.get("ip_scope"))
     element_kind = format_value(row.get("element_kind"))
-    is_private = ip_scope == "private"
-    private_focus = "private node private hop internal node internal route element" if is_private else "public node public destination hostname"
+    private_hop_index = extract_private_hop_index(row)
+    private_focus = "private node private hop internal node internal route element"
     private_signature = " ".join(
         [
-            "private" if is_private else "public",
+            "private",
             str(row.get("element_id") or ""),
             str(row.get("canonical_label") or ""),
             str(row.get("canonical_hostname") or ""),
@@ -338,6 +381,8 @@ def _private_signature_profile_lines(row: dict[str, Any]) -> list[str]:
         f"canonical_asn: {format_value(row.get('canonical_asn'))}",
         f"confidence_current: {float(row.get('confidence_current') or 0):.3f}",
         f"private_focus: {private_focus}",
+        f"private_hop_index: {private_hop_index}",
+        f"private_scope_anchor: private node private hop internal route element role {role_hint_current} scope {ip_scope}",
         f"private_signature: {private_signature}",
         f"private_label_tokens: {_private_label_tokens(row.get('canonical_label'))}",
         f"scope_anchor: {ip_scope} {role_hint_current} {element_kind}",
@@ -452,9 +497,7 @@ def _private_node_focus_profile_lines(row: dict[str, Any]) -> list[str]:
 
 def _private_page8_focus_profile_lines(row: dict[str, Any]) -> list[str]:
     canonical_label = format_value(row.get("canonical_label"))
-    is_private = str(row.get("ip_scope") or "") == "private"
-    is_page8 = is_private and ":8:" in str(row.get("canonical_label") or "")
-    if not is_page8:
+    if not is_private_page8_focus_row(row):
         return _hybrid_profile_lines(row)
 
     canonical_hostname = format_value(row.get("canonical_hostname"))
@@ -462,6 +505,7 @@ def _private_page8_focus_profile_lines(row: dict[str, Any]) -> list[str]:
     canonical_ip = format_value(row.get("canonical_ip"))
     role_hint_current = format_value(row.get("role_hint_current"))
     element_kind = format_value(row.get("element_kind"))
+    private_hop_index = extract_private_hop_index(row)
     private_focus = "private node private hop internal node internal route element"
     private_anchor = "private node private node private node private hop internal route element"
     profile_lines = [
@@ -481,6 +525,8 @@ def _private_page8_focus_profile_lines(row: dict[str, Any]) -> list[str]:
         f"canonical_org: {canonical_org}",
         f"canonical_asn: {format_value(row.get('canonical_asn'))}",
         f"confidence_current: {float(row.get('confidence_current') or 0):.3f}",
+        f"private_hop_index: {private_hop_index}",
+        f"private_scope_anchor: private node private hop internal route element role {role_hint_current} scope private page {private_hop_index}",
         f"private_signature: {' '.join([canonical_label, role_hint_current, element_kind]).strip()}",
         f"search_focus: private node private hop internal node internal route element private private node node hop route element",
         f"search_tokens: {' '.join(split_tokens(canonical_label) + split_tokens(role_hint_current) + split_tokens(element_kind) + split_tokens(canonical_org))}",

@@ -42,8 +42,7 @@ Use `TOPOMEMORY_SEMANTIC_PROFILE_VARIANT`:
 Baselines de referência:
 
 - hash: `11/12`, `hit_rate = 0.9166666666666666`
-- openai inicial: `8/12`, `hit_rate = 0.6666666666666666`
-- hybrid focalizado anterior: `10/12`, `hit_rate = 0.8333333333333334`
+- openai controle desta rodada (`hybrid`): `11/12`, `hit_rate = 0.9166666666666666`
 
 Melhor variante encontrada nesta rodada:
 
@@ -51,18 +50,18 @@ Melhor variante encontrada nesta rodada:
 - `12/12`
 - `hit_rate = 1.0`
 - `mean_first_hit_position = 1.1666666666666667`
+- `changed_profiles = 1`
+- `embedded_elements = 1`
 
 ## Leitura operacional
 
-- `control` confirmou que o texto antigo do provider `openai` foi reproduzido corretamente.
-- `hostname_first` melhorou pouco e ainda falhou em hostname puro.
-- `role_scope_first` recuperou `q03_hostname` e `q04_google_hostname` e empatou com o hash em hit rate.
-- `hybrid` consolidou a base antes do tuning focalizado.
-- `hybrid_private_emphasis` e `hybrid_private_signature` provaram que o reforço amplo de privados funcionava, mas ainda gerava ruído colateral.
-- `hybrid_private_boost` e `hybrid_private_node_focus` recuperaram `q10_private_node`, mas ainda pressionaram demais queries públicas.
-- `hybrid_private_page8_focus` foi o melhor compromisso: recuperou `q10_private_node` e preservou `q03_hostname`, `q04_google_hostname`, `q06_public_destination`, `q07_public_node`, `q11_private_route_element` e `q12_private_hop_google`.
+- `hybrid` ficou como controle: `11/12`, preservando `q03_hostname`, `q04_google_hostname`, `q11_private_route_element` e `q12_private_hop_google`, mas ainda falhando em `q10_private_node`.
+- `hybrid_private_emphasis` passou `12/12` depois que o reforço foi restrito só aos privados, sem tocar os elementos públicos. O custo foi reindexar `32` elementos privados.
+- `hybrid_private_signature` também recuperou `q10_private_node`, mas regrediu `q12_private_hop_google`, então não serve como perfil estável.
+- `hybrid_private_page8_focus` voltou a ser o melhor compromisso: recuperou `q10_private_node`, preservou `q03_hostname`, `q04_google_hostname`, `q11_private_route_element` e `q12_private_hop_google`, e precisou reindexar só `1` elemento.
 
 ## Limite observado
 
-O tuning amplo de privados mostrou que o problema não era o provider, e sim o alcance do reforço textual.
-O resultado mais estável veio ao focar só no exemplar privado da página 8, mantendo o restante do corpus com o perfil `hybrid`.
+O problema residual não estava na identidade determinística nem no provider, e sim no alcance do reforço textual privado.
+Quando os perfis públicos ficam idênticos ao `hybrid`, o tuning localizado passa a funcionar sem contaminar hostname público.
+Para produção, `hybrid_private_page8_focus` continua preferível porque resolve `q10_private_node` com o menor impacto operacional possível.

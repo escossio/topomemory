@@ -45,6 +45,9 @@ Campos principais:
 - provider real disponível: `openai`, documentado em [LAYER1_SEMANTIC_REAL_PROVIDER.md](/docs/LAYER1_SEMANTIC_REAL_PROVIDER.md)
 - fonte operacional usada nesta rodada: `livecopilot-semantic-api.service` com `EnvironmentFile=/etc/livecopilot-semantic.env`
 - variante vencedora atual do tuning: `hybrid_private_page8_focus`, configurada por `TOPOMEMORY_SEMANTIC_PROFILE_VARIANT`
+- controle operacional atual para comparação focalizada: `hybrid`
+- resultado do controle `hybrid`: `11/12`, com falha residual em `q10_private_node`
+- resultado da vencedora focalizada: `12/12`, com reindexação de apenas `1` elemento privado
 
 Este modelo foi escolhido porque:
 
@@ -60,6 +63,7 @@ Este modelo foi escolhido porque:
 - um único registro semântico representa o estado atual de cada `network_element`
 - se o perfil textual mudar, o embedding correspondente é invalidado e recalculado
 - se nada mudar, a execução é reprodutível e não precisa alterar o vetor persistido
+- `embedding_model` agora grava o nome real do modelo ativo, evitando reembed completo quando nenhum perfil mudou
 
 ## Perfil semântico
 

@@ -202,6 +202,22 @@ def render_markdown(summary: dict[str, Any], results: list[QueryResult], queries
     lines.extend(
         [
             "",
+            "## Spotlight",
+            "",
+        ]
+    )
+    for query_id in ("q03_hostname", "q04_google_hostname", "q10_private_node", "q11_private_route_element", "q12_private_hop_google"):
+        result = next((item for item in results if item.query_id == query_id), None)
+        if result is None:
+            continue
+        top1 = result.returned_topk[0]["element_id"] if result.returned_topk else "none"
+        lines.append(
+            f"- {result.query_id}: `{'pass' if result.pass_ else 'fail'}`, "
+            f"first_hit = `{result.first_hit_position or 'none'}`, top1 = `{top1}`"
+        )
+    lines.extend(
+        [
+            "",
             "## Leitura",
             "",
             f"- acertos: `{summary['total_pass']}`",
@@ -211,6 +227,27 @@ def render_markdown(summary: dict[str, Any], results: list[QueryResult], queries
         ]
     )
     return "\n".join(lines) + "\n"
+
+
+def build_spotlight_summary(results: list[QueryResult]) -> dict[str, dict[str, Any]]:
+    spotlight_ids = {
+        "q03_hostname",
+        "q04_google_hostname",
+        "q10_private_node",
+        "q11_private_route_element",
+        "q12_private_hop_google",
+    }
+    summary: dict[str, dict[str, Any]] = {}
+    for result in results:
+        if result.query_id not in spotlight_ids:
+            continue
+        summary[result.query_id] = {
+            "pass": result.pass_,
+            "first_hit_position": result.first_hit_position,
+            "top1": result.returned_topk[0]["element_id"] if result.returned_topk else None,
+            "topk": [row["element_id"] for row in result.returned_topk],
+        }
+    return summary
 
 
 def main() -> int:
@@ -283,6 +320,7 @@ def main() -> int:
     }
     payload = {
         "summary": summary,
+        "spotlight": build_spotlight_summary(results),
         "results": [
             {
                 "query_id": result.query_id,

@@ -10,7 +10,13 @@ from typing import Any
 import psycopg
 
 from embedding_provider import EmbeddingProviderError, get_embedding_provider
-from semantic_support import SEMANTIC_PROFILE_VERSION, build_semantic_profile_text, get_semantic_profile_variant
+from semantic_support import (
+    SEMANTIC_PROFILE_VERSION,
+    build_semantic_profile_text,
+    get_semantic_profile_variant,
+    is_private_element_row,
+    row_matches_variant_focus,
+)
 
 
 class SemanticProfileError(RuntimeError):
@@ -101,14 +107,26 @@ def load_network_element_rows(conn: psycopg.Connection[Any]) -> list[dict[str, A
     return [dict(zip(columns, row, strict=True)) for row in rows]
 
 
-def upsert_semantic_profile(conn: psycopg.Connection[Any], row: dict[str, Any], *, variant: str) -> None:
-    semantic_profile_text = build_semantic_profile_text(row, variant=variant)
+def load_existing_profile_texts(conn: psycopg.Connection[Any]) -> dict[str, str]:
+    with conn.cursor() as cur:
+        cur.execute("SELECT element_id, semantic_profile_text FROM topomemory.network_element_semantic")
+        rows = cur.fetchall()
+    return {element_id: semantic_profile_text for element_id, semantic_profile_text in rows}
+
+
+def upsert_semantic_profile(
+    conn: psycopg.Connection[Any],
+    row: dict[str, Any],
+    *,
+    semantic_profile_text: str,
+    embedding_model: str,
+) -> None:
     payload = {
         "semantic_id": f"semantic-{row['element_id']}",
         "element_id": row["element_id"],
         "semantic_profile_text": semantic_profile_text,
         "semantic_profile_version": SEMANTIC_PROFILE_VERSION,
-        "embedding_model": "openai",
+        "embedding_model": embedding_model,
     }
     with conn.cursor() as cur:
         cur.execute(
@@ -170,10 +188,26 @@ def main() -> int:
         raise SemanticProfileError(str(exc)) from exc
 
     with db_connect(args.database_url) as conn:
+        existing_profiles = load_existing_profile_texts(conn)
         with conn.transaction():
             rows = load_network_element_rows(conn)
+            changed_profiles = 0
+            private_elements = 0
+            focused_private_elements = 0
             for row in rows:
-                upsert_semantic_profile(conn, row, variant=variant)
+                semantic_profile_text = build_semantic_profile_text(row, variant=variant)
+                if existing_profiles.get(row["element_id"]) != semantic_profile_text:
+                    changed_profiles += 1
+                if is_private_element_row(row):
+                    private_elements += 1
+                if row_matches_variant_focus(row, variant):
+                    focused_private_elements += 1
+                upsert_semantic_profile(
+                    conn,
+                    row,
+                    semantic_profile_text=semantic_profile_text,
+                    embedding_model=embedding_model,
+                )
 
     print(
         json.dumps(
@@ -183,6 +217,9 @@ def main() -> int:
                 "profile_variant": variant,
                 "embedding_model": embedding_model,
                 "indexed_elements": len(rows),
+                "private_elements": private_elements,
+                "focused_private_elements": focused_private_elements,
+                "changed_profiles": changed_profiles,
             },
             ensure_ascii=False,
             indent=2,

@@ -10,7 +10,7 @@ from typing import Any
 import psycopg
 
 from embedding_provider import EMBEDDING_PROVIDER_ENV, EmbeddingProviderError, get_embedding_provider, vector_literal
-from semantic_support import SEMANTIC_PROFILE_VERSION, get_semantic_profile_variant
+from semantic_support import SEMANTIC_PROFILE_VERSION, get_semantic_profile_variant, row_matches_variant_focus
 
 
 class SemanticEmbeddingError(RuntimeError):
@@ -25,19 +25,28 @@ def load_pending_profiles(conn: psycopg.Connection[Any], *, embedding_model: str
     with conn.cursor() as cur:
         cur.execute(
             """
-            SELECT semantic_id, element_id, semantic_profile_text
-            FROM topomemory.network_element_semantic
-            WHERE embedding_vector IS NULL
-               OR embedding_created_at IS NULL
-               OR embedding_model <> %s
-               OR semantic_profile_version <> %s
-            ORDER BY element_id
+            SELECT
+              sem.semantic_id,
+              sem.element_id,
+              sem.semantic_profile_text,
+              ne.ip_scope,
+              ne.canonical_label,
+              ne.role_hint_current,
+              ne.element_kind
+            FROM topomemory.network_element_semantic sem
+            JOIN topomemory.network_element ne
+              ON ne.element_id = sem.element_id
+            WHERE sem.embedding_vector IS NULL
+               OR sem.embedding_created_at IS NULL
+               OR sem.embedding_model <> %s
+               OR sem.semantic_profile_version <> %s
+            ORDER BY sem.element_id
             """,
             (embedding_model, SEMANTIC_PROFILE_VERSION),
         )
         rows = cur.fetchall()
 
-    columns = ["semantic_id", "element_id", "semantic_profile_text"]
+    columns = ["semantic_id", "element_id", "semantic_profile_text", "ip_scope", "canonical_label", "role_hint_current", "element_kind"]
     return [dict(zip(columns, row, strict=True)) for row in rows]
 
 
@@ -71,15 +80,17 @@ def main() -> int:
     with db_connect(args.database_url) as conn:
         with conn.transaction():
             rows = load_pending_profiles(conn, embedding_model=provider.model_name())
-            texts = [row["semantic_profile_text"] for row in rows]
-            embeddings = provider.embed_batch(texts)
-            for row, embedding in zip(rows, embeddings, strict=True):
-                persist_embedding(
-                    conn,
-                    element_id=row["element_id"],
-                    vector_text=vector_literal(embedding),
-                    embedding_model=provider.model_name(),
-                )
+            focused_private_elements = sum(1 for row in rows if row_matches_variant_focus(row))
+            if rows:
+                texts = [row["semantic_profile_text"] for row in rows]
+                embeddings = provider.embed_batch(texts)
+                for row, embedding in zip(rows, embeddings, strict=True):
+                    persist_embedding(
+                        conn,
+                        element_id=row["element_id"],
+                        vector_text=vector_literal(embedding),
+                        embedding_model=provider.model_name(),
+                    )
 
     print(
         json.dumps(
@@ -90,6 +101,7 @@ def main() -> int:
                 "embedding_provider": os.environ.get(EMBEDDING_PROVIDER_ENV, "hash"),
                 "embedding_model": provider.model_name(),
                 "embedded_elements": len(rows),
+                "focused_private_elements": focused_private_elements,
             },
             ensure_ascii=False,
             indent=2,
