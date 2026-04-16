@@ -17,6 +17,8 @@ Ele registra:
 - contagens mínimas de observação, resolução e decisão
 - assinatura textual da rota observada
 - assinatura textual da rota resolvida
+- assinatura resolvida do trecho público
+- assinatura resolvida do trecho privado
 - melhor candidato atual a destino final
 - notas curtas sobre o contexto do snapshot
 
@@ -29,6 +31,9 @@ Ela registra:
 - `health_status`
 - `structural_status`
 - `route_change_status`
+- `public_change_status`
+- `private_change_status`
+- `destination_change_status`
 - nível de confiança
 - resumo de reasoning
 - evidência em JSON
@@ -57,6 +62,13 @@ Os estados mínimos são:
 - `changed` quando a assinatura resolvida muda com material suficiente
 - `not_comparable` quando o contexto não permite afirmar
 
+Leitura refinada:
+
+- `destination_change_status = same_destination` quando o destino final permanece igual
+- `public_change_status = unchanged` quando o trecho público resolvido permanece igual
+- `private_change_status = changed` quando a diferença aparece só no trecho privado
+- nesse caso a leitura operacional continua saudável, com variação privada explícita
+
 ## O que esta rodada não faz
 
 - não abre Prometheus
@@ -81,6 +93,13 @@ Esta camada mínima prepara o terreno ao guardar:
 
 Um run de `google.com / home_page` pode resultar em snapshot com destino explícito e avaliação `healthy`.
 
-Um run equivalente anterior com a mesma assinatura resolvida pode resultar em `unchanged`.
+Um run equivalente anterior com o mesmo destino e o mesmo trecho público, mas com trecho privado diferente, pode resultar em:
+
+- `health_status=healthy`
+- `structural_status=stable`
+- `route_change_status=unchanged`
+- `public_change_status=unchanged`
+- `private_change_status=changed`
+- `destination_change_status=same_destination`
 
 Um run de `example.com / home_page` pode servir como primeira observação equivalente ou como caso sem comparação útil, dependendo do histórico disponível.

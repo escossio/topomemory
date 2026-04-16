@@ -81,5 +81,6 @@ A primeira versão da Camada 2 grava:
 
 - `route_snapshot` por run
 - `route_health_assessment` por snapshot
+- separação explícita entre trecho público, trecho privado e estabilidade do destino
 
 O contrato mínimo desta frente fica em [LAYER2_MINIMAL_HEALTH.md](/docs/LAYER2_MINIMAL_HEALTH.md).

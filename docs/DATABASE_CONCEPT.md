@@ -25,6 +25,7 @@ A Camada 2 mínima passa a persistir `route_snapshot` e `route_health_assessment
 - `route_snapshot` resume o run como rota
 - `route_health_assessment` classifica a saúde mínima e a mudança estrutural
 - a comparação entre runs equivalentes continua ancorada em `target_value` e `scenario`
+- a rodada refinada separa `public_resolved_path_signature`, `private_resolved_path_signature` e `destination_stable_key`
 
 ## Escopo lógico recomendado
 

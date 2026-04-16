@@ -144,6 +144,17 @@ def canonical_label(row: dict[str, Any]) -> str:
     return "unknown"
 
 
+def resolved_scope(row: dict[str, Any]) -> str:
+    return str(row.get("resolved_ip_scope") or row.get("observed_ip_scope") or "unknown").lower()
+
+
+def signature_token(row: dict[str, Any]) -> str:
+    resolved = row.get("resolved_element_id")
+    if resolved:
+        return str(resolved)
+    return f"unresolved:{row['element_index']}:{row.get('observational_signature') or 'none'}"
+
+
 def build_path_signature(rows: list[dict[str, Any]]) -> str:
     parts: list[str] = []
     for row in rows:
@@ -162,6 +173,11 @@ def build_resolved_path_signature(rows: list[dict[str, Any]]) -> str:
         else:
             parts.append(f"unresolved:{row['element_index']}:{row.get('observational_signature') or 'none'}")
     return " > ".join(parts)
+
+
+def build_scope_signature(rows: list[dict[str, Any]], scope: str) -> str:
+    parts = [signature_token(row) for row in rows if resolved_scope(row) == scope]
+    return " > ".join(parts) if parts else "none"
 
 
 def choose_destination(rows: list[dict[str, Any]]) -> tuple[str | None, str | None, str | None, str | None, str]:
@@ -224,6 +240,11 @@ def upsert_snapshot(conn: psycopg.Connection[Any], payload: dict[str, Any]) -> N
               skipped_count,
               path_signature,
               resolved_path_signature,
+              public_resolved_path_signature,
+              private_resolved_path_signature,
+              destination_stable_key,
+              public_element_count_resolved,
+              private_element_count_resolved,
               destination_element_id,
               destination_label,
               destination_ip,
@@ -247,6 +268,11 @@ def upsert_snapshot(conn: psycopg.Connection[Any], payload: dict[str, Any]) -> N
               %(skipped_count)s,
               %(path_signature)s,
               %(resolved_path_signature)s,
+              %(public_resolved_path_signature)s,
+              %(private_resolved_path_signature)s,
+              %(destination_stable_key)s,
+              %(public_element_count_resolved)s,
+              %(private_element_count_resolved)s,
               %(destination_element_id)s,
               %(destination_label)s,
               %(destination_ip)s,
@@ -268,6 +294,11 @@ def upsert_snapshot(conn: psycopg.Connection[Any], payload: dict[str, Any]) -> N
               skipped_count = EXCLUDED.skipped_count,
               path_signature = EXCLUDED.path_signature,
               resolved_path_signature = EXCLUDED.resolved_path_signature,
+              public_resolved_path_signature = EXCLUDED.public_resolved_path_signature,
+              private_resolved_path_signature = EXCLUDED.private_resolved_path_signature,
+              destination_stable_key = EXCLUDED.destination_stable_key,
+              public_element_count_resolved = EXCLUDED.public_element_count_resolved,
+              private_element_count_resolved = EXCLUDED.private_element_count_resolved,
               destination_element_id = EXCLUDED.destination_element_id,
               destination_label = EXCLUDED.destination_label,
               destination_ip = EXCLUDED.destination_ip,
@@ -287,15 +318,20 @@ def process_run(conn: psycopg.Connection[Any], run_id: str) -> dict[str, Any]:
 
     total_resolved = sum(1 for row in rows if row.get("resolved_element_id"))
     total_unresolved = len(rows) - total_resolved
-    public_count = sum(1 for row in rows if str(row.get("resolved_ip_scope") or row.get("observed_ip_scope") or "").lower() == "public")
-    private_count = sum(1 for row in rows if str(row.get("resolved_ip_scope") or row.get("observed_ip_scope") or "").lower() == "private")
+    public_count = sum(1 for row in rows if resolved_scope(row) == "public")
+    private_count = sum(1 for row in rows if resolved_scope(row) == "private")
+    public_resolved_count = sum(1 for row in rows if resolved_scope(row) == "public" and row.get("resolved_element_id"))
+    private_resolved_count = sum(1 for row in rows if resolved_scope(row) == "private" and row.get("resolved_element_id"))
     matched_count = sum(1 for row in rows if row.get("decision_type") == "matched_existing_entity")
     new_count = sum(1 for row in rows if row.get("decision_type") == "new_entity_created")
     skipped_count = sum(1 for row in rows if str(row.get("decision_type") or "").startswith("skipped_"))
 
     destination_element_id, destination_label, destination_ip, destination_hostname, destination_reason = choose_destination(rows)
+    destination_stable_key = destination_element_id or destination_label or destination_ip or destination_hostname
     path_signature = build_path_signature(rows)
     resolved_path_signature = build_resolved_path_signature(rows)
+    public_resolved_path_signature = build_scope_signature(rows, "public")
+    private_resolved_path_signature = build_scope_signature(rows, "private")
     notes = [destination_reason]
     if destination_element_id is None:
         notes.insert(0, "destino não resolvido")
@@ -319,6 +355,11 @@ def process_run(conn: psycopg.Connection[Any], run_id: str) -> dict[str, Any]:
         "skipped_count": skipped_count,
         "path_signature": path_signature,
         "resolved_path_signature": resolved_path_signature,
+        "public_resolved_path_signature": public_resolved_path_signature,
+        "private_resolved_path_signature": private_resolved_path_signature,
+        "destination_stable_key": destination_stable_key,
+        "public_element_count_resolved": public_resolved_count,
+        "private_element_count_resolved": private_resolved_count,
         "destination_element_id": destination_element_id,
         "destination_label": destination_label,
         "destination_ip": destination_ip,
@@ -377,6 +418,8 @@ def main() -> int:
                     f"scenario={row['scenario']}",
                     f"observed={row['total_observed_elements']}",
                     f"resolved={row['total_resolved_elements']}",
+                    f"public_resolved={row['public_element_count_resolved']}",
+                    f"private_resolved={row['private_element_count_resolved']}",
                     f"destination={row['destination_element_id'] or 'none'}",
                 ]
             )

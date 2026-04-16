@@ -31,11 +31,16 @@ class SnapshotRow:
     total_unresolved_elements: int
     public_element_count: int
     private_element_count: int
+    public_element_count_resolved: int | None
+    private_element_count_resolved: int | None
     matched_existing_count: int
     new_entity_count: int
     skipped_count: int
     path_signature: str
     resolved_path_signature: str
+    public_resolved_path_signature: str | None
+    private_resolved_path_signature: str | None
+    destination_stable_key: str | None
     destination_element_id: str | None
     destination_label: str | None
     destination_ip: str | None
@@ -63,11 +68,16 @@ def load_snapshot(conn: psycopg.Connection[Any], run_id: str) -> SnapshotRow:
               total_unresolved_elements,
               public_element_count,
               private_element_count,
+              public_element_count_resolved,
+              private_element_count_resolved,
               matched_existing_count,
               new_entity_count,
               skipped_count,
               path_signature,
               resolved_path_signature,
+              public_resolved_path_signature,
+              private_resolved_path_signature,
+              destination_stable_key,
               destination_element_id,
               destination_label,
               destination_ip,
@@ -112,8 +122,11 @@ def find_previous_equivalent_snapshot(conn: psycopg.Connection[Any], *, target_v
             """
             SELECT rs.route_snapshot_id, rs.run_id, rs.bundle_id, rs.target_value, rs.scenario,
                    rs.total_observed_elements, rs.total_observed_relations, rs.total_resolved_elements, rs.total_unresolved_elements,
-                   rs.public_element_count, rs.private_element_count, rs.matched_existing_count, rs.new_entity_count, rs.skipped_count,
-                   rs.path_signature, rs.resolved_path_signature, rs.destination_element_id, rs.destination_label, rs.destination_ip, rs.destination_hostname, rs.snapshot_notes
+                   rs.public_element_count, rs.private_element_count, rs.public_element_count_resolved, rs.private_element_count_resolved,
+                   rs.matched_existing_count, rs.new_entity_count, rs.skipped_count,
+                   rs.path_signature, rs.resolved_path_signature,
+                   rs.public_resolved_path_signature, rs.private_resolved_path_signature,
+                   rs.destination_stable_key, rs.destination_element_id, rs.destination_label, rs.destination_ip, rs.destination_hostname, rs.snapshot_notes
             FROM topomemory.route_snapshot rs
             JOIN topomemory.run r ON r.run_id = rs.run_id
             WHERE rs.target_value = %s
@@ -135,8 +148,10 @@ def load_snapshot_by_run(conn: psycopg.Connection[Any], run_id: str) -> Snapshot
             """
             SELECT route_snapshot_id, run_id, bundle_id, target_value, scenario,
                    total_observed_elements, total_observed_relations, total_resolved_elements, total_unresolved_elements,
-                   public_element_count, private_element_count, matched_existing_count, new_entity_count, skipped_count,
-                   path_signature, resolved_path_signature, destination_element_id, destination_label, destination_ip, destination_hostname, snapshot_notes
+                   public_element_count, private_element_count, public_element_count_resolved, private_element_count_resolved,
+                   matched_existing_count, new_entity_count, skipped_count,
+                   path_signature, resolved_path_signature, public_resolved_path_signature, private_resolved_path_signature, destination_stable_key,
+                   destination_element_id, destination_label, destination_ip, destination_hostname, snapshot_notes
             FROM topomemory.route_snapshot
             WHERE run_id = %s
             """,
@@ -146,7 +161,7 @@ def load_snapshot_by_run(conn: psycopg.Connection[Any], run_id: str) -> Snapshot
     return SnapshotRow(*row) if row else None
 
 
-def choose_health(snapshot: SnapshotRow, run_meta: dict[str, Any]) -> tuple[str, str, str, str, dict[str, Any]]:
+def choose_health(snapshot: SnapshotRow, run_meta: dict[str, Any]) -> tuple[str, str, dict[str, Any]]:
     total = snapshot.total_observed_elements
     resolved_ratio = snapshot.total_resolved_elements / total if total else 0.0
     destination_clear = bool(snapshot.destination_element_id)
@@ -158,52 +173,110 @@ def choose_health(snapshot: SnapshotRow, run_meta: dict[str, Any]) -> tuple[str,
         "total_unresolved_elements": snapshot.total_unresolved_elements,
         "public_element_count": snapshot.public_element_count,
         "private_element_count": snapshot.private_element_count,
+        "public_element_count_resolved": snapshot.public_element_count_resolved,
+        "private_element_count_resolved": snapshot.private_element_count_resolved,
         "matched_existing_count": snapshot.matched_existing_count,
         "new_entity_count": snapshot.new_entity_count,
         "skipped_count": snapshot.skipped_count,
         "path_signature": snapshot.path_signature,
         "resolved_path_signature": snapshot.resolved_path_signature,
+        "public_resolved_path_signature": snapshot.public_resolved_path_signature,
+        "private_resolved_path_signature": snapshot.private_resolved_path_signature,
+        "destination_stable_key": snapshot.destination_stable_key,
+        "destination_element_id": snapshot.destination_element_id,
+        "destination_label": snapshot.destination_label,
+        "destination_ip": snapshot.destination_ip,
+        "destination_hostname": snapshot.destination_hostname,
     }
 
     if run_meta["run_status"] == "failed" or run_meta["collection_health"] == "blocked":
-        return "blocked", "insufficient_context", "not_comparable", "low", evidence
+        return "blocked", "low", evidence
 
     if run_meta["run_status"] == "success" and run_meta["collection_health"] == "healthy" and destination_clear and resolved_ratio >= 0.6 and coherent_path:
         confidence = "high" if resolved_ratio >= 0.85 else "medium"
-        return "healthy", "stable", "first_observation", confidence, evidence
+        return "healthy", confidence, evidence
 
     if run_meta["run_status"] in {"success", "partial"} and (snapshot.total_resolved_elements > 0 or destination_clear):
         confidence = "medium" if resolved_ratio >= 0.35 else "low"
-        structural_status = "changed" if resolved_ratio >= 0.5 else "insufficient_context"
-        return "degraded", structural_status, "first_observation", confidence, evidence
+        return "degraded", confidence, evidence
 
-    return "unknown", "insufficient_context", "not_comparable", "low", evidence
+    return "unknown", "low", evidence
 
 
 def classify_comparison(
     current: SnapshotRow,
     previous: SnapshotRow | None,
-    structural_status: str,
     confidence: str,
     evidence: dict[str, Any],
-) -> tuple[str, str, str, dict[str, Any], str]:
+) -> tuple[str, str, str, str, dict[str, Any], str]:
     if previous is None:
         evidence["compared_to_run_id"] = None
-        evidence["compared_to_resolved_path_signature"] = None
         evidence["compared_to_snapshot_id"] = None
-        return "first_observation", "insufficient_context", confidence, evidence, "primeira observação equivalente disponível"
+        evidence["compared_to_resolved_path_signature"] = None
+        evidence["compared_to_public_resolved_path_signature"] = None
+        evidence["compared_to_private_resolved_path_signature"] = None
+        return "first_observation", "not_comparable", "not_comparable", "not_comparable", evidence, "primeira observação equivalente disponível"
 
     evidence["compared_to_run_id"] = previous.run_id
     evidence["compared_to_resolved_path_signature"] = previous.resolved_path_signature
+    evidence["compared_to_public_resolved_path_signature"] = previous.public_resolved_path_signature
+    evidence["compared_to_private_resolved_path_signature"] = previous.private_resolved_path_signature
     evidence["compared_to_snapshot_id"] = previous.route_snapshot_id
-    if current.resolved_path_signature == previous.resolved_path_signature:
-        return "unchanged", "stable", confidence, evidence, "rota resolvida estável em comparação com o run equivalente anterior"
+    destination_change_status = "unknown_destination"
+    if current.destination_stable_key and previous.destination_stable_key:
+        destination_change_status = (
+            "same_destination"
+            if current.destination_stable_key == previous.destination_stable_key
+            else "changed_destination"
+        )
+    elif current.destination_stable_key is None or previous.destination_stable_key is None:
+        destination_change_status = "unknown_destination"
 
-    if current.resolved_path_signature and previous.resolved_path_signature:
-        next_confidence = confidence if confidence != "low" else "medium"
-        return "changed", "changed", next_confidence, evidence, "assinatura resolvida mudou entre runs equivalentes"
+    public_change_status = "not_comparable"
+    if current.public_resolved_path_signature and previous.public_resolved_path_signature:
+        public_change_status = (
+            "unchanged"
+            if current.public_resolved_path_signature == previous.public_resolved_path_signature
+            else "changed"
+        )
 
-    return "not_comparable", "insufficient_context", "low", evidence, "comparação limitada por contexto insuficiente"
+    private_change_status = "not_comparable"
+    if current.private_resolved_path_signature and previous.private_resolved_path_signature:
+        private_change_status = (
+            "unchanged"
+            if current.private_resolved_path_signature == previous.private_resolved_path_signature
+            else "changed"
+        )
+
+    if destination_change_status == "same_destination" and public_change_status == "unchanged" and private_change_status == "changed":
+        route_change_status = "unchanged"
+        structural_status = "stable"
+        reasoning = "destino e trecho público estáveis; variação observada apenas no trecho privado"
+    elif destination_change_status == "same_destination" and public_change_status == "unchanged" and private_change_status == "unchanged":
+        route_change_status = "unchanged"
+        structural_status = "stable"
+        reasoning = "destino e trecho público estáveis; trecho privado também permaneceu estável"
+    elif destination_change_status == "same_destination" and public_change_status == "changed":
+        route_change_status = "changed"
+        structural_status = "changed"
+        reasoning = "destino estável, mas o trecho público mudou"
+    elif destination_change_status == "changed_destination":
+        route_change_status = "changed"
+        structural_status = "changed"
+        reasoning = "destino final mudou entre runs equivalentes"
+    elif destination_change_status == "unknown_destination" or public_change_status == "not_comparable" or private_change_status == "not_comparable":
+        route_change_status = "not_comparable"
+        structural_status = "insufficient_context"
+        reasoning = "contexto insuficiente para separar destino, trecho público e trecho privado"
+    else:
+        route_change_status = "changed"
+        structural_status = "changed"
+        reasoning = "mudança estrutural detectada na rota resolvida"
+
+    if route_change_status == "changed" and confidence == "low":
+        confidence = "medium"
+
+    return route_change_status, public_change_status, private_change_status, destination_change_status, evidence, reasoning
 
 
 def upsert_assessment(conn: psycopg.Connection[Any], payload: dict[str, Any]) -> None:
@@ -218,6 +291,9 @@ def upsert_assessment(conn: psycopg.Connection[Any], payload: dict[str, Any]) ->
               health_status,
               structural_status,
               route_change_status,
+              public_change_status,
+              private_change_status,
+              destination_change_status,
               confidence,
               reasoning_summary,
               evidence_json,
@@ -231,6 +307,9 @@ def upsert_assessment(conn: psycopg.Connection[Any], payload: dict[str, Any]) ->
               %(health_status)s,
               %(structural_status)s,
               %(route_change_status)s,
+              %(public_change_status)s,
+              %(private_change_status)s,
+              %(destination_change_status)s,
               %(confidence)s,
               %(reasoning_summary)s,
               %(evidence_json)s,
@@ -241,6 +320,9 @@ def upsert_assessment(conn: psycopg.Connection[Any], payload: dict[str, Any]) ->
               health_status = EXCLUDED.health_status,
               structural_status = EXCLUDED.structural_status,
               route_change_status = EXCLUDED.route_change_status,
+              public_change_status = EXCLUDED.public_change_status,
+              private_change_status = EXCLUDED.private_change_status,
+              destination_change_status = EXCLUDED.destination_change_status,
               confidence = EXCLUDED.confidence,
               reasoning_summary = EXCLUDED.reasoning_summary,
               evidence_json = EXCLUDED.evidence_json,
@@ -266,16 +348,46 @@ def evaluate_run(conn: psycopg.Connection[Any], run_id: str, compare_to_run_id: 
             run_id=run_id,
         )
 
-    health_status, structural_status, route_change_status, confidence, evidence = choose_health(snapshot, run_meta)
+    health_status, confidence, evidence = choose_health(snapshot, run_meta)
+    structural_status = "stable"
+    route_change_status = "first_observation"
+    public_change_status = "not_comparable"
+    private_change_status = "not_comparable"
+    destination_change_status = "not_comparable"
+    reasoning_summary = "primeira observação equivalente disponível"
+
     if previous_snapshot is None:
         route_change_status = "first_observation" if compare_to_run_id is None else "not_comparable"
+        destination_change_status = "not_comparable" if compare_to_run_id is None else "unknown_destination"
         reasoning_summary = "primeira observação equivalente disponível" if compare_to_run_id is None else "comparação solicitada, mas o snapshot comparativo não existe"
         evidence["compared_to_run_id"] = compare_to_run_id
         evidence["compared_to_snapshot_id"] = None
+        evidence["compared_to_resolved_path_signature"] = None
+        evidence["compared_to_public_resolved_path_signature"] = None
+        evidence["compared_to_private_resolved_path_signature"] = None
     else:
-        route_change_status, structural_status, confidence, evidence, reasoning_summary = classify_comparison(
-            snapshot, previous_snapshot, structural_status, confidence, evidence
+        route_change_status, public_change_status, private_change_status, destination_change_status, evidence, reasoning_summary = classify_comparison(
+            snapshot, previous_snapshot, confidence, evidence
         )
+        if destination_change_status == "same_destination" and public_change_status == "unchanged" and private_change_status == "changed":
+            structural_status = "stable"
+        elif destination_change_status == "same_destination" and public_change_status == "unchanged" and private_change_status == "unchanged":
+            structural_status = "stable"
+        elif destination_change_status == "same_destination" and public_change_status == "changed":
+            structural_status = "changed"
+        elif destination_change_status == "changed_destination":
+            structural_status = "changed"
+        elif destination_change_status == "unknown_destination" or public_change_status == "not_comparable" or private_change_status == "not_comparable":
+            structural_status = "insufficient_context"
+
+    if health_status == "healthy" and route_change_status == "changed" and destination_change_status == "same_destination" and public_change_status == "changed":
+        health_status = "degraded"
+    elif health_status == "healthy" and route_change_status == "changed" and destination_change_status == "changed_destination":
+        health_status = "degraded"
+    elif health_status == "healthy" and destination_change_status == "same_destination" and public_change_status == "unchanged" and private_change_status == "changed":
+        health_status = "healthy"
+    elif health_status in {"healthy", "degraded"} and destination_change_status == "unknown_destination":
+        health_status = "unknown"
 
     payload = {
         "route_health_assessment_id": f"route-health-assessment-{snapshot.run_id}",
@@ -286,6 +398,9 @@ def evaluate_run(conn: psycopg.Connection[Any], run_id: str, compare_to_run_id: 
         "route_change_status": route_change_status,
         "confidence": confidence,
         "reasoning_summary": reasoning_summary,
+        "public_change_status": public_change_status,
+        "private_change_status": private_change_status,
+        "destination_change_status": destination_change_status,
         "evidence_json": evidence,
         "compared_to_run_id": evidence.get("compared_to_run_id"),
         "compared_to_snapshot_id": evidence.get("compared_to_snapshot_id"),
@@ -329,6 +444,9 @@ def main() -> int:
                 f"health_status={result['health_status']}",
                 f"structural_status={result['structural_status']}",
                 f"route_change_status={result['route_change_status']}",
+                f"public_change_status={result['public_change_status']}",
+                f"private_change_status={result['private_change_status']}",
+                f"destination_change_status={result['destination_change_status']}",
                 f"confidence={result['confidence']}",
                 f"reasoning_summary={result['reasoning_summary']}",
             ]
