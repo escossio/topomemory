@@ -27,6 +27,14 @@ A Camada 2 mínima passa a persistir `route_snapshot` e `route_health_assessment
 - a comparação entre runs equivalentes continua ancorada em `target_value` e `scenario`
 - a rodada refinada separa `public_resolved_path_signature`, `private_resolved_path_signature` e `destination_stable_key`
 
+## Tendência temporal mínima
+
+A leitura temporal mínima passa a persistir `route_health_trend`.
+
+- ela agrega runs equivalentes por `target_value` e `scenario`
+- ela usa uma janela curta e explícita
+- ela separa estabilidade pública, variação privada e estabilidade do destino
+
 ## Escopo lógico recomendado
 
 ### Recomendação padrão
