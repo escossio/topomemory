@@ -18,6 +18,7 @@
 - Zabbix é componente operacional, não o cérebro do sistema
 - O grafo é projeção, não fonte da verdade
 - A unidade operacional principal é a rota/entrega, não o hop isolado
+- A Camada 2 mínima persiste `route_snapshot` e `route_health_assessment` para leitura operacional da rota
 - BGP público é uma frente futura de enriquecimento externo, não substitui a coleta local controlada
 - a observação primária do sistema continua sendo a VM da Camada 0
 - o enriquecimento público de BGP é módulo auxiliar futuro e não altera o contrato da Camada 0 nem da Camada 1

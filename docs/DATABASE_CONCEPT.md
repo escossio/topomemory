@@ -18,6 +18,14 @@ A frente semântica auxiliar já usa `pgvector` de forma isolada, mas sem interf
 
 O modelo separa observação bruta de entidade canônica. A mesma coisa observada várias vezes pode gerar múltiplas observações, mas converge para uma identidade canônica quando o sistema decide isso com base em evidências.
 
+## Saúde operacional mínima
+
+A Camada 2 mínima passa a persistir `route_snapshot` e `route_health_assessment` no mesmo schema `topomemory`.
+
+- `route_snapshot` resume o run como rota
+- `route_health_assessment` classifica a saúde mínima e a mudança estrutural
+- a comparação entre runs equivalentes continua ancorada em `target_value` e `scenario`
+
 ## Escopo lógico recomendado
 
 ### Recomendação padrão

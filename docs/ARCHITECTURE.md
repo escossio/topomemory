@@ -7,7 +7,7 @@ topomemory organiza observação e operação em um fluxo controlado:
 1. uma VM de coleta controlada executa a observação inicial;
 2. as observações são registradas como eventos e relações;
 3. a memória canônica consolida a identidade dos elementos;
-4. a saúde operacional da rota é calculada sobre a base observada;
+4. a saúde operacional da rota é calculada sobre a base observada e persiste snapshot/assessment mínimos na Camada 2;
 5. a telemetria temporal registra a evolução ao longo do tempo;
 6. o grafo operacional é projetado a partir da memória e da telemetria;
 7. a operação e a resposta a incidentes usam essa leitura consolidada.
@@ -30,7 +30,7 @@ O contrato formal dessa passagem da Camada 0 para a Camada 1 está documentado e
 - A Camada 1 consolida elementos e relações canônicas.
 - A base conceitual de dependências do serviço alimenta a Camada 2, mas não é uma camada executável separada.
 - A saída oficial da Camada 0 para a Camada 1 é o `ingestion_bundle`.
-- A Camada 2 traduz observação e dependência em leitura operacional da rota.
+- A Camada 2 traduz observação e dependência em leitura operacional da rota e persistência de snapshot/assessment.
 - A Camada 3 preserva o tempo como dimensão analítica própria.
 - A Camada 4 projeta o grafo operacional; ela não define a verdade, apenas a representa.
 - A Camada 5 consome as leituras anteriores para ação, incidente e resposta.
@@ -74,3 +74,12 @@ Há também uma frente futura de enriquecimento público de BGP para apoiar cont
 - O run de coleta é a unidade mínima da Camada 0.
 - O `ingestion_bundle` é a interface oficial de entrada da Camada 1.
 - Artefatos soltos, por si só, não constituem o contrato de ingestão.
+
+## Camada 2 mínima
+
+A primeira versão da Camada 2 grava:
+
+- `route_snapshot` por run
+- `route_health_assessment` por snapshot
+
+O contrato mínimo desta frente fica em [LAYER2_MINIMAL_HEALTH.md](/docs/LAYER2_MINIMAL_HEALTH.md).

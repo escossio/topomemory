@@ -95,3 +95,11 @@ O baseline continua em [LAYER1_BASELINE.md](/docs/LAYER1_BASELINE.md).
 A auditoria operacional continua em [LAYER1_AUDIT.md](/docs/LAYER1_AUDIT.md).
 
 A comparação entre runs lê os resultados já consolidados e os coloca lado a lado para análise.
+
+## Relação com a Camada 2
+
+A mesma leitura por `run_id` usada aqui alimenta a Camada 2 mínima:
+
+- o caminho observado vira `path_signature`
+- a identidade resolvida vira `resolved_path_signature`
+- a comparação entre runs equivalentes alimenta a avaliação de saúde da rota

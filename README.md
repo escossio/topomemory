@@ -49,6 +49,7 @@ Ela também tem uma superfície analítica de comparação entre runs para enxer
 - [Normalização mínima da Camada 1](/docs/LAYER1_MINIMAL_NORMALIZATION.md)
 - [Auditoria operacional da Camada 1](/docs/LAYER1_AUDIT.md)
 - [Comparação entre runs da Camada 1](/docs/LAYER1_RUN_DIFF.md)
+- [Saúde mínima da Camada 2](/docs/LAYER2_MINIMAL_HEALTH.md)
 - [Baseline semântico auxiliar da Camada 1](/docs/LAYER1_SEMANTIC_BASELINE.md)
 - [Avaliação da busca semântica da Camada 1](/docs/LAYER1_SEMANTIC_EVAL.md)
 - [Tuning de perfis semânticos da Camada 1](/docs/LAYER1_SEMANTIC_PROFILE_TUNING.md)
