@@ -51,6 +51,7 @@ Ela também tem uma superfície analítica de comparação entre runs para enxer
 - [Comparação entre runs da Camada 1](/docs/LAYER1_RUN_DIFF.md)
 - [Saúde mínima da Camada 2](/docs/LAYER2_MINIMAL_HEALTH.md)
 - [Tendência mínima da Camada 2](/docs/LAYER2_TREND_MINIMAL.md)
+- [Comparação mínima entre janelas da Camada 2](/docs/LAYER2_TREND_COMPARE.md)
 - [Baseline semântico auxiliar da Camada 1](/docs/LAYER1_SEMANTIC_BASELINE.md)
 - [Avaliação da busca semântica da Camada 1](/docs/LAYER1_SEMANTIC_EVAL.md)
 - [Tuning de perfis semânticos da Camada 1](/docs/LAYER1_SEMANTIC_PROFILE_TUNING.md)

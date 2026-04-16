@@ -83,6 +83,7 @@ A primeira versão da Camada 2 grava:
 - `route_health_assessment` por snapshot
 - separação explícita entre trecho público, trecho privado e estabilidade do destino
 - a tendência temporal mínima por grupo equivalente em `route_health_trend`
+- a comparação mínima entre janelas sucessivas em `route_health_trend_compare`
 
 O contrato mínimo desta frente fica em [LAYER2_MINIMAL_HEALTH.md](/docs/LAYER2_MINIMAL_HEALTH.md).
 

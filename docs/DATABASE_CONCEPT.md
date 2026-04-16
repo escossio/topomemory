@@ -35,6 +35,14 @@ A leitura temporal mínima passa a persistir `route_health_trend`.
 - ela usa uma janela curta e explícita
 - ela separa estabilidade pública, variação privada e estabilidade do destino
 
+## Comparação entre janelas
+
+A comparação entre janelas sucessivas passa a persistir `route_health_trend_compare`.
+
+- ela compara a janela atual com a janela anterior imediatamente disponível
+- ela registra deltas públicos, privados, de destino e geral
+- ela mantém o mesmo recorte por `target_value` e `scenario`
+
 ## Escopo lógico recomendado
 
 ### Recomendação padrão

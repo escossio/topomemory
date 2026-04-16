@@ -28,6 +28,9 @@ class TrendRow:
     public_resolved_path_signature: str | None
     private_resolved_path_signature: str | None
     destination_stable_key: str | None
+    public_change_status: str
+    private_change_status: str
+    destination_change_status: str
     health_status: str
     structural_status: str
     route_change_status: str
@@ -51,7 +54,7 @@ def load_equivalent_groups(conn: psycopg.Connection[Any]) -> list[tuple[str, str
         return [(row[0], row[1]) for row in cur.fetchall()]
 
 
-def load_trend_inputs(conn: psycopg.Connection[Any], *, target_value: str, scenario: str, window_size: int) -> list[TrendRow]:
+def load_trend_inputs(conn: psycopg.Connection[Any], *, target_value: str, scenario: str, window_size: int, window_offset: int = 0) -> list[TrendRow]:
     with conn.cursor() as cur:
         cur.execute(
             """
@@ -62,6 +65,9 @@ def load_trend_inputs(conn: psycopg.Connection[Any], *, target_value: str, scena
               rs.public_resolved_path_signature,
               rs.private_resolved_path_signature,
               rs.destination_stable_key,
+              ra.public_change_status,
+              ra.private_change_status,
+              ra.destination_change_status,
               ra.health_status,
               ra.structural_status,
               ra.route_change_status,
@@ -75,8 +81,9 @@ def load_trend_inputs(conn: psycopg.Connection[Any], *, target_value: str, scena
               AND rs.scenario = %s
             ORDER BY r.started_at DESC
             LIMIT %s
+            OFFSET %s
             """,
-            (ASSESSMENT_VERSION, target_value, scenario, window_size),
+            (ASSESSMENT_VERSION, target_value, scenario, window_size, window_offset),
         )
         rows = cur.fetchall()
 
@@ -87,11 +94,63 @@ def status_counter(values: list[str]) -> dict[str, int]:
     return dict(Counter(values))
 
 
-def classify_trend(rows: list[TrendRow]) -> tuple[str, str, str, str, str, dict[str, Any]]:
+def classify_trend(rows: list[TrendRow], *, requested_window_size: int) -> tuple[str, str, str, str, str, dict[str, Any]]:
     if not rows:
         return "insufficient_context", "insufficient_context", "insufficient_context", "insufficient_context", "low", {
             "reason": "nenhum run equivalente com snapshot e assessment disponível",
         }
+
+    if len(rows) == 1:
+        row = rows[0]
+        if row.route_change_status in {"first_observation", "not_comparable"}:
+            evidence = {
+                "reason": "menos de dois runs equivalentes ou comparação anterior indisponível",
+                "single_row_mode": True,
+                "current_public_change_status": row.public_change_status,
+                "current_private_change_status": row.private_change_status,
+                "current_destination_change_status": row.destination_change_status,
+            }
+            return "insufficient_context", "insufficient_context", "insufficient_context", "insufficient_context", "low", evidence
+
+        public_stability_status = "stable" if row.public_change_status == "unchanged" else "unstable" if row.public_change_status == "changed" else "insufficient_context"
+        private_variation_status = "low_variation" if row.private_change_status == "unchanged" else "oscillating" if row.private_change_status == "changed" else "insufficient_context"
+        if row.destination_change_status == "same_destination":
+            destination_stability_status = "stable"
+        elif row.destination_change_status == "changed_destination":
+            destination_stability_status = "changed"
+        elif row.destination_change_status == "unknown_destination":
+            destination_stability_status = "unknown"
+        else:
+            destination_stability_status = "insufficient_context"
+
+        if row.health_status in {"blocked", "degraded"} or destination_stability_status == "changed" or public_stability_status == "unstable":
+            overall_trend_status = "degrading"
+        elif destination_stability_status == "stable" and public_stability_status == "stable" and private_variation_status == "low_variation":
+            overall_trend_status = "stable"
+        elif destination_stability_status == "stable" and public_stability_status == "stable" and private_variation_status == "oscillating":
+            overall_trend_status = "oscillating"
+        elif destination_stability_status == "unknown" or public_stability_status == "insufficient_context" or private_variation_status == "insufficient_context":
+            overall_trend_status = "insufficient_context"
+        else:
+            overall_trend_status = "oscillating"
+
+        confidence = "medium" if overall_trend_status != "insufficient_context" else "low"
+        evidence = {
+            "reason": "janela unitária derivada do estado operacional do run",
+            "single_row_mode": True,
+            "current_public_change_status": row.public_change_status,
+            "current_private_change_status": row.private_change_status,
+            "current_destination_change_status": row.destination_change_status,
+            "public_signatures": [row.public_resolved_path_signature],
+            "private_signatures": [row.private_resolved_path_signature],
+            "destination_keys": [row.destination_stable_key],
+            "health_status_counts": status_counter([row.health_status]),
+            "structural_status_counts": status_counter([row.structural_status]),
+            "route_change_status_counts": status_counter([row.route_change_status]),
+            "window_size": len(rows),
+            "trend_window_size_requested": requested_window_size,
+        }
+        return public_stability_status, private_variation_status, destination_stability_status, overall_trend_status, confidence, evidence
 
     if len(rows) < 2:
         evidence = {
@@ -99,6 +158,8 @@ def classify_trend(rows: list[TrendRow]) -> tuple[str, str, str, str, str, dict[
             "public_signatures": [row.public_resolved_path_signature for row in rows],
             "private_signatures": [row.private_resolved_path_signature for row in rows],
             "destination_keys": [row.destination_stable_key for row in rows],
+            "window_size": len(rows),
+            "trend_window_size_requested": requested_window_size,
         }
         return "insufficient_context", "insufficient_context", "insufficient_context", "insufficient_context", "low", evidence
 
@@ -171,7 +232,7 @@ def classify_trend(rows: list[TrendRow]) -> tuple[str, str, str, str, str, dict[
         "structural_status_counts": status_counter(structural_statuses),
         "route_change_status_counts": status_counter(route_change_statuses),
         "window_size": len(rows),
-        "trend_window_size_requested": TREND_WINDOW_SIZE_DEFAULT,
+        "trend_window_size_requested": requested_window_size,
     }
 
     return public_stability_status, private_variation_status, destination_stability_status, overall_trend_status, confidence, evidence
@@ -186,7 +247,10 @@ def upsert_trend(conn: psycopg.Connection[Any], payload: dict[str, Any]) -> None
               target_value,
               scenario,
               trend_window_size,
+              window_offset,
               total_runs_considered,
+              window_start_run_id,
+              window_end_run_id,
               latest_run_id,
               latest_snapshot_id,
               latest_assessment_id,
@@ -203,7 +267,10 @@ def upsert_trend(conn: psycopg.Connection[Any], payload: dict[str, Any]) -> None
               %(target_value)s,
               %(scenario)s,
               %(trend_window_size)s,
+              %(window_offset)s,
               %(total_runs_considered)s,
+              %(window_start_run_id)s,
+              %(window_end_run_id)s,
               %(latest_run_id)s,
               %(latest_snapshot_id)s,
               %(latest_assessment_id)s,
@@ -215,8 +282,10 @@ def upsert_trend(conn: psycopg.Connection[Any], payload: dict[str, Any]) -> None
               %(reasoning_summary)s,
               %(evidence_json)s
             )
-            ON CONFLICT (target_value, scenario, trend_window_size) DO UPDATE SET
+            ON CONFLICT (target_value, scenario, trend_window_size, window_offset) DO UPDATE SET
               total_runs_considered = EXCLUDED.total_runs_considered,
+              window_start_run_id = EXCLUDED.window_start_run_id,
+              window_end_run_id = EXCLUDED.window_end_run_id,
               latest_run_id = EXCLUDED.latest_run_id,
               latest_snapshot_id = EXCLUDED.latest_snapshot_id,
               latest_assessment_id = EXCLUDED.latest_assessment_id,
@@ -232,15 +301,24 @@ def upsert_trend(conn: psycopg.Connection[Any], payload: dict[str, Any]) -> None
         )
 
 
-def build_trend(conn: psycopg.Connection[Any], *, target_value: str, scenario: str, window_size: int) -> dict[str, Any]:
-    rows = load_trend_inputs(conn, target_value=target_value, scenario=scenario, window_size=window_size)
-    public_stability_status, private_variation_status, destination_stability_status, overall_trend_status, confidence, evidence = classify_trend(rows)
+def build_trend(conn: psycopg.Connection[Any], *, target_value: str, scenario: str, window_size: int, window_offset: int = 0) -> dict[str, Any]:
+    rows = load_trend_inputs(conn, target_value=target_value, scenario=scenario, window_size=window_size, window_offset=window_offset)
+    public_stability_status, private_variation_status, destination_stability_status, overall_trend_status, confidence, evidence = classify_trend(rows, requested_window_size=window_size)
 
     latest = rows[0] if rows else None
     if latest is None:
         raise RouteHealthTrendError(f"nenhum snapshot/assessment disponível para {target_value} / {scenario}")
 
-    if len(rows) < 2:
+    if len(rows) == 1:
+        if overall_trend_status == "stable":
+            reasoning_summary = "janela unitária mostra destino estável, trecho público estável e variação privada baixa"
+        elif overall_trend_status == "oscillating":
+            reasoning_summary = "janela unitária mostra destino estável, trecho público estável e variação privada recorrente"
+        elif overall_trend_status == "degrading":
+            reasoning_summary = "janela unitária mostra sinal de degradação por saúde, destino ou trecho público"
+        else:
+            reasoning_summary = "contexto insuficiente para resumir tendência com honestidade"
+    elif len(rows) < 2:
         reasoning_summary = "menos de dois runs equivalentes; leitura agregada insuficiente"
     elif overall_trend_status == "stable":
         reasoning_summary = "destino estável, trecho público estável e variação privada baixa"
@@ -252,14 +330,18 @@ def build_trend(conn: psycopg.Connection[Any], *, target_value: str, scenario: s
         reasoning_summary = "contexto insuficiente para resumir tendência com honestidade"
 
     payload = {
-        "route_health_trend_id": f"route-health-trend-{target_value}-{scenario}-{window_size}",
+        "route_health_trend_id": f"route-health-trend-{target_value}-{scenario}-{window_size}-{window_offset}",
         "target_value": target_value,
         "scenario": scenario,
         "trend_window_size": window_size,
+        "window_offset": window_offset,
         "total_runs_considered": len(rows),
+        "window_start_run_id": rows[-1].run_id if rows else latest.run_id,
+        "window_end_run_id": latest.run_id,
         "latest_run_id": latest.run_id,
         "latest_snapshot_id": latest.snapshot_id,
         "latest_assessment_id": latest.assessment_id,
+        "destination_stable_key": latest.destination_stable_key,
         "public_stability_status": public_stability_status,
         "private_variation_status": private_variation_status,
         "destination_stability_status": destination_stability_status,
@@ -278,6 +360,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--scenario", help="scenario a agregar")
     parser.add_argument("--all", action="store_true", help="processa todos os grupos equivalentes")
     parser.add_argument("--window-size", type=int, default=TREND_WINDOW_SIZE_DEFAULT, help="tamanho da janela equivalente")
+    parser.add_argument("--window-offset", type=int, default=0, help="deslocamento da janela, em runs, a partir do mais recente")
     parser.add_argument("--database-url", default=os.environ.get("DATABASE_URL"), help="DSN do PostgreSQL")
     return parser
 
@@ -292,6 +375,8 @@ def main() -> int:
         raise RouteHealthTrendError("informe --scenario junto com --target")
     if args.window_size < 1:
         raise RouteHealthTrendError("--window-size precisa ser >= 1")
+    if args.window_offset < 0:
+        raise RouteHealthTrendError("--window-offset precisa ser >= 0")
 
     with db_connect(args.database_url) as conn:
         if args.all:
@@ -306,7 +391,7 @@ def main() -> int:
         for target_value, scenario in groups:
             try:
                 processed.append(
-                    build_trend(conn, target_value=target_value, scenario=scenario, window_size=args.window_size)
+                    build_trend(conn, target_value=target_value, scenario=scenario, window_size=args.window_size, window_offset=args.window_offset)
                 )
             except RouteHealthTrendError as exc:
                 if args.all:

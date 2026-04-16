@@ -12,6 +12,7 @@ Esta primeira versão usa uma janela curta e explícita:
 
 - os últimos `3` runs equivalentes por `target_value` e `scenario`
 - quando houver menos de `2` runs, a leitura cai para contexto insuficiente
+- a frente também grava `window_offset`, `window_start_run_id` e `window_end_run_id` para ancorar a janela usada
 
 ## O que é `route_health_trend`
 
@@ -36,6 +37,10 @@ Ele guarda:
 - `overall_trend_status = oscillating` quando destino e trecho público ficam estáveis e a variação privada se repete
 - `overall_trend_status = degrading` quando há sinal real de piora em saúde, destino ou trecho público
 - `overall_trend_status = insufficient_context` quando a janela não permite uma leitura honesta
+
+## Relação com a comparação entre janelas
+
+`route_health_trend` alimenta a camada seguinte, que compara a janela atual contra a anterior e grava a leitura em `route_health_trend_compare`.
 
 ## O que esta frente não faz
 
